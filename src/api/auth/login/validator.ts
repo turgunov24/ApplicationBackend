@@ -25,8 +25,8 @@ export const loginSchema: LoginValidationSchema = {
 		in: 'body',
 		isString: true,
 		isLength: {
-			options: { min: 8, max: 20 },
-			errorMessage: 'Password must be between 8 and 20 characters',
+			options: { min: 4, max: 20 },
+			errorMessage: 'Password must be between 4 and 20 characters',
 		},
 		notEmpty: true,
 		errorMessage: 'Password is required',

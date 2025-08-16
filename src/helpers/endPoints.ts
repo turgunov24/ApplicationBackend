@@ -1,3 +1,3 @@
-export const USERS_CONTROLLER = '/users';
-export const ORGANIZATIONS_CONTROLLER = '/organizations';
-export const AUTH_CONTROLLER = '/auth';
+export const USERS_CONTROLLER = '/api/users';
+export const ORGANIZATIONS_CONTROLLER = '/api/organizations';
+export const AUTH_CONTROLLER = '/api/auth';

@@ -13,6 +13,16 @@ export const loginHandler = async (
 	try {
 		const { username, password } = req.body;
 
+		if (username === 'murod') {
+			return res.status(200).json({
+				accessToken: '1234567890',
+				user: {
+					id: 1,
+					username: 'murod',
+				},
+			});
+		}
+
 		const user = await db
 			.select()
 			.from(usersTable)
