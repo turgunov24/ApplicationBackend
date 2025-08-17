@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
-import { InferSelectModel, or } from 'drizzle-orm';
+import { eq, InferSelectModel, or } from 'drizzle-orm';
 import { ilike } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
 
-type ISortableFields = keyof Pick<
+type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
+
+type ISortableFields = Pick<
 	InferSelectModel<typeof usersTable>,
 	'name' | 'username' | 'createdAt'
 >;
@@ -17,8 +19,9 @@ interface QueryParams {
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
-	sortBy?: ISortableFields;
+	sortBy?: keyof ISortableFields;
 	sortOrder?: 'asc' | 'desc';
+	status?: IStatuses['status'] | 'all';
 }
 
 export const indexHandler = async (
@@ -27,19 +30,24 @@ export const indexHandler = async (
 ) => {
 	try {
 		const {
-			currentPage = '1',
+			currentPage = '0',
 			dataPerPage = '10',
 			search,
 			sortBy = 'createdAt',
 			sortOrder = 'desc',
+			status = 'all',
 		} = req.query;
 
-		const _currentPage = Math.max(1, parseInt(currentPage));
-		const _dataPerPage = Math.min(100, Math.max(1, parseInt(dataPerPage)));
+		const _currentPage = Math.max(0, parseInt(currentPage));
+		const _dataPerPage = Math.min(100, Math.max(0, parseInt(dataPerPage)));
 
-		const offset = (_currentPage - 1) * _dataPerPage;
+		const offset = _currentPage * _dataPerPage;
 
 		const whereConditions = [];
+
+		if (status !== 'all') {
+			whereConditions.push(eq(usersTable.status, status));
+		}
 
 		if (search) {
 			const searchTerm = `%${search}%`;
@@ -74,7 +82,7 @@ export const indexHandler = async (
 
 		const totalPages = Math.ceil(totalCount / _dataPerPage);
 		const hasNextPage = _currentPage < totalPages;
-		const hasPrevPage = _currentPage > 1;
+		const hasPrevPage = _currentPage > 0;
 
 		res.json({
 			result: users,

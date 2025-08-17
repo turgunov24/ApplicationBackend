@@ -17,7 +17,13 @@ const port = process.env.PORT || 3002;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: '*', credentials: true }));
+app.use(
+	cors({
+		origin: '*',
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	})
+);
 
 // Basic route
 app.get('/', (req, res) => {

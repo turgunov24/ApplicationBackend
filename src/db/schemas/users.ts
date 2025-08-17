@@ -1,4 +1,7 @@
+import { text } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
+
+export const statuses = ['active', 'pending', 'banned', 'rejected'] as const;
 
 export const usersTable = pgTable('users', {
 	id: serial().primaryKey().notNull(),
@@ -8,4 +11,5 @@ export const usersTable = pgTable('users', {
 	token: varchar({ length: 500 }),
 	password: varchar({ length: 100 }).notNull(),
 	username: varchar({ length: 50 }).notNull().unique(),
+	status: text('status', { enum: statuses }).notNull().default('pending'),
 });

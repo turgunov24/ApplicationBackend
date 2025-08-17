@@ -1,5 +1,5 @@
 {
-  "id": "fb03ea2e-d0d4-4e2d-a86e-b5e2407c4f70",
+  "id": "c9ae984e-469d-4016-9627-98cb281d2fe9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -91,11 +91,11 @@
           "name": "token",
           "type": "varchar(500)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "password": {
           "name": "password",
-          "type": "varchar(20)",
+          "type": "varchar(100)",
           "primaryKey": false,
           "notNull": true
         },
@@ -104,19 +104,19 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_token_unique": {
-          "name": "users_token_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
-        },
         "users_username_unique": {
           "name": "users_username_unique",
           "nullsNotDistinct": false,

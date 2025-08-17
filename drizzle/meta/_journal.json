@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1755105675516,
-      "tag": "0000_aspiring_photon",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1755106378624,
-      "tag": "0001_tearful_lightspeed",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1755106502075,
-      "tag": "0002_nervous_mimic",
+      "when": 1755419814293,
+      "tag": "0000_chief_mentallo",
       "breakpoints": true
     }
   ]

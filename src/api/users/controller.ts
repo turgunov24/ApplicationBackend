@@ -9,10 +9,12 @@ import {
 } from './validators';
 import { withValidationErrorsMiddleware } from '../../middlewares/withValidationErrors';
 import { updateHandler } from './handlers/update';
+import { getCountsByStatusHandler } from './handlers/getCountsByStatus';
 
 const router = Router();
 
 router.get('/', indexHandler);
+router.get('/counts-by-status', getCountsByStatusHandler);
 router.post(
 	'/',
 	createValidator,

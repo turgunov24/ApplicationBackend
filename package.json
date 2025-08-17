@@ -1,5 +1,5 @@
 {
-	"name": "48taxibot",
+	"name": "app",
 	"version": "1.0.0",
 	"main": "index.js",
 	"type": "commonjs",
@@ -9,7 +9,12 @@
 		"generate": "npx drizzle-kit generate",
 		"migrate": "npx drizzle-kit migrate",
 		"studio": "npx drizzle-kit studio",
-		"seed": "ts-node src/db/seed.ts"
+		"seed": "ts-node src/db/seed.ts",
+		"build": "rm -rf dist && esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp",
+		"build:watch": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp --watch",
+		"build:clean": "rm -rf dist",
+		"start:prod": "node dist/index.js",
+		"dev:build": "ts-node-dev --respawn --transpile-only src/index.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -21,6 +26,7 @@
 		"@types/node": "^22.5.5",
 		"@types/pg": "^8.15.4",
 		"drizzle-kit": "^0.31.4",
+		"esbuild": "0.25.9",
 		"nodemon": "^3.1.4",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.6.2"
@@ -51,6 +57,7 @@
 		"pg": "^8.16.0",
 		"postgres": "^3.4.7",
 		"prisma": "^6.3.0",
+		"ts-node-dev": "^2.0.0",
 		"uuid": "^11.1.0",
 		"winston": "^3.17.0"
 	}
