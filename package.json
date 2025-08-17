@@ -14,7 +14,8 @@
 		"build:watch": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp --watch",
 		"build:clean": "rm -rf dist",
 		"start:prod": "node dist/index.js",
-		"dev:build": "ts-node-dev --respawn --transpile-only src/index.ts"
+		"dev:build": "ts-node-dev --respawn --transpile-only src/index.ts",
+		"dev:render": "ts-node-dev --respawn --transpile-only src/index.ts && node dist/index.js"
 	},
 	"keywords": [],
 	"author": "",

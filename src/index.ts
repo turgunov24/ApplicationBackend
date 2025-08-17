@@ -13,7 +13,7 @@ import organizationsRouter from './api/organizations/controller';
 import authRouter from './api/auth/login/controller';
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
