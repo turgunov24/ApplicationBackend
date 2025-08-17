@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const handlers_1 = require("./handlers");
+const create_1 = require("./handlers/create");
+const delete_1 = require("./handlers/delete");
+const validators_1 = require("./validators");
+const withValidationErrors_1 = require("../../middlewares/withValidationErrors");
+const update_1 = require("./handlers/update");
+const getCountsByStatus_1 = require("./handlers/getCountsByStatus");
+const router = (0, express_1.Router)();
+router.get('/', handlers_1.indexHandler);
+router.get('/counts-by-status', getCountsByStatus_1.getCountsByStatusHandler);
+router.post('/', validators_1.createValidator, withValidationErrors_1.withValidationErrorsMiddleware, create_1.createHandler);
+router.put('/', validators_1.updateValidator, withValidationErrors_1.withValidationErrorsMiddleware, update_1.updateHandler);
+router.delete('/', validators_1.deleteValidator, withValidationErrors_1.withValidationErrorsMiddleware, delete_1.deleteHandler);
+exports.default = router;
