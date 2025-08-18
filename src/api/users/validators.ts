@@ -8,7 +8,6 @@ export type CreatePayload = Pick<
 	'name' | 'username' | 'password'
 >;
 
-
 type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
