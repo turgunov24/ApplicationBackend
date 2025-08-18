@@ -5,7 +5,15 @@ import db from '../../db';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof usersTable>,
-	'name' | 'username' | 'password'
+	| 'fullName'
+	| 'username'
+	| 'password'
+	| 'email'
+	| 'phone'
+	| 'countryId'
+	| 'regionId'
+	| 'cityId'
+	| 'roleId'
 >;
 
 type keys = keyof CreatePayload;
@@ -35,24 +43,12 @@ const deleteSchema: DeleteValidationSchema = {
 };
 
 const createSchema: CreateValidationSchema = {
-	name: {
+	fullName: {
 		in: 'body',
 		isString: true,
 		notEmpty: true,
 		errorMessage: 'User name is required',
 		trim: true,
-		custom: {
-			options: async (value) => {
-				const user = await db
-					.select()
-					.from(usersTable)
-					.where(eq(usersTable.username, value));
-				if (user.length > 0) {
-					throw new Error('User name already exists');
-				}
-				return true;
-			},
-		},
 	},
 	username: {
 		in: 'body',
@@ -86,6 +82,44 @@ const createSchema: CreateValidationSchema = {
 			},
 			errorMessage: 'Password must be between 8 and 20 characters',
 		},
+	},
+	email: {
+		in: 'body',
+		isEmail: true,
+		notEmpty: true,
+		errorMessage: 'User email is required',
+		trim: true,
+	},
+	phone: {
+		in: 'body',
+		isString: true,
+		notEmpty: true,
+		errorMessage: 'User phone is required',
+		trim: true,
+	},
+	countryId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'User country id is required',
+	},
+	regionId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'User region id is required',
+	},
+	cityId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'User city id is required',
+	},
+	roleId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'User role id is required',
 	},
 };
 
