@@ -46,7 +46,7 @@ export const createHandler = async (
 		res.status(201).json(result[0]);
 	} catch (error) {
 		if (error instanceof Error) {
-			res.status(500).json({ message: error.message });
+			res.status(500).json({ message: error.cause });
 		} else {
 			res.status(500).json({ message: 'Internal server error' });
 		}

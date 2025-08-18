@@ -23,8 +23,8 @@ export const usersTable = pgTable('users', {
 	password: varchar({ length: 100 }).notNull(),
 	status: text('status', { enum: statuses }).notNull().default('pending'),
 	avatarPath: text('avatar_path')
-	.notNull()
-	.default('uploads/avatars/default-avatar.jpg'),
+		.notNull()
+		.default('uploads/avatars/default-avatar.jpg'),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
 });

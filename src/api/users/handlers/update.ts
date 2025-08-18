@@ -11,13 +11,18 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { name, username, password } = req.body;
+		const { fullName, username, password } = req.body;
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		await db
 			.update(usersTable)
-			.set({ name, username, password: hashedPassword, updatedAt: new Date() })
+			.set({
+				fullName,
+				username,
+				password: hashedPassword,
+				updatedAt: new Date(),
+			})
 			.where(eq(usersTable.id, Number(id)))
 			.returning();
 

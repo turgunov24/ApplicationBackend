@@ -12,7 +12,7 @@ type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
 
 type ISortableFields = Pick<
 	InferSelectModel<typeof usersTable>,
-	'name' | 'username' | 'createdAt'
+	'fullName' | 'username' | 'createdAt'
 >;
 
 interface QueryParams {
@@ -53,7 +53,7 @@ export const indexHandler = async (
 			const searchTerm = `%${search}%`;
 			whereConditions.push(
 				or(
-					ilike(usersTable.name, searchTerm),
+					ilike(usersTable.fullName, searchTerm),
 					ilike(usersTable.username, searchTerm)
 				)
 			);
@@ -61,9 +61,6 @@ export const indexHandler = async (
 
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const orderBy =
-			sortOrder === 'asc' ? asc(usersTable[sortBy]) : desc(usersTable[sortBy]);
 
 		const totalCountResult = await db
 			.select({ count: count() })
@@ -76,7 +73,11 @@ export const indexHandler = async (
 			.select()
 			.from(usersTable)
 			.where(whereClause)
-			.orderBy(orderBy)
+			.orderBy(
+				sortOrder === 'asc'
+					? asc(usersTable.createdAt)
+					: desc(usersTable.createdAt)
+			)
 			.limit(_dataPerPage)
 			.offset(offset);
 
