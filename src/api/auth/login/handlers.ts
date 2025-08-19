@@ -21,13 +21,13 @@ export const loginHandler = async (
 			.where(eq(usersTable.username, username));
 
 		if (!user[0]) {
-			return res.status(401).json(generateErrorMessage('Invalid credentials'));
+			return res.status(400).json(generateErrorMessage('Invalid credentials'));
 		}
 
 		const validPassword = await bcrypt.compare(password, user[0].password);
 
 		if (!validPassword) {
-			return res.status(401).json(generateErrorMessage('Invalid credentials'));
+			return res.status(400).json(generateErrorMessage('Invalid credentials'));
 		}
 
 		const secret = process.env.JWT_SECRET;
@@ -38,9 +38,9 @@ export const loginHandler = async (
 				.json(generateErrorMessage('JWT_SECRET is not set'));
 		}
 
-		const token = jwt.sign({ id: user[0].id }, secret, { expiresIn: '1h' });
+		const accessToken = jwt.sign({ id: user[0].id }, secret, { expiresIn: '1h' });
 
-		return res.status(200).json({ token, user: user[0] });
+		return res.status(200).json({ accessToken, user: user[0] });
 	} catch (error: unknown) {
 		handleError(res, error);
 	}
