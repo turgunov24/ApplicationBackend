@@ -1,8 +1,9 @@
-import db from '../../../db';
-import { usersTable } from '../../../db/schemas/users';
-import { Request, Response } from 'express';
-import { CreatePayload } from '../validators';
-import bcrypt from 'bcryptjs';
+import db from '../../../db'
+import { usersTable } from '../../../db/schemas/users'
+import { Request, Response } from 'express'
+import { CreatePayload } from '../validators'
+import bcrypt from 'bcryptjs'
+import { handleError } from '../../../utils/handleError'
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
@@ -45,11 +46,6 @@ export const createHandler = async (
 
 		res.status(201).json(result[0]);
 	} catch (error) {
-		if (error instanceof Error) {
-			res.status(500).json({ message: error.cause });
-		} else {
-			res.status(500).json({ message: 'Internal server error' });
-		}
-		console.log(error);
+		handleError(res, error);
 	}
 };

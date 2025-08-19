@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable, statuses } from '../../../db/schemas/users';
 import { eq, count } from 'drizzle-orm';
+import { generateErrorMessage } from '../../../utils/generateErrorMessage'
 
 export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 	try {
@@ -29,9 +30,9 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 		res.json(statusCounts);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
-			res.status(500).json({ message: error.message });
+			res.status(500).json(generateErrorMessage(error.message));
 		} else {
-			res.status(500).json({ message: 'Internal server error' });
+			res.status(500).json(generateErrorMessage('Internal server error'));
 		}
 	}
 };

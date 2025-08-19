@@ -4,6 +4,7 @@ import db from '../../../db';
 import { eq } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
 import bcrypt from 'bcryptjs';
+import { handleError } from '../../../utils/handleError';
 
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
@@ -28,10 +29,6 @@ export const updateHandler = async (
 
 		res.json({ message: 'User updated successfully' });
 	} catch (error: unknown) {
-		if (error instanceof Error) {
-			res.status(500).json({ message: error.message });
-		} else {
-			res.status(500).json({ message: 'Internal server error' });
-		}
+		handleError(res, error);
 	}
 };

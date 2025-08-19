@@ -7,6 +7,7 @@ import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
+import { handleError } from '../../../utils/handleError';
 
 type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
 
@@ -97,10 +98,6 @@ export const indexHandler = async (
 			},
 		});
 	} catch (error: unknown) {
-		if (error instanceof Error) {
-			res.status(500).json({ message: error.message });
-		} else {
-			res.status(500).json({ message: 'Internal server error' });
-		}
+		handleError(res, error);
 	}
 };
