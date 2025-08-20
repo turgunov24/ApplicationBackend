@@ -7,7 +7,13 @@ import {
 	integer,
 } from 'drizzle-orm/pg-core';
 
-export const statuses = ['active', 'pending', 'banned', 'rejected'] as const;
+export const statuses = [
+	'active',
+	'pending',
+	'banned',
+	'rejected',
+	'deleted',
+] as const;
 
 export const usersTable = pgTable('users', {
 	id: serial().primaryKey().notNull(),

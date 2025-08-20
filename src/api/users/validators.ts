@@ -1,6 +1,6 @@
 import { usersTable } from '../../db/schemas/users';
 import { checkSchema, ParamSchema } from 'express-validator';
-import { eq, InferInsertModel } from 'drizzle-orm';
+import { and, eq, InferInsertModel, ne } from 'drizzle-orm';
 import db from '../../db';
 
 export type CreatePayload = Pick<
@@ -162,6 +162,19 @@ const createSchema: CreateValidationSchema = {
 const updateSchema: UpdateValidationSchema = {
 	...createSchema,
 	...deleteSchema,
+	password: {
+		in: 'body',
+		isString: true,
+		trim: true,
+		optional: true,
+		isLength: {
+			options: {
+				min: 8,
+				max: 20,
+			},
+			errorMessage: 'Password must be between 8 and 20 characters',
+		},
+	},
 	username: {
 		in: 'body',
 		isString: true,
@@ -170,26 +183,19 @@ const updateSchema: UpdateValidationSchema = {
 		trim: true,
 		custom: {
 			options: async (value, { req }) => {
-				const user = await db
+				const { id } = req.query as { id: string };
+
+				if (!id) {
+					throw new Error('User id not provided');
+				}
+				const users = await db
 					.select()
 					.from(usersTable)
-					.where(eq(usersTable.username, value));
+					.where(
+						and(eq(usersTable.username, value), ne(usersTable.id, parseInt(id)))
+					);
 
-				if (user.length === 0) {
-					throw new Error('User not found or id not provided');
-				}
-
-				if (user.length > 0) {
-					const { id } = req.query as { id: string };
-
-					if (!id) {
-						throw new Error('User id not provided');
-					}
-
-					if (user[0].id !== parseInt(id)) {
-						throw new Error('User username already exists');
-					}
-				}
+				if (users.length > 0) throw new Error('User username already exists');
 
 				return true;
 			},
@@ -203,26 +209,19 @@ const updateSchema: UpdateValidationSchema = {
 		trim: true,
 		custom: {
 			options: async (value, { req }) => {
-				const user = await db
+				const { id } = req.query as { id: string };
+
+				if (!id) {
+					throw new Error('User id not provided');
+				}
+				const users = await db
 					.select()
 					.from(usersTable)
-					.where(eq(usersTable.email, value));
+					.where(
+						and(eq(usersTable.email, value), ne(usersTable.id, parseInt(id)))
+					);
 
-				if (user.length === 0) {
-					throw new Error('User not found or id not provided');
-				}
-
-				if (user.length > 0) {
-					const { id } = req.query as { id: string };
-
-					if (!id) {
-						throw new Error('User id not provided');
-					}
-
-					if (user[0].id !== parseInt(id)) {
-						throw new Error('User email already exists');
-					}
-				}
+				if (users.length > 0) throw new Error('User email already exists');
 
 				return true;
 			},

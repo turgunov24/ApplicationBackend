@@ -12,9 +12,23 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { fullName, username, password } = req.body;
+		const {
+			fullName,
+			username,
+			password,
+			email,
+			phone,
+			countryId,
+			regionId,
+			cityId,
+			roleId,
+		} = req.body;
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+		let hashedPassword = undefined;
+
+		if (password) {
+			hashedPassword = await bcrypt.hash(password, 10);
+		}
 
 		await db
 			.update(usersTable)
@@ -22,6 +36,12 @@ export const updateHandler = async (
 				fullName,
 				username,
 				password: hashedPassword,
+				email,
+				phone,
+				countryId,
+				regionId,
+				cityId,
+				roleId,
 				updatedAt: new Date(),
 			})
 			.where(eq(usersTable.id, Number(id)))

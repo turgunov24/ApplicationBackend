@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
-import { usersTable } from '../../../db/schemas/users'
-import db from '../../../db'
-import { eq } from 'drizzle-orm'
-import { handleError } from '../../../utils/handleError'
+import { Request, Response } from 'express';
+import { usersTable } from '../../../db/schemas/users';
+import db from '../../../db';
+import { eq } from 'drizzle-orm';
+import { handleError } from '../../../utils/handleError';
 
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,
@@ -12,7 +12,8 @@ export const deleteHandler = async (
 		const { id } = req.query;
 
 		await db
-			.delete(usersTable)
+			.update(usersTable)
+			.set({ status: 'deleted', updatedAt: new Date() })
 			.where(eq(usersTable.id, Number(id)))
 			.returning();
 
