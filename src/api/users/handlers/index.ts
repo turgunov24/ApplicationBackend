@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
-import { eq, InferSelectModel, or } from 'drizzle-orm';
+import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
 import { ilike } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
@@ -49,7 +49,7 @@ export const indexHandler = async (
 
 			res.json(user[0]);
 			return;
-		}	
+		}
 
 		const _currentPage = Math.max(0, parseInt(currentPage));
 		const _dataPerPage = Math.min(100, Math.max(0, parseInt(dataPerPage)));
@@ -85,7 +85,7 @@ export const indexHandler = async (
 		const users = await db
 			.select()
 			.from(usersTable)
-			.where(whereClause)
+			.where(and(whereClause, ne(usersTable.status, 'deleted')))
 			.orderBy(
 				sortOrder === 'asc'
 					? asc(usersTable.createdAt)
