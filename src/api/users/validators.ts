@@ -1,5 +1,5 @@
 import { usersTable } from '../../db/schemas/users';
-import { checkSchema, ParamSchema, Schema } from 'express-validator';
+import { checkSchema, ParamSchema } from 'express-validator';
 import { eq, InferInsertModel } from 'drizzle-orm';
 import db from '../../db';
 
@@ -20,6 +20,30 @@ type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
 export type DeleteValidationSchema = Record<'id', ParamSchema>;
+export type UpdateValidationSchema = CreateValidationSchema &
+	DeleteValidationSchema;
+
+const indexSchema: DeleteValidationSchema = {
+	id: {
+		in: 'query',
+		isInt: true,
+		optional: true,
+		custom: {
+			options: async (value) => {
+				if (value) {
+					const user = await db
+						.select()
+						.from(usersTable)
+						.where(eq(usersTable.id, value));
+
+					if (!user.length) throw new Error('User not found');
+				}
+
+				return true;
+			},
+		},
+	},
+};
 
 const deleteSchema: DeleteValidationSchema = {
 	id: {
@@ -29,12 +53,12 @@ const deleteSchema: DeleteValidationSchema = {
 		errorMessage: 'User id is required',
 		custom: {
 			options: async (value) => {
-				const place = await db
+				const user = await db
 					.select()
 					.from(usersTable)
 					.where(eq(usersTable.id, value));
 
-				if (!place.length) throw new Error('User not found');
+				if (!user.length) throw new Error('User not found');
 
 				return true;
 			},
@@ -89,6 +113,18 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'User email is required',
 		trim: true,
+		custom: {
+			options: async (value) => {
+				const user = await db
+					.select()
+					.from(usersTable)
+					.where(eq(usersTable.email, value));
+				if (user.length > 0) {
+					throw new Error('User email already exists');
+				}
+				return true;
+			},
+		},
 	},
 	phone: {
 		in: 'body',
@@ -123,11 +159,78 @@ const createSchema: CreateValidationSchema = {
 	},
 };
 
-const updateSchema = {
+const updateSchema: UpdateValidationSchema = {
 	...createSchema,
 	...deleteSchema,
+	username: {
+		in: 'body',
+		isString: true,
+		notEmpty: true,
+		errorMessage: 'User username is required',
+		trim: true,
+		custom: {
+			options: async (value, { req }) => {
+				const user = await db
+					.select()
+					.from(usersTable)
+					.where(eq(usersTable.username, value));
+
+				if (user.length === 0) {
+					throw new Error('User not found or id not provided');
+				}
+
+				if (user.length > 0) {
+					const { id } = req.query as { id: string };
+
+					if (!id) {
+						throw new Error('User id not provided');
+					}
+
+					if (user[0].id !== parseInt(id)) {
+						throw new Error('User username already exists');
+					}
+				}
+
+				return true;
+			},
+		},
+	},
+	email: {
+		in: 'body',
+		isEmail: true,
+		notEmpty: true,
+		errorMessage: 'User email is required',
+		trim: true,
+		custom: {
+			options: async (value, { req }) => {
+				const user = await db
+					.select()
+					.from(usersTable)
+					.where(eq(usersTable.email, value));
+
+				if (user.length === 0) {
+					throw new Error('User not found or id not provided');
+				}
+
+				if (user.length > 0) {
+					const { id } = req.query as { id: string };
+
+					if (!id) {
+						throw new Error('User id not provided');
+					}
+
+					if (user[0].id !== parseInt(id)) {
+						throw new Error('User email already exists');
+					}
+				}
+
+				return true;
+			},
+		},
+	},
 };
 
 export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
+export const indexValidator = checkSchema(indexSchema);

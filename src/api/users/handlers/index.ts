@@ -23,6 +23,7 @@ interface QueryParams {
 	sortBy?: keyof ISortableFields;
 	sortOrder?: 'asc' | 'desc';
 	status?: IStatuses['status'] | 'all';
+	id?: string;
 }
 
 export const indexHandler = async (
@@ -37,7 +38,18 @@ export const indexHandler = async (
 			sortBy = 'createdAt',
 			sortOrder = 'desc',
 			status = 'all',
+			id,
 		} = req.query;
+
+		if (id) {
+			const user = await db
+				.select()
+				.from(usersTable)
+				.where(eq(usersTable.id, Number(id)));
+
+			res.json(user[0]);
+			return;
+		}	
 
 		const _currentPage = Math.max(0, parseInt(currentPage));
 		const _dataPerPage = Math.min(100, Math.max(0, parseInt(dataPerPage)));

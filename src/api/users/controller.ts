@@ -5,6 +5,7 @@ import { deleteHandler } from './handlers/delete';
 import {
 	createValidator,
 	deleteValidator,
+	indexValidator,
 	updateValidator,
 } from './validators';
 import { updateHandler } from './handlers/update';
@@ -84,7 +85,8 @@ export const validateFileRequired = (
 
 const router = Router();
 
-router.get('/', indexHandler);
+// @ts-expect-error
+router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
 router.get('/counts-by-status', getCountsByStatusHandler);
 router.post(
 	'/',
@@ -95,7 +97,15 @@ router.post(
 	withValidationErrorsMiddleware,
 	createHandler
 );
-router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
+router.put(
+	'/',
+	upload.single('file'),
+	multerErrorHandler,
+	validateFileRequired,
+	updateValidator,
+	withValidationErrorsMiddleware,
+	updateHandler
+);
 router.delete(
 	'/',
 	deleteValidator,
