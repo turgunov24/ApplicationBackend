@@ -24,12 +24,7 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 			const statusCountResult = await db
 				.select({ count: count() })
 				.from(referencesRegionsTable)
-				.where(
-					and(
-						eq(referencesRegionsTable.status, status),
-						ne(referencesRegionsTable.status, 'deleted')
-					)
-				);
+				.where(and(eq(referencesRegionsTable.status, status)));
 
 			statusCounts[status] = statusCountResult[0].count;
 		}
