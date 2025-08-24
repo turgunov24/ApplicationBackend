@@ -11,13 +11,14 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { nameUz, nameRu } = req.body;
+		const { nameUz, nameRu ,countryId} = req.body;
 
 		await db
 			.update(referencesRegionsTable)
 			.set({
 				nameUz,
 				nameRu,
+				countryId,
 				updatedAt: new Date(),
 			})
 			.where(eq(referencesRegionsTable.id, Number(id)))
