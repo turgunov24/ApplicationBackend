@@ -25,9 +25,7 @@ const indexSchema: DeleteValidationSchema = {
 		custom: {
 			options: async (value) => {
 				if (value) {
-					if (typeof value !== 'number') {
-						throw new Error('Region id must be a number');
-					}
+				
 
 					const region = await db
 						.select()
@@ -51,9 +49,7 @@ const deleteSchema: DeleteValidationSchema = {
 		errorMessage: 'Region id is required',
 		custom: {
 			options: async (value) => {
-				if (typeof value !== 'number') {
-					throw new Error('Region id must be a number');
-				}
+				
 
 				const region = await db
 					.select()
@@ -90,9 +86,7 @@ const createSchema: CreateValidationSchema = {
 		errorMessage: 'Country id is required',
 		custom: {
 			options: async (value) => {
-				if (typeof value !== 'number') {
-					throw new Error('Country id must be a number');
-				}
+				
 
 				const country = await db
 					.select()
@@ -115,9 +109,7 @@ const listSchema: ListValidationSchema = {
 		custom: {
 			options: async (value) => {
 				if (value) {
-					if (typeof value !== 'number') {
-						throw new Error('Country id must be a number');
-					}
+				
 
 					const country = await db
 						.select()
