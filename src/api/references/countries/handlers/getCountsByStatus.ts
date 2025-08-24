@@ -10,8 +10,7 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 		// Get total count
 		const totalCountResult = await db
 			.select({ count: count() })
-			.from(referencesCountriesTable)
-			.where(ne(referencesCountriesTable.status, 'deleted'));
+			.from(referencesCountriesTable);
 
 		const totalCount = totalCountResult[0].count;
 

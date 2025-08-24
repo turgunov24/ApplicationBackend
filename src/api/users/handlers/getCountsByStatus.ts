@@ -2,15 +2,14 @@ import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable, statuses } from '../../../db/schemas/users';
 import { eq, count, ne } from 'drizzle-orm';
-import { generateErrorMessage } from '../../../utils/generateErrorMessage'
+import { generateErrorMessage } from '../../../utils/generateErrorMessage';
 
 export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 	try {
 		// Get total count
 		const totalCountResult = await db
 			.select({ count: count() })
-			.from(usersTable)
-			.where(ne(usersTable.status, 'deleted'));
+			.from(usersTable);
 
 		const totalCount = totalCountResult[0].count;
 
