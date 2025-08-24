@@ -5,9 +5,9 @@ import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
-import { referencesCountriesTable } from '../../../../db/schemas/references/countries';
+import { referencesCountriesTable } from '../../../../db/schemas';
 import db from '../../../../db';
-import { handleError } from '../../../../utils/handleError'
+import { handleError } from '../../../../utils/handleError';
 
 type IStatuses = Pick<
 	InferSelectModel<typeof referencesCountriesTable>,
@@ -25,7 +25,7 @@ interface QueryParams {
 	search?: string;
 	sortBy?: keyof ISortableFields;
 	sortOrder?: 'asc' | 'desc';
-	status?: IStatuses['status'];
+	status?: IStatuses['status'] | 'all';
 	id?: string;
 }
 
@@ -36,11 +36,11 @@ export const indexHandler = async (
 	try {
 		const {
 			currentPage = '0',
-			dataPerPage = '10',
+			dataPerPage = '5',
 			search,
 			sortBy = 'createdAt',
 			sortOrder = 'desc',
-			status = 'active',
+			status = 'all',
 			id,
 		} = req.query;
 
@@ -61,6 +61,10 @@ export const indexHandler = async (
 
 		const whereConditions = [];
 
+		if (status !== 'all') {
+			whereConditions.push(eq(referencesCountriesTable.status, status));
+		}
+
 		if (search) {
 			const searchTerm = `%${search}%`;
 			whereConditions.push(
@@ -74,10 +78,11 @@ export const indexHandler = async (
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
+		// Get total count excluding deleted records
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(referencesCountriesTable)
-			.where(whereClause);
+			.where(and(whereClause, ne(referencesCountriesTable.status, 'deleted')));
 
 		const totalCount = totalCountResult[0].count;
 
@@ -94,7 +99,7 @@ export const indexHandler = async (
 			.offset(offset);
 
 		const totalPages = Math.ceil(totalCount / _dataPerPage);
-		const hasNextPage = _currentPage < totalPages;
+		const hasNextPage = _currentPage + 1 < totalPages;
 		const hasPrevPage = _currentPage > 0;
 
 		res.json({
@@ -109,7 +114,6 @@ export const indexHandler = async (
 			},
 		});
 	} catch (error: unknown) {
-		console.log(error);
 		handleError(res, error);
 	}
 };

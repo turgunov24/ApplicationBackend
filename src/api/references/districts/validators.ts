@@ -1,8 +1,8 @@
-import { checkSchema, ParamSchema } from 'express-validator'
-import { eq, InferInsertModel } from 'drizzle-orm'
-import db from '../../../db'
-import { referencesDistrictsTable } from '../../../db/schemas/references/districts'
-import { referencesRegionsTable } from '../../../db/schemas/references/regions'
+import { checkSchema, ParamSchema } from 'express-validator';
+import { eq, InferInsertModel } from 'drizzle-orm';
+import db from '../../../db';
+import { referencesDistrictsTable } from '../../../db/schemas/references/districts';
+import { referencesRegionsTable } from '../../../db/schemas/references/regions';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesDistrictsTable>,
@@ -13,6 +13,7 @@ type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
 export type DeleteValidationSchema = Record<'id', ParamSchema>;
+export type ListValidationSchema = Record<'regionId', ParamSchema>;
 export type UpdateValidationSchema = CreateValidationSchema &
 	DeleteValidationSchema;
 
@@ -24,6 +25,10 @@ const indexSchema: DeleteValidationSchema = {
 		custom: {
 			options: async (value) => {
 				if (value) {
+					if (typeof value !== 'number') {
+						throw new Error('District id must be a number');
+					}
+
 					const district = await db
 						.select()
 						.from(referencesDistrictsTable)
@@ -46,6 +51,10 @@ const deleteSchema: DeleteValidationSchema = {
 		errorMessage: 'District id is required',
 		custom: {
 			options: async (value) => {
+				if (typeof value !== 'number') {
+					throw new Error('District id must be a number');
+				}
+
 				const district = await db
 					.select()
 					.from(referencesDistrictsTable)
@@ -81,12 +90,42 @@ const createSchema: CreateValidationSchema = {
 		errorMessage: 'Region id is required',
 		custom: {
 			options: async (value) => {
+				if (typeof value !== 'number') {
+					throw new Error('Region id must be a number');
+				}
+
 				const region = await db
 					.select()
 					.from(referencesRegionsTable)
 					.where(eq(referencesRegionsTable.id, value));
 
 				if (!region.length) throw new Error('Region not found');
+
+				return true;
+			},
+		},
+	},
+};
+
+const listSchema: ListValidationSchema = {
+	regionId: {
+		in: 'query',
+		isInt: true,
+		optional: true,
+		custom: {
+			options: async (value) => {
+				if (value) {
+					if (typeof value !== 'number') {
+						throw new Error('Region id must be a number');
+					}
+
+					const region = await db
+						.select()
+						.from(referencesRegionsTable)
+						.where(eq(referencesRegionsTable.id, value));
+
+					if (!region.length) throw new Error('Region not found');
+				}
 
 				return true;
 			},
@@ -103,3 +142,4 @@ export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
+export const listValidator = checkSchema(listSchema);

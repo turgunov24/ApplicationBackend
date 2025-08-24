@@ -13,6 +13,7 @@ type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
 export type DeleteValidationSchema = Record<'id', ParamSchema>;
+export type ListValidationSchema = Record<'countryId', ParamSchema>;
 export type UpdateValidationSchema = CreateValidationSchema &
 	DeleteValidationSchema;
 
@@ -24,6 +25,10 @@ const indexSchema: DeleteValidationSchema = {
 		custom: {
 			options: async (value) => {
 				if (value) {
+					if (typeof value !== 'number') {
+						throw new Error('Region id must be a number');
+					}
+
 					const region = await db
 						.select()
 						.from(referencesRegionsTable)
@@ -46,6 +51,10 @@ const deleteSchema: DeleteValidationSchema = {
 		errorMessage: 'Region id is required',
 		custom: {
 			options: async (value) => {
+				if (typeof value !== 'number') {
+					throw new Error('Region id must be a number');
+				}
+
 				const region = await db
 					.select()
 					.from(referencesRegionsTable)
@@ -81,12 +90,42 @@ const createSchema: CreateValidationSchema = {
 		errorMessage: 'Country id is required',
 		custom: {
 			options: async (value) => {
+				if (typeof value !== 'number') {
+					throw new Error('Country id must be a number');
+				}
+
 				const country = await db
 					.select()
 					.from(referencesCountriesTable)
 					.where(eq(referencesCountriesTable.id, value));
 
 				if (!country.length) throw new Error('Country not found');
+
+				return true;
+			},
+		},
+	},
+};
+
+const listSchema: ListValidationSchema = {
+	countryId: {
+		in: 'query',
+		isInt: true,
+		optional: true,
+		custom: {
+			options: async (value) => {
+				if (value) {
+					if (typeof value !== 'number') {
+						throw new Error('Country id must be a number');
+					}
+
+					const country = await db
+						.select()
+						.from(referencesCountriesTable)
+						.where(eq(referencesCountriesTable.id, value));
+
+					if (!country.length) throw new Error('Country not found');
+				}
 
 				return true;
 			},
@@ -103,3 +142,4 @@ export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
+export const listValidator = checkSchema(listSchema);

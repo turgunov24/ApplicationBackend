@@ -36,7 +36,7 @@ export const indexHandler = async (
 	try {
 		const {
 			currentPage = '0',
-			dataPerPage = '10',
+			dataPerPage = '5',
 			search,
 			// sortBy = 'createdAt',
 			sortOrder = 'desc',
@@ -77,7 +77,7 @@ export const indexHandler = async (
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(referencesRegionsTable)
-			.where(whereClause);
+			.where(and(whereClause, ne(referencesRegionsTable.status, 'deleted')));
 
 		const totalCount = totalCountResult[0].count;
 
@@ -94,7 +94,7 @@ export const indexHandler = async (
 			.offset(offset);
 
 		const totalPages = Math.ceil(totalCount / _dataPerPage);
-		const hasNextPage = _currentPage < totalPages;
+		const hasNextPage = _currentPage + 1 < totalPages;
 		const hasPrevPage = _currentPage > 0;
 
 		res.json({
