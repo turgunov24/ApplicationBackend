@@ -60,6 +60,8 @@ export const indexHandler = async (
 
 		if (status !== 'all') {
 			whereConditions.push(eq(usersTable.status, status));
+		} else {
+			whereConditions.push(ne(usersTable.status, 'deleted'));
 		}
 
 		if (search) {
@@ -78,14 +80,14 @@ export const indexHandler = async (
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(usersTable)
-			.where(and(whereClause, ne(usersTable.status, 'deleted')));
+			.where(and(whereClause));
 
 		const totalCount = totalCountResult[0].count;
 
 		const users = await db
 			.select()
 			.from(usersTable)
-			.where(and(whereClause, ne(usersTable.status, 'deleted')))
+			.where(and(whereClause))
 			.orderBy(
 				sortOrder === 'asc'
 					? asc(usersTable.createdAt)

@@ -5,7 +5,7 @@ import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
-import { referencesRegionsTable } from '../../../../db/schemas/references/regions';
+import { referencesRegionsTable } from '../../../../db/schemas';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 
@@ -25,7 +25,7 @@ interface QueryParams {
 	search?: string;
 	sortBy?: keyof ISortableFields;
 	sortOrder?: 'asc' | 'desc';
-	status?: IStatuses['status'];
+	status?: IStatuses['status'] | 'all';
 	id?: string;
 }
 
@@ -38,9 +38,9 @@ export const indexHandler = async (
 			currentPage = '0',
 			dataPerPage = '5',
 			search,
-			// sortBy = 'createdAt',
+			sortBy = 'createdAt',
 			sortOrder = 'desc',
-			// status = 'active',
+			status = 'all',
 			id,
 		} = req.query;
 
@@ -61,6 +61,12 @@ export const indexHandler = async (
 
 		const whereConditions = [];
 
+		if (status !== 'all') {
+			whereConditions.push(eq(referencesRegionsTable.status, status));
+		} else {
+			whereConditions.push(ne(referencesRegionsTable.status, 'deleted'));
+		}
+
 		if (search) {
 			const searchTerm = `%${search}%`;
 			whereConditions.push(
@@ -74,17 +80,18 @@ export const indexHandler = async (
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
+		// Get total count excluding deleted records
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(referencesRegionsTable)
-			.where(and(whereClause, ne(referencesRegionsTable.status, 'deleted')));
+			.where(and(whereClause));
 
 		const totalCount = totalCountResult[0].count;
 
 		const users = await db
 			.select()
 			.from(referencesRegionsTable)
-			.where(and(whereClause, ne(referencesRegionsTable.status, 'deleted')))
+			.where(and(whereClause))
 			.orderBy(
 				sortOrder === 'asc'
 					? asc(referencesRegionsTable.createdAt)
