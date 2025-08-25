@@ -5,6 +5,8 @@ import {
 	AUTH_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
+	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
+	REFERENCES_PERMISSIONS_CONTROLLER,
 	REFERENCES_REGIONS_CONTROLLER,
 	USERS_CONTROLLER,
 } from './helpers/endPoints';
@@ -16,6 +18,8 @@ import path from 'path';
 import referencesCountriesRouter from './api/references/countries/controller';
 import referencesRegionsRouter from './api/references/regions/controller';
 import referencesDistrictsRouter from './api/references/districts/controller';
+import referencesPermissionGroupsRouter from './api/references/permissionGroups/controller';
+import referencesPermissionsRouter from './api/references/permissions/controller';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -44,6 +48,11 @@ app.use(AUTH_CONTROLLER, authRouter);
 app.use(REFERENCES_COUNTRIES_CONTROLLER, referencesCountriesRouter);
 app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);
 app.use(REFERENCES_DISTRICTS_CONTROLLER, referencesDistrictsRouter);
+app.use(
+	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
+	referencesPermissionGroupsRouter
+);
+app.use(REFERENCES_PERMISSIONS_CONTROLLER, referencesPermissionsRouter);
 
 // Start the server
 app.listen(port, () => {
