@@ -21,7 +21,6 @@ export const updateHandler = async (
 			countryId,
 			regionId,
 			cityId,
-			roleId,
 		} = req.body;
 
 		let hashedPassword = undefined;
@@ -41,7 +40,6 @@ export const updateHandler = async (
 				countryId,
 				regionId,
 				cityId,
-				roleId,
 				updatedAt: new Date(),
 			})
 			.where(eq(usersTable.id, Number(id)))

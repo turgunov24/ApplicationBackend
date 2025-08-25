@@ -24,7 +24,6 @@ export const usersTable = pgTable('users', {
 	countryId: integer('country_id').notNull(),
 	regionId: integer('region_id').notNull(),
 	cityId: integer('city_id').notNull(),
-	roleId: integer('role_id').notNull(),
 	token: varchar({ length: 500 }),
 	password: varchar({ length: 100 }).notNull(),
 	status: text('status', { enum: statuses }).notNull().default('pending'),

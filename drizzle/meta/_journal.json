@@ -15,6 +15,27 @@
       "when": 1756136515427,
       "tag": "0001_crazy_bucky",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756140165785,
+      "tag": "0002_sparkling_richard_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1756140213230,
+      "tag": "0003_flawless_shard",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1756142527428,
+      "tag": "0004_melted_black_cat",
+      "breakpoints": true
     }
   ]
 }

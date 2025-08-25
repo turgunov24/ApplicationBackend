@@ -8,6 +8,7 @@ import {
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 	REFERENCES_PERMISSIONS_CONTROLLER,
 	REFERENCES_REGIONS_CONTROLLER,
+	REFERENCES_ROLES_CONTROLLER,
 	USERS_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
@@ -20,6 +21,7 @@ import referencesRegionsRouter from './api/references/regions/controller';
 import referencesDistrictsRouter from './api/references/districts/controller';
 import referencesPermissionGroupsRouter from './api/references/permissionGroups/controller';
 import referencesPermissionsRouter from './api/references/permissions/controller';
+import referencesRolesRouter from './api/references/roles/controller';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -53,6 +55,7 @@ app.use(
 	referencesPermissionGroupsRouter
 );
 app.use(REFERENCES_PERMISSIONS_CONTROLLER, referencesPermissionsRouter);
+app.use(REFERENCES_ROLES_CONTROLLER, referencesRolesRouter);
 
 // Start the server
 app.listen(port, () => {

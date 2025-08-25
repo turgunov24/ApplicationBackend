@@ -1,9 +1,9 @@
-import db from '../../../db'
-import { usersTable } from '../../../db/schemas/users'
-import { Request, Response } from 'express'
-import { CreatePayload } from '../validators'
-import bcrypt from 'bcryptjs'
-import { handleError } from '../../../utils/handleError'
+import db from '../../../db';
+import { usersTable } from '../../../db/schemas/users';
+import { Request, Response } from 'express';
+import { CreatePayload } from '../validators';
+import bcrypt from 'bcryptjs';
+import { handleError } from '../../../utils/handleError';
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
@@ -19,7 +19,6 @@ export const createHandler = async (
 			countryId,
 			regionId,
 			cityId,
-			roleId,
 		} = req.body;
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -39,7 +38,6 @@ export const createHandler = async (
 				countryId,
 				regionId,
 				cityId,
-				roleId,
 				avatarPath,
 			})
 			.returning();

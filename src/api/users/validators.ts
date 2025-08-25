@@ -13,7 +13,6 @@ export type CreatePayload = Pick<
 	| 'countryId'
 	| 'regionId'
 	| 'cityId'
-	| 'roleId'
 >;
 
 type keys = keyof CreatePayload;
@@ -150,12 +149,6 @@ const createSchema: CreateValidationSchema = {
 		isInt: true,
 		notEmpty: true,
 		errorMessage: 'User city id is required',
-	},
-	roleId: {
-		in: 'body',
-		isInt: true,
-		notEmpty: true,
-		errorMessage: 'User role id is required',
 	},
 };
 
