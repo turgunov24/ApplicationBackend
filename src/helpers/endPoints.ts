@@ -7,3 +7,5 @@ export const REFERENCES_PERMISSION_GROUPS_CONTROLLER =
 	'/api/references/permission-groups';
 export const REFERENCES_PERMISSIONS_CONTROLLER = '/api/references/permissions';
 export const REFERENCES_ROLES_CONTROLLER = '/api/references/roles';
+export const REFERENCES_ROLES_PERMISSIONS_CONTROLLER =
+	'/api/references/roles-permissions';
