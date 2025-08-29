@@ -49,9 +49,7 @@ export const getRolePermissionsHandler = async (
 			result[roleId] = permissionIds;
 		});
 
-		res.json({
-			result,
-		});
+		res.json(result);
 	} catch (error: unknown) {
 		handleError(res, error);
 	}
