@@ -5,7 +5,7 @@ import {
 	referencesPermissionsTable,
 } from '../../../../db/schemas';
 import { handleError } from '../../../../utils/handleError';
-import { ne, eq } from 'drizzle-orm';
+import { ne, eq, and } from 'drizzle-orm';
 
 export const listHandler = async (req: Request, res: Response) => {
 	try {
@@ -29,8 +29,10 @@ export const listHandler = async (req: Request, res: Response) => {
 					})
 					.from(referencesPermissionsTable)
 					.where(
-						eq(referencesPermissionsTable.permissionGroupId, group.id) &&
+						and(
+							eq(referencesPermissionsTable.permissionGroupId, group.id),
 							ne(referencesPermissionsTable.status, 'deleted')
+						)
 					);
 
 				return {
