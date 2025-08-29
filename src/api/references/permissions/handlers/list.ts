@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import db from '../../../../db';
-import { referencesPermissionsTable } from '../../../../db/schemas';
+import {
+	referencesPermissionGroupsTable,
+	referencesPermissionsTable,
+} from '../../../../db/schemas';
 import { handleError } from '../../../../utils/handleError';
 import { and, eq, ne } from 'drizzle-orm';
 import { ListValidationSchema } from '../validators';

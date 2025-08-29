@@ -42,12 +42,12 @@ export const getRolePermissionsHandler = async (
 		});
 
 		// Convert to the required format
-		const result = Array.from(rolePermissionsMap.entries()).map(
-			([roleId, permissionIds]) => ({
-				roleId,
-				permissionIds,
-			})
-		);
+		const result: { [key: number]: number[] } = {};
+
+		// Populate the result object
+		rolePermissionsMap.forEach((permissionIds, roleId) => {
+			result[roleId] = permissionIds;
+		});
 
 		res.json({
 			result,
