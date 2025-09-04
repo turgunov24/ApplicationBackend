@@ -47,7 +47,7 @@ export const createHandler = async (
 
 		const newUser = result[0];
 
-		if (roles && roles.length > 0) {
+		if (Array.isArray(roles) && roles.length > 0) {
 			const userRoles = roles.map((roleId) => ({
 				userId: newUser.id,
 				roleId: roleId,

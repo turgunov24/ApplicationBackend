@@ -9,7 +9,8 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 		// Get total count
 		const totalCountResult = await db
 			.select({ count: count() })
-			.from(usersTable);
+			.from(usersTable)
+			.where(ne(usersTable.status, 'deleted'));
 
 		const totalCount = totalCountResult[0].count;
 

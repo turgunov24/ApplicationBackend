@@ -48,21 +48,22 @@ export const updateHandler = async (
 			.returning();
 
 		// Handle roles update
-		if (roles !== undefined) {
+		if (Array.isArray(roles) && roles.length > 0) {
 			// Delete existing user roles
 			await db
 				.delete(usersRolesTable)
 				.where(eq(usersRolesTable.userId, Number(id)));
 
-			// Insert new roles if provided
-			if (roles.length > 0) {
-				const userRoles = roles.map((roleId) => ({
-					userId: Number(id),
-					roleId: roleId,
-				}));
+			const userRoles = roles.map((roleId) => ({
+				userId: Number(id),
+				roleId: roleId,
+			}));
 
-				await db.insert(usersRolesTable).values(userRoles);
-			}
+			await db.insert(usersRolesTable).values(userRoles);
+		} else {
+			await db
+				.delete(usersRolesTable)
+				.where(eq(usersRolesTable.userId, Number(id)));
 		}
 
 		res.json({ message: 'User updated successfully' });

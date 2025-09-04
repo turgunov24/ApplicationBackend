@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
-import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
+import { usersRolesTable } from '../../../db/schemas/usersRoles';
+import { eq, inArray, InferSelectModel, ne, or } from 'drizzle-orm';
 import { ilike } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
@@ -24,6 +25,7 @@ interface QueryParams {
 	sortOrder?: 'asc' | 'desc';
 	status?: IStatuses['status'] | 'all';
 	id?: string;
+	roles: string[];
 }
 
 export const indexHandler = async (
@@ -39,6 +41,7 @@ export const indexHandler = async (
 			sortOrder = 'desc',
 			status = 'all',
 			id,
+			roles,
 		} = req.query;
 
 		if (id) {
@@ -70,6 +73,19 @@ export const indexHandler = async (
 				or(
 					ilike(usersTable.fullName, searchTerm),
 					ilike(usersTable.username, searchTerm)
+				)
+			);
+		}
+
+		if (roles && roles.length > 0) {
+			const roleIds = roles.map((role) => Number(role));
+			whereConditions.push(
+				inArray(
+					usersTable.id,
+					db
+						.select({ userId: usersRolesTable.userId })
+						.from(usersRolesTable)
+						.where(inArray(usersRolesTable.roleId, roleIds))
 				)
 			);
 		}

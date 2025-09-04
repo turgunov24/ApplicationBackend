@@ -155,22 +155,23 @@ const createSchema: CreateValidationSchema = {
 	},
 	roles: {
 		in: 'body',
-		isArray: true,
-		errorMessage: 'Roles must be an array',
+		optional: true,
 		custom: {
 			options: async (value: CreatePayload['roles']) => {
-				const existingRoles = await db
-					.select({ id: referencesRolesTable.id })
-					.from(referencesRolesTable)
-					.where(
-						and(
-							ne(referencesRolesTable.status, 'deleted'),
-							inArray(referencesRolesTable.id, value)
-						)
-					);
+				if (Array.isArray(value)) {
+					const existingRoles = await db
+						.select({ id: referencesRolesTable.id })
+						.from(referencesRolesTable)
+						.where(
+							and(
+								ne(referencesRolesTable.status, 'deleted'),
+								inArray(referencesRolesTable.id, value)
+							)
+						);
 
-				if (existingRoles.length !== value.length) {
-					throw new Error('One or more roles not found or Invalid roleId');
+					if (existingRoles.length !== value.length) {
+						throw new Error('One or more roles not found or Invalid roleId');
+					}
 				}
 
 				return true;
