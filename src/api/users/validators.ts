@@ -79,10 +79,8 @@ const createSchema: CreateValidationSchema = {
 	username: {
 		in: 'body',
 		isString: true,
-		notEmpty: {
-			errorMessage: 'User username is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User username is required',
 		trim: true,
 		custom: {
 			options: async (value) => {
@@ -100,13 +98,10 @@ const createSchema: CreateValidationSchema = {
 	password: {
 		in: 'body',
 		isString: true,
-		notEmpty: {
-			errorMessage: 'User password is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User password is required',
 		trim: true,
 		isLength: {
-			bail: true,
 			options: {
 				min: 8,
 				max: 20,
@@ -117,10 +112,8 @@ const createSchema: CreateValidationSchema = {
 	email: {
 		in: 'body',
 		isEmail: true,
-		notEmpty: {
-			errorMessage: 'User email is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User email is required',
 		trim: true,
 		custom: {
 			options: async (value) => {
@@ -138,42 +131,32 @@ const createSchema: CreateValidationSchema = {
 	phone: {
 		in: 'body',
 		isString: true,
-		notEmpty: {
-			errorMessage: 'User phone is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User phone is required',
 		trim: true,
 	},
 	countryId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: {
-			errorMessage: 'User country id is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User country id is required',
 	},
 	regionId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: {
-			errorMessage: 'User region id is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User region id is required',
 	},
 	cityId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: {
-			errorMessage: 'User city id is required',
-			bail: true,
-		},
+		notEmpty: true,
+		errorMessage: 'User city id is required',
 	},
 	roles: {
 		in: 'body',
-		isArray: {
-			errorMessage: 'Roles must be an array',
-			bail: true,
-		},
+		isArray: true,
+		errorMessage: 'Roles must be an array',
 		custom: {
 			options: async (value: CreatePayload['roles']) => {
 				const existingRoles = await db
