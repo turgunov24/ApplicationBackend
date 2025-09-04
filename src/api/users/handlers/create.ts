@@ -1,5 +1,6 @@
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
+import { usersRolesTable } from '../../../db/schemas/usersRoles';
 import { Request, Response } from 'express';
 import { CreatePayload } from '../validators';
 import bcrypt from 'bcryptjs';
@@ -19,7 +20,9 @@ export const createHandler = async (
 			countryId,
 			regionId,
 			cityId,
+			roles,
 		} = req.body;
+
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// Get avatar path from uploaded file, or null if no file uploaded
@@ -42,7 +45,18 @@ export const createHandler = async (
 			})
 			.returning();
 
-		res.status(201).json(result[0]);
+		const newUser = result[0];
+
+		if (roles && roles.length > 0) {
+			const userRoles = roles.map((roleId) => ({
+				userId: newUser.id,
+				roleId: roleId,
+			}));
+
+			await db.insert(usersRolesTable).values(userRoles);
+		}
+
+		res.status(201).json(newUser);
 	} catch (error) {
 		handleError(res, error);
 	}

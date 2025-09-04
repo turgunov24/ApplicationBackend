@@ -1,7 +1,8 @@
 import { usersTable } from '../../db/schemas/users';
 import { checkSchema, ParamSchema } from 'express-validator';
-import { and, eq, InferInsertModel, ne } from 'drizzle-orm';
+import { and, eq, inArray, InferInsertModel, ne } from 'drizzle-orm';
 import db from '../../db';
+import { referencesRolesTable } from '../../db/schemas';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof usersTable>,
@@ -13,7 +14,9 @@ export type CreatePayload = Pick<
 	| 'countryId'
 	| 'regionId'
 	| 'cityId'
->;
+> & {
+	roles: number[];
+};
 
 type keys = keyof CreatePayload;
 
@@ -70,14 +73,16 @@ const createSchema: CreateValidationSchema = {
 		in: 'body',
 		isString: true,
 		notEmpty: true,
-		errorMessage: 'User name is required',
+		errorMessage: 'Full name is required',
 		trim: true,
 	},
 	username: {
 		in: 'body',
 		isString: true,
-		notEmpty: true,
-		errorMessage: 'User username is required',
+		notEmpty: {
+			errorMessage: 'User username is required',
+			bail: true,
+		},
 		trim: true,
 		custom: {
 			options: async (value) => {
@@ -95,10 +100,13 @@ const createSchema: CreateValidationSchema = {
 	password: {
 		in: 'body',
 		isString: true,
-		notEmpty: true,
-		errorMessage: 'User password is required',
+		notEmpty: {
+			errorMessage: 'User password is required',
+			bail: true,
+		},
 		trim: true,
 		isLength: {
+			bail: true,
 			options: {
 				min: 8,
 				max: 20,
@@ -109,8 +117,10 @@ const createSchema: CreateValidationSchema = {
 	email: {
 		in: 'body',
 		isEmail: true,
-		notEmpty: true,
-		errorMessage: 'User email is required',
+		notEmpty: {
+			errorMessage: 'User email is required',
+			bail: true,
+		},
 		trim: true,
 		custom: {
 			options: async (value) => {
@@ -128,27 +138,61 @@ const createSchema: CreateValidationSchema = {
 	phone: {
 		in: 'body',
 		isString: true,
-		notEmpty: true,
-		errorMessage: 'User phone is required',
+		notEmpty: {
+			errorMessage: 'User phone is required',
+			bail: true,
+		},
 		trim: true,
 	},
 	countryId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: true,
-		errorMessage: 'User country id is required',
+		notEmpty: {
+			errorMessage: 'User country id is required',
+			bail: true,
+		},
 	},
 	regionId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: true,
-		errorMessage: 'User region id is required',
+		notEmpty: {
+			errorMessage: 'User region id is required',
+			bail: true,
+		},
 	},
 	cityId: {
 		in: 'body',
 		isInt: true,
-		notEmpty: true,
-		errorMessage: 'User city id is required',
+		notEmpty: {
+			errorMessage: 'User city id is required',
+			bail: true,
+		},
+	},
+	roles: {
+		in: 'body',
+		isArray: {
+			errorMessage: 'Roles must be an array',
+			bail: true,
+		},
+		custom: {
+			options: async (value: CreatePayload['roles']) => {
+				const existingRoles = await db
+					.select({ id: referencesRolesTable.id })
+					.from(referencesRolesTable)
+					.where(
+						and(
+							ne(referencesRolesTable.status, 'deleted'),
+							inArray(referencesRolesTable.id, value)
+						)
+					);
+
+				if (existingRoles.length !== value.length) {
+					throw new Error('One or more roles not found or Invalid roleId');
+				}
+
+				return true;
+			},
+		},
 	},
 };
 

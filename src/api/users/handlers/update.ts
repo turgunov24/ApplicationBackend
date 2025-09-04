@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { usersTable } from '../../../db/schemas/users';
+import { usersRolesTable } from '../../../db/schemas/usersRoles';
 import db from '../../../db';
 import { eq } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
@@ -21,6 +22,7 @@ export const updateHandler = async (
 			countryId,
 			regionId,
 			cityId,
+			roles,
 		} = req.body;
 
 		let hashedPassword = undefined;
@@ -44,6 +46,24 @@ export const updateHandler = async (
 			})
 			.where(eq(usersTable.id, Number(id)))
 			.returning();
+
+		// Handle roles update
+		if (roles !== undefined) {
+			// Delete existing user roles
+			await db
+				.delete(usersRolesTable)
+				.where(eq(usersRolesTable.userId, Number(id)));
+
+			// Insert new roles if provided
+			if (roles.length > 0) {
+				const userRoles = roles.map((roleId) => ({
+					userId: Number(id),
+					roleId: roleId,
+				}));
+
+				await db.insert(usersRolesTable).values(userRoles);
+			}
+		}
 
 		res.json({ message: 'User updated successfully' });
 	} catch (error: unknown) {
