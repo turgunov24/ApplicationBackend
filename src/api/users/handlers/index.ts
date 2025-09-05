@@ -50,7 +50,22 @@ export const indexHandler = async (
 				.from(usersTable)
 				.where(eq(usersTable.id, Number(id)));
 
-			res.json(user[0]);
+			if (user[0]) {
+				// Get user's role IDs
+				const userRoles = await db
+					.select({ roleId: usersRolesTable.roleId })
+					.from(usersRolesTable)
+					.where(eq(usersRolesTable.userId, Number(id)));
+
+				const roles = userRoles.map((role) => role.roleId);
+
+				res.json({
+					...user[0],
+					roles,
+				});
+			} else {
+				res.json(null);
+			}
 			return;
 		}
 
