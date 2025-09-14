@@ -15,6 +15,12 @@ import { validationResult } from 'express-validator';
 import fs from 'fs';
 import { MulterError } from 'multer';
 import { withValidationErrorsMiddleware } from '../../middlewares/withValidationErrors';
+import { parseUserFromToken } from '../../middlewares/parseUserFromToken';
+import {
+	checkAnyResourcePermission,
+	checkOwnResourcePermission,
+} from '../../middlewares/checkPermission';
+import { PolicyResources, PolicyActions } from '../../policy/types';
 
 export const validationErrorHandler = (
 	req: Request,
@@ -85,11 +91,27 @@ export const validateFileRequired = (
 
 const router = Router();
 
-// @ts-expect-error
-router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
-router.get('/counts-by-status', getCountsByStatusHandler);
+// Apply authentication and permission middleware to all routes
+// router.use(parseUserFromToken);
+
+router.get(
+	'/',
+	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
+	indexValidator,
+	withValidationErrorsMiddleware,
+	// @ts-expect-error
+	indexHandler
+);
+
+router.get(
+	'/counts-by-status',
+	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
+	getCountsByStatusHandler
+);
+
 router.post(
 	'/',
+	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.CREATE),
 	upload.single('file'),
 	multerErrorHandler,
 	validateFileRequired,
@@ -97,8 +119,10 @@ router.post(
 	withValidationErrorsMiddleware,
 	createHandler
 );
+
 router.put(
 	'/',
+	checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.UPDATE),
 	upload.single('file'),
 	multerErrorHandler,
 	validateFileRequired,
@@ -106,8 +130,10 @@ router.put(
 	withValidationErrorsMiddleware,
 	updateHandler
 );
+
 router.delete(
 	'/',
+	checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.DELETE),
 	deleteValidator,
 	withValidationErrorsMiddleware,
 	deleteHandler

@@ -13,28 +13,57 @@ import { deleteHandler } from './handlers/delete';
 import { getCountsByStatusHandler } from './handlers/getCountsByStatus';
 import { listHandler } from './handlers/list';
 import { parseUserFromToken } from '../../../middlewares/parseUserFromToken';
+import { checkAnyResourcePermission } from '../../../middlewares/checkPermission';
+import { PolicyResources, PolicyActions } from '../../../policy/types';
 
 const router = Router();
 
 router.get(
 	'/',
 	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.READ),
 	indexValidator,
 	withValidationErrorsMiddleware,
 	// @ts-expect-error
 	indexHandler
 );
-router.get('/list', listHandler);
-router.get('/counts-by-status', getCountsByStatusHandler);
+
+router.get(
+	'/list',
+	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.READ),
+	listHandler
+);
+
+router.get(
+	'/counts-by-status',
+	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.READ),
+	getCountsByStatusHandler
+);
+
 router.post(
 	'/',
+	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.CREATE),
 	createValidator,
 	withValidationErrorsMiddleware,
 	createHandler
 );
-router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
+
+router.put(
+	'/',
+	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.UPDATE),
+	updateValidator,
+	withValidationErrorsMiddleware,
+	updateHandler
+);
+
 router.delete(
 	'/',
+	parseUserFromToken,
+	checkAnyResourcePermission(PolicyResources.COUNTRIES, PolicyActions.DELETE),
 	deleteValidator,
 	withValidationErrorsMiddleware,
 	deleteHandler

@@ -2,9 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import db from '../db';
 import { usersTable } from '../db/schemas/users';
+import { usersRolesTable } from '../db/schemas/usersRoles';
+import { referencesRolesTable } from '../db/schemas/references/roles';
 import { eq } from 'drizzle-orm';
 import { generateErrorMessage } from '../utils/generateErrorMessage';
 import { handleError } from '../utils/handleError';
+import { UserWithRoles } from '../policy/types';
 import '../types/auth';
 
 export const parseUserFromToken = async (
@@ -75,8 +78,36 @@ export const parseUserFromToken = async (
 				.json(generateErrorMessage('User account is not active'));
 		}
 
-		// Attach user to request
-		req.user = user;
+		// Load user roles
+		const userRoles = await db
+			.select({
+				id: referencesRolesTable.id,
+				nameUz: referencesRolesTable.nameUz,
+				nameRu: referencesRolesTable.nameRu,
+				descriptionUz: referencesRolesTable.descriptionUz,
+				descriptionRu: referencesRolesTable.descriptionRu,
+				status: referencesRolesTable.status,
+				createdAt: referencesRolesTable.createdAt,
+				updatedAt: referencesRolesTable.updatedAt,
+			})
+			.from(usersRolesTable)
+			.innerJoin(
+				referencesRolesTable,
+				eq(usersRolesTable.roleId, referencesRolesTable.id)
+			)
+			.where(eq(usersRolesTable.userId, user.id));
+
+		// Create user with roles
+		const userWithRoles: UserWithRoles = {
+			id: user.id,
+			username: user.username,
+			email: user.email,
+			status: user.status,
+			roles: userRoles,
+		};
+
+		// Attach user with roles to request
+		req.user = userWithRoles as any;
 
 		next();
 	} catch (error: unknown) {

@@ -1,5 +1,6 @@
 import { InferSelectModel } from 'drizzle-orm';
 import { usersTable } from '../db/schemas';
+import { UserWithRoles } from '../policy/types';
 
 export type AuthenticatedUser = InferSelectModel<typeof usersTable>;
 
@@ -7,7 +8,7 @@ export type AuthenticatedUser = InferSelectModel<typeof usersTable>;
 declare global {
 	namespace Express {
 		interface Request {
-			user: AuthenticatedUser;
+			user: UserWithRoles;
 		}
 	}
 }
