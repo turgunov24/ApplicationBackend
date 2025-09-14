@@ -266,7 +266,7 @@ export class PolicyService {
 			logger.warn('Policy service not initialized, denying access');
 			return { granted: false, attributes: [] };
 		}
-
+		console.log('user.roles',user.roles);
 		try {
 			// Check each role the user has
 			for (const role of user.roles) {
