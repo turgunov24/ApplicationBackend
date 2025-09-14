@@ -96,7 +96,7 @@ const router = Router();
 
 router.get(
 	'/',
-	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
+	// checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
 	indexValidator,
 	withValidationErrorsMiddleware,
 	// @ts-expect-error
@@ -105,13 +105,13 @@ router.get(
 
 router.get(
 	'/counts-by-status',
-	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
+	// checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.READ),
 	getCountsByStatusHandler
 );
 
 router.post(
 	'/',
-	checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.CREATE),
+	// checkAnyResourcePermission(PolicyResources.USERS, PolicyActions.CREATE),
 	upload.single('file'),
 	multerErrorHandler,
 	validateFileRequired,
@@ -122,7 +122,7 @@ router.post(
 
 router.put(
 	'/',
-	checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.UPDATE),
+	// checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.UPDATE),
 	upload.single('file'),
 	multerErrorHandler,
 	validateFileRequired,
@@ -133,7 +133,7 @@ router.put(
 
 router.delete(
 	'/',
-	checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.DELETE),
+	// checkOwnResourcePermission(PolicyResources.USERS, PolicyActions.DELETE),
 	deleteValidator,
 	withValidationErrorsMiddleware,
 	deleteHandler

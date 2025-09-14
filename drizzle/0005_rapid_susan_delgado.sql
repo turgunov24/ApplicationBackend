@@ -1,0 +1,1 @@
+ALTER TABLE "references_permissions" ADD COLUMN "resource" varchar(50) DEFAULT 'users' NOT NULL;
