@@ -9,3 +9,4 @@ export const REFERENCES_PERMISSIONS_CONTROLLER = '/api/references/permissions';
 export const REFERENCES_ROLES_CONTROLLER = '/api/references/roles';
 export const REFERENCES_ROLES_PERMISSIONS_CONTROLLER =
 	'/api/references/roles-permissions';
+export const REFERENCES_RESOURCES_CONTROLLER = '/api/references/resources';

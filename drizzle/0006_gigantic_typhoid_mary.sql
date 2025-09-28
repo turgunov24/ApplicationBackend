@@ -1,1 +1,0 @@
-ALTER TABLE "references_permissions" DROP COLUMN "resource";

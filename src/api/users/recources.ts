@@ -1,5 +1,5 @@
 import { USERS_CONTROLLER } from '../../helpers/endPoints';
-import { PolicyRecources, RecourceActions } from '../../policy/types';
+import { PolicyRecources, RecourceActions } from '../../policy/recources';
 
 const recources: PolicyRecources = [
 	{

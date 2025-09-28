@@ -6,20 +6,20 @@ import {
 	unique,
 } from 'drizzle-orm/pg-core';
 import { usersTable } from './users';
-import { referencesRolesTable } from './references/roles';
+import { referencesPermissionsTable } from './references/permissions';
 
-export const usersRolesTable = pgTable(
-	'users_roles',
+export const userRelPermissionsTable = pgTable(
+	'users_rel_permissions',
 	{
 		id: serial().primaryKey().notNull(),
 		userId: integer('user_id')
 			.notNull()
 			.references(() => usersTable.id, { onDelete: 'cascade' }),
-		roleId: integer('role_id')
+		permissionId: integer('permission_id')
 			.notNull()
-			.references(() => referencesRolesTable.id, { onDelete: 'cascade' }),
+			.references(() => referencesPermissionsTable.id, { onDelete: 'cascade' }),
 		createdAt: timestamp().notNull().defaultNow(),
 		updatedAt: timestamp().notNull().defaultNow(),
 	},
-	(table) => [unique().on(table.userId, table.roleId)]
+	(table) => [unique().on(table.userId, table.permissionId)]
 );

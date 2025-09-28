@@ -8,6 +8,7 @@ import {
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 	REFERENCES_PERMISSIONS_CONTROLLER,
 	REFERENCES_REGIONS_CONTROLLER,
+	REFERENCES_RESOURCES_CONTROLLER,
 	REFERENCES_ROLES_CONTROLLER,
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
 	USERS_CONTROLLER,
@@ -24,6 +25,7 @@ import referencesPermissionGroupsRouter from './api/references/permissionGroups/
 import referencesPermissionsRouter from './api/references/permissions/controller';
 import referencesRolesRouter from './api/references/roles/controller';
 import referencesRolesPermissionsRouter from './api/references/rolesPermissions/controller';
+import referencesResourcesRouter from './api/references/resources/controller';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -62,9 +64,9 @@ app.use(
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
 	referencesRolesPermissionsRouter
 );
+app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
 
 // Start the server
 app.listen(port, () => {
 	logger.info(`Server is running on http://localhost:${port}`);
-	// recoverBots()
 });

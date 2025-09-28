@@ -6,7 +6,7 @@ import { referencesPermissionGroupsTable } from '../../../db/schemas/references/
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesPermissionsTable>,
-	'nameUz' | 'nameRu' | 'permissionGroupId'
+	'nameUz' | 'nameRu' | 'permissionGroupId' | 'resource' | 'action'
 >;
 
 type keys = keyof CreatePayload;
@@ -93,6 +93,18 @@ const createSchema: CreateValidationSchema = {
 				return true;
 			},
 		},
+	},
+	resource: {
+		in: 'body',
+		isString: true,
+		notEmpty: true,
+		errorMessage: 'Permission recource is required',
+	},
+	action: {
+		in: 'body',
+		isString: true,
+		notEmpty: true,
+		errorMessage: 'Permission action is required',
 	},
 };
 

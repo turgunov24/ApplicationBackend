@@ -24,4 +24,6 @@ export const referencesPermissionsTable = pgTable('references_permissions', {
 		.references(() => referencesPermissionGroupsTable.id, {
 			onDelete: 'cascade',
 		}),
+	resource: varchar({ length: 255 }),	
+	action: varchar({ length: 255 }),
 });

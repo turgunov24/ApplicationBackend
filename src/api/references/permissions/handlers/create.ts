@@ -9,11 +9,13 @@ export const createHandler = async (
 	res: Response
 ) => {
 	try {
-		const { nameUz, nameRu, permissionGroupId } = req.body;
+		const { nameUz, nameRu, permissionGroupId, resource, action } = req.body;
 
 		const result = await db
 			.insert(referencesPermissionsTable)
 			.values({
+				resource,
+				action,
 				nameUz,
 				nameRu,
 				permissionGroupId,

@@ -11,7 +11,7 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { nameUz, nameRu ,permissionGroupId} = req.body;
+		const { nameUz, nameRu, permissionGroupId, action, resource } = req.body;
 
 		await db
 			.update(referencesPermissionsTable)
@@ -19,6 +19,8 @@ export const updateHandler = async (
 				nameUz,
 				nameRu,
 				permissionGroupId,
+				action,
+				resource,
 				updatedAt: new Date(),
 			})
 			.where(eq(referencesPermissionsTable.id, Number(id)))

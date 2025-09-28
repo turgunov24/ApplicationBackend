@@ -1,2 +1,0 @@
-ALTER TABLE "references_roles_permissions" ADD CONSTRAINT "references_roles_permissions_role_id_permission_id_unique" UNIQUE("role_id","permission_id");--> statement-breakpoint
-ALTER TABLE "users_roles" ADD CONSTRAINT "users_roles_user_id_role_id_unique" UNIQUE("user_id","role_id");

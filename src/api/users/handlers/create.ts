@@ -1,10 +1,10 @@
-import db from '../../../db';
-import { usersTable } from '../../../db/schemas/users';
-import { usersRolesTable } from '../../../db/schemas/usersRoles';
-import { Request, Response } from 'express';
-import { CreatePayload } from '../validators';
-import bcrypt from 'bcryptjs';
-import { handleError } from '../../../utils/handleError';
+import db from '../../../db'
+import { usersTable } from '../../../db/schemas/users'
+import { usersRolesTable } from '../../../db/schemas/usersRoles'
+import { Request, Response } from 'express'
+import { CreatePayload } from '../validators'
+import bcrypt from 'bcryptjs'
+import { handleError } from '../../../utils/handleError'
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,

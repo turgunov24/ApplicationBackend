@@ -16,11 +16,7 @@ import fs from 'fs';
 import { MulterError } from 'multer';
 import { withValidationErrorsMiddleware } from '../../middlewares/withValidationErrors';
 import { parseUserFromToken } from '../../middlewares/parseUserFromToken';
-import {
-	checkAnyResourcePermission,
-	checkOwnResourcePermission,
-} from '../../middlewares/checkPermission';
-import { PolicyResources, PolicyActions } from '../../policy/types';
+
 
 export const validationErrorHandler = (
 	req: Request,

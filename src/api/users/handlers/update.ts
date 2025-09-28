@@ -1,11 +1,13 @@
-import { Request, Response } from 'express';
-import { usersTable } from '../../../db/schemas/users';
-import { usersRolesTable } from '../../../db/schemas/usersRoles';
-import db from '../../../db';
-import { eq } from 'drizzle-orm';
-import { CreatePayload } from '../validators';
-import bcrypt from 'bcryptjs';
-import { handleError } from '../../../utils/handleError';
+import { Request, Response } from 'express'
+import { usersTable } from '../../../db/schemas/users'
+import db from '../../../db'
+import { eq } from 'drizzle-orm'
+import { CreatePayload } from '../validators'
+import bcrypt from 'bcryptjs'
+import { handleError } from '../../../utils/handleError'
+import {
+	usersRolesTable
+} from '../../../db/schemas'
 
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
@@ -47,7 +49,6 @@ export const updateHandler = async (
 			.where(eq(usersTable.id, Number(id)))
 			.returning();
 
-		// Handle roles update
 		if (Array.isArray(roles) && roles.length > 0) {
 			// Delete existing user roles
 			await db
