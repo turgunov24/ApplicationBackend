@@ -88,7 +88,7 @@ export const validateFileRequired = (
 const router = Router();
 
 // Apply authentication and permission middleware to all routes
-// router.use(parseUserFromToken);
+router.use(parseUserFromToken);
 
 router.get(
 	'/',

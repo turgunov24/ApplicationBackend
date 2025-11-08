@@ -1,0 +1,1 @@
+ALTER TABLE "references_countries" ADD COLUMN "username" text;

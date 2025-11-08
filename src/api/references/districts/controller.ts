@@ -13,26 +13,60 @@ import { updateHandler } from './handlers/update';
 import { deleteHandler } from './handlers/delete';
 import { getCountsByStatusHandler } from './handlers/getCountsByStatus';
 import { listHandler } from './handlers/list';
+import { parseUserFromToken } from '../../../middlewares/parseUserFromToken';
+import { authorizeUser } from '../../../middlewares/authorizeUser';
 
 const router = Router();
 
-// @ts-expect-error
-router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
-router.get('/counts-by-status', getCountsByStatusHandler);
-// @ts-expect-error
-router.get('/list', listValidator, withValidationErrorsMiddleware, listHandler);
+router.get(
+	'/',
+	parseUserFromToken,
+	authorizeUser,
+	indexValidator,
+	withValidationErrorsMiddleware,
+	// @ts-expect-error
+	indexHandler
+);
+
 router.post(
 	'/',
+	parseUserFromToken,
+	authorizeUser,
 	createValidator,
 	withValidationErrorsMiddleware,
 	createHandler
 );
-router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
+router.put(
+	'/',
+	parseUserFromToken,
+	authorizeUser,
+	updateValidator,
+	withValidationErrorsMiddleware,
+	updateHandler
+);
 router.delete(
 	'/',
+	parseUserFromToken,
+	authorizeUser,
 	deleteValidator,
 	withValidationErrorsMiddleware,
 	deleteHandler
+);
+
+router.get(
+	'/counts-by-status',
+	parseUserFromToken,
+	authorizeUser,
+	getCountsByStatusHandler
+);
+router.get(
+	'/list',
+	parseUserFromToken,
+	authorizeUser,
+	listValidator,
+	withValidationErrorsMiddleware,
+	// @ts-expect-error
+	listHandler
 );
 
 export default router;

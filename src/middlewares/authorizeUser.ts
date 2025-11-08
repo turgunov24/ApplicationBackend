@@ -17,9 +17,13 @@ export const authorizeUser = async (
 	next: NextFunction
 ) => {
 	try {
+		if (process.env.SKIP_AUTH) {
+			return next();
+		}
 		const { user, baseUrl } = req;
 
 		const resource = resources.find((r) => r.endpoint === baseUrl);
+		console.log('🚀 ~ authorizeUser ~ resource:', resource);
 
 		if (!resource) {
 			return res.status(400).json(generateErrorMessage('Resource not found'));
@@ -62,10 +66,13 @@ export const authorizeUser = async (
 						eq(referencesPermissionsTable.status, 'active')
 					)
 				);
+			console.log('🚀 ~ authorizeUser ~ permissions:', permissions);
 
 			for (const { permission } of permissions) {
 				if (!permission.action) continue;
 				if (!permission.resource) continue;
+
+				if (permission.resource !== resource.endpoint) continue;
 
 				const granted = resource.allowedActions.some(
 					(allowedAction) => permission.action === allowedAction

@@ -13,6 +13,10 @@ export const parseUserFromToken = async (
 	res: Response,
 	next: NextFunction
 ) => {
+	if (process.env.SKIP_AUTH) {
+		return next();
+	}
+
 	try {
 		// Get token from Authorization header
 		const authHeader = req.headers.authorization;

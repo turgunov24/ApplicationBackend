@@ -1,6 +1,6 @@
 {
-  "id": "933fd47e-032f-4dbf-80ad-9a5d4474f98a",
-  "prevId": "b86e4b50-c372-4084-9c06-6a6483db94da",
+  "id": "e96c77bf-4672-4cfb-bbf8-cc56250d7df6",
+  "prevId": "933fd47e-032f-4dbf-80ad-9a5d4474f98a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -48,12 +48,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'active'"
-        },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {},

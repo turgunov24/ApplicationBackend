@@ -1,0 +1,1 @@
+ALTER TABLE "references_countries" DROP COLUMN "username";
