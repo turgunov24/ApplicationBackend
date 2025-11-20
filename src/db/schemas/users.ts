@@ -33,3 +33,4 @@ export const usersTable = pgTable('users', {
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
 });
+ 

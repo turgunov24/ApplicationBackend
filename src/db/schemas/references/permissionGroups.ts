@@ -4,7 +4,6 @@ import {
 	varchar,
 	timestamp,
 	serial,
-	integer,
 } from 'drizzle-orm/pg-core';
 
 export const statuses = ['active', 'deleted'] as const;

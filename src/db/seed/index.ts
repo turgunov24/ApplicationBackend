@@ -5,6 +5,8 @@ import 'dotenv/config';
 import db from '../index';
 import { logger } from '../../utils/logger';
 import { countries } from './referenceCountries';
+import { roles } from './referenceRoles';
+import { permissionGroups } from './referencePermissionGroup'
 
 async function main() {
 	try {
@@ -40,6 +42,26 @@ async function main() {
 					});
 				}
 			}
+		}
+
+		for (const role of roles) {
+			const newRole = await db
+				.insert(schemas.referencesRolesTable)
+				.values({
+					nameRu: role.nameRu,
+					nameUz: role.nameUz,
+				})
+				.returning({ id: schemas.referencesRolesTable.id });
+		}
+
+		for (const permissionGroup of permissionGroups) {
+			const newRole = await db
+				.insert(schemas.referencesPermissionGroupsTable)
+				.values({
+					nameRu: permissionGroup.nameRu,
+					nameUz: permissionGroup.nameUz,
+				})
+				.returning({ id: schemas.referencesPermissionGroupsTable.id });
 		}
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
