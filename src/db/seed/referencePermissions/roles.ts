@@ -36,13 +36,13 @@ export const rolesPermissions: Array<
 	{
 		nameUz: 'reference-roles-list',
 		nameRu: 'reference-roles-list',
-		resource: REFERENCES_ROLES_CONTROLLER,
+		resource: REFERENCES_ROLES_CONTROLLER.concat('/list'),
 		action: ResourceActions.READ,
 	},
 	{
 		nameUz: 'reference-roles-counts-by-status',
 		nameRu: 'reference-roles-counts-by-status',
-		resource: REFERENCES_ROLES_CONTROLLER,
+		resource: REFERENCES_ROLES_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

@@ -36,13 +36,13 @@ export const regionsPermissions: Array<
 	{
 		nameUz: 'reference-regions-list',
 		nameRu: 'reference-regions-list',
-		resource: REFERENCES_REGIONS_CONTROLLER,
+		resource: REFERENCES_REGIONS_CONTROLLER.concat('/list'),
 		action: ResourceActions.READ,
 	},
 	{
 		nameUz: 'reference-regions-counts-by-status',
 		nameRu: 'reference-regions-counts-by-status',
-		resource: REFERENCES_REGIONS_CONTROLLER,
+		resource: REFERENCES_REGIONS_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

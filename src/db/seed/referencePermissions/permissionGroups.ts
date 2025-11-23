@@ -36,13 +36,13 @@ export const permissionGroupsPermissions: Array<
 	{
 		nameUz: 'reference-permission-groups-list',
 		nameRu: 'reference-permission-groups-list',
-		resource: REFERENCES_PERMISSION_GROUPS_CONTROLLER,
+		resource: REFERENCES_PERMISSION_GROUPS_CONTROLLER.concat('/list'),
 		action: ResourceActions.READ,
 	},
 	{
 		nameUz: 'reference-permission-groups-counts-by-status',
 		nameRu: 'reference-permission-groups-counts-by-status',
-		resource: REFERENCES_PERMISSION_GROUPS_CONTROLLER,
+		resource: REFERENCES_PERMISSION_GROUPS_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

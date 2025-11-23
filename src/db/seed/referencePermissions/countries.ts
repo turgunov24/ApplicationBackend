@@ -36,13 +36,13 @@ export const countriesPermissions: Array<
 	{
 		nameUz: 'reference-countries-list',
 		nameRu: 'reference-countries-list',
-		resource: REFERENCES_COUNTRIES_CONTROLLER,
+		resource: REFERENCES_COUNTRIES_CONTROLLER.concat('/list'),
 		action: ResourceActions.READ,
 	},
 	{
 		nameUz: 'reference-countries-counts-by-status',
 		nameRu: 'reference-countries-counts-by-status',
-		resource: REFERENCES_COUNTRIES_CONTROLLER,
+		resource: REFERENCES_COUNTRIES_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

@@ -36,13 +36,13 @@ export const districtsPermissions: Array<
 	{
 		nameUz: 'reference-districts-list',
 		nameRu: 'reference-districts-list',
-		resource: REFERENCES_DISTRICTS_CONTROLLER,
+		resource: REFERENCES_DISTRICTS_CONTROLLER.concat('/list'),
 		action: ResourceActions.READ,	
 	},
 	{
 		nameUz: 'reference-districts-counts-by-status',
 		nameRu: 'reference-districts-counts-by-status',
-		resource: REFERENCES_DISTRICTS_CONTROLLER,
+		resource: REFERENCES_DISTRICTS_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

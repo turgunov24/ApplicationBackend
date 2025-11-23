@@ -36,7 +36,7 @@ export const usersPermissions: Array<
 	{
 		nameUz: 'users-counts-by-status',
 		nameRu: 'users-counts-by-status',
-		resource: USERS_CONTROLLER,
+		resource: USERS_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
 ];

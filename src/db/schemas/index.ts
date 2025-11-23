@@ -11,4 +11,3 @@ export { referencesPermissionGroupsTable } from './references/permissionGroups';
 export { referencesPermissionsTable } from './references/permissions';
 export { referencesRolesTable } from './references/roles';
 export { referencesRolesPermissionsTable } from './references/rolesPermissions';
-export { userRelPermissionsTable } from './userRelPermissions';
