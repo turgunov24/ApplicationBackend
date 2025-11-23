@@ -19,6 +19,7 @@ import {
 	USERS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
+import { ResourceActions } from '../../types/auth';
 
 async function main() {
 	try {
@@ -54,16 +55,6 @@ async function main() {
 					});
 				}
 			}
-		}
-
-		for (const role of roles) {
-			const newRole = await db
-				.insert(schemas.referencesRolesTable)
-				.values({
-					nameRu: role.nameRu,
-					nameUz: role.nameUz,
-				})
-				.returning({ id: schemas.referencesRolesTable.id });
 		}
 
 		for (const permissionGroup of permissionGroups) {
@@ -174,6 +165,57 @@ async function main() {
 			}
 
 			throw new Error('Permission not found while seeding');
+		}
+
+		const allPermissions = await db
+			.select()
+			.from(schemas.referencesPermissionsTable);
+
+		for (const role of roles) {
+			const newRole = await db
+				.insert(schemas.referencesRolesTable)
+				.values({
+					nameRu: role.nameRu,
+					nameUz: role.nameUz,
+				})
+				.returning({ id: schemas.referencesRolesTable.id });
+
+			if (role.nameUz === 'Admin') {
+				await db.insert(schemas.referencesRolesPermissionsTable).values(
+					allPermissions.map((permission) => ({
+						roleId: newRole[0].id,
+						permissionId: permission.id,
+					}))
+				);
+			}
+
+			if (role.nameUz === 'Foydalanuvchi') {
+				await db.insert(schemas.referencesRolesPermissionsTable).values(
+					allPermissions
+						.filter((permission) => {
+							if (permission.action === ResourceActions.READ) {
+								if (
+									permission.resource.startsWith(
+										REFERENCES_COUNTRIES_CONTROLLER
+									) ||
+									permission.resource.startsWith(
+										REFERENCES_REGIONS_CONTROLLER
+									) ||
+									permission.resource.startsWith(
+										REFERENCES_DISTRICTS_CONTROLLER
+									)
+								) {
+									return true;
+								}
+							}
+							return false;
+						})
+						.map((permission) => ({
+							roleId: newRole[0].id,
+							permissionId: permission.id,
+						}))
+				);
+			}
 		}
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
