@@ -1,5 +1,5 @@
 {
-  "id": "b86e4b50-c372-4084-9c06-6a6483db94da",
+  "id": "414ce2ce-7977-4c0b-be4d-9302e01f78ad",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -362,12 +362,6 @@
       "name": "references_roles_permissions",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "role_id": {
           "name": "role_id",
           "type": "integer",
@@ -424,17 +418,16 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "references_roles_permissions_role_id_permission_id_unique": {
-          "name": "references_roles_permissions_role_id_permission_id_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "references_roles_permissions_role_id_permission_id_pk": {
+          "name": "references_roles_permissions_role_id_permission_id_pk",
           "columns": [
             "role_id",
             "permission_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -501,87 +494,6 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
-    "public.users_rel_permissions": {
-      "name": "users_rel_permissions",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "permission_id": {
-          "name": "permission_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "users_rel_permissions_user_id_users_id_fk": {
-          "name": "users_rel_permissions_user_id_users_id_fk",
-          "tableFrom": "users_rel_permissions",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "users_rel_permissions_permission_id_references_permissions_id_fk": {
-          "name": "users_rel_permissions_permission_id_references_permissions_id_fk",
-          "tableFrom": "users_rel_permissions",
-          "tableTo": "references_permissions",
-          "columnsFrom": [
-            "permission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "users_rel_permissions_user_id_permission_id_unique": {
-          "name": "users_rel_permissions_user_id_permission_id_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "permission_id"
-          ]
-        }
-      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

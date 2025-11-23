@@ -1,6 +1,9 @@
 import { InferSelectModel } from 'drizzle-orm';
 import * as schemas from '../schemas/index';
 
+// IMPORTANT !
+// nameUz va nameRu lar seedlarda ishlatilgan shuning uchun modify qilishdan oldin tekshiring
+
 export const permissionGroups: Array<
 	Pick<
 		InferSelectModel<typeof schemas.referencesPermissionGroupsTable>,
@@ -8,11 +11,19 @@ export const permissionGroups: Array<
 	>
 > = [
 	{
-		nameUz: "Ma'lumotnomalar bilan ishlash",
-		nameRu: 'Маълумотномалар билан ишлаш',
+		nameUz: "Mamlakatlar ma'lumotnomalari",
+		nameRu: 'Мамлакатлар маълумотномалари',
 	},
 	{
-		nameUz: "Ma'lumotnomalarni ko'rish",
-		nameRu: 'Маълумотномаларни кўриш',
+		nameUz: "Viloyatlar ma'lumotnomalari",
+		nameRu: 'Вилоятлар маълумотномалари',	
 	},
+	{
+		nameUz: "Tumanlar ma'lumotnomalari",
+		nameRu: 'Туманлар маълумотномалари',	
+	},
+	{
+		nameUz: "Adminga aloqador ruxsatlar",
+		nameRu: 'Админга алоқадор рухсатлар',	
+	}
 ];

@@ -7,6 +7,7 @@ import { rolesPermissions } from './roles';
 import { permissionGroupsPermissions } from './permissionGroups';
 import { permissionsPermissions } from './permissions';
 import { rolesPermissionsPermissions } from './rolesPermissions';
+import { usersPermissions } from './users';
 
 export const permissions: Array<
 	Pick<
@@ -21,4 +22,5 @@ export const permissions: Array<
 	...permissionGroupsPermissions,
 	...permissionsPermissions,
 	...rolesPermissionsPermissions,
+	...usersPermissions,
 ];

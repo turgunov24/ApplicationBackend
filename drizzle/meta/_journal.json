@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1762610966458,
-      "tag": "0000_smiling_pepper_potts",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1762611257951,
-      "tag": "0001_blue_carnage",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1762619740866,
-      "tag": "0002_gigantic_micromax",
+      "when": 1763925262246,
+      "tag": "0000_elite_marvel_apes",
       "breakpoints": true
     }
   ]
