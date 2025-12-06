@@ -1,5 +1,5 @@
 {
-  "id": "414ce2ce-7977-4c0b-be4d-9302e01f78ad",
+  "id": "f24a109c-586d-4675-8bb9-2a988d63b294",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -253,13 +253,13 @@
           "name": "resource",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "action": {
           "name": "action",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -502,12 +502,6 @@
       "name": "users_roles",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "user_id": {
           "name": "user_id",
           "type": "integer",
@@ -564,17 +558,16 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "users_roles_user_id_role_id_unique": {
-          "name": "users_roles_user_id_role_id_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "users_roles_user_id_role_id_pk": {
+          "name": "users_roles_user_id_role_id_pk",
           "columns": [
             "user_id",
             "role_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -654,8 +647,7 @@
           "name": "avatar_path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'uploads/avatars/default-avatar.jpg'"
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",

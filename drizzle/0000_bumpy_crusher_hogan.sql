@@ -36,8 +36,8 @@ CREATE TABLE "references_permissions" (
 	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
 	"permission_group_id" integer NOT NULL,
-	"resource" varchar(255),
-	"action" varchar(255)
+	"resource" varchar(255) NOT NULL,
+	"action" varchar(255) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "references_regions" (
@@ -70,12 +70,11 @@ CREATE TABLE "references_roles" (
 );
 --> statement-breakpoint
 CREATE TABLE "users_roles" (
-	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"role_id" integer NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "users_roles_user_id_role_id_unique" UNIQUE("user_id","role_id")
+	CONSTRAINT "users_roles_user_id_role_id_pk" PRIMARY KEY("user_id","role_id")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -90,7 +89,7 @@ CREATE TABLE "users" (
 	"token" varchar(500),
 	"password" varchar(100) NOT NULL,
 	"status" text DEFAULT 'pending' NOT NULL,
-	"avatar_path" text DEFAULT 'uploads/avatars/default-avatar.jpg' NOT NULL,
+	"avatar_path" text,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "users_username_unique" UNIQUE("username"),
