@@ -23,7 +23,6 @@ export const authorizeUser = async (
 		const { user, baseUrl } = req;
 
 		const resource = resources.find((r) => r.endpoint === baseUrl);
-		console.log('🚀 ~ authorizeUser ~ resource:', resource);
 
 		if (!resource) {
 			return res.status(400).json(generateErrorMessage('Resource not found'));
@@ -66,7 +65,6 @@ export const authorizeUser = async (
 						eq(referencesPermissionsTable.status, 'active')
 					)
 				);
-			console.log('🚀 ~ authorizeUser ~ permissions:', permissions);
 
 			for (const { permission } of permissions) {
 				if (!permission.action) continue;
