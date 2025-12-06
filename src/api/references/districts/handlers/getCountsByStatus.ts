@@ -1,9 +1,48 @@
 import { Request, Response } from 'express';
-import { eq, count, ne, and } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
 import db from '../../../../db';
 import { referencesDistrictsTable } from '../../../../db/schemas';
 import { statuses } from '../../../../db/schemas/references/districts';
 import { handleError } from '../../../../utils/handleError';
+
+/**
+ * @swagger
+ * /api/references/districts/counts-by-status:
+ *   get:
+ *     summary: Get counts of districts by status (and total count)
+ *     tags: [References]
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 all:
+ *                   type: integer
+ *                   description: Total count of all districts
+ *                 active:
+ *                   type: integer
+ *                   description: Count of active districts
+ *                 deleted:
+ *                   type: integer
+ *                   description: Count of deleted districts
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
 
 export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 	try {
@@ -23,7 +62,7 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 			const statusCountResult = await db
 				.select({ count: count() })
 				.from(referencesDistrictsTable)
-				.where(and(eq(referencesDistrictsTable.status, status)));
+				.where(eq(referencesDistrictsTable.status, status));
 
 			statusCounts[status] = statusCountResult[0].count;
 		}

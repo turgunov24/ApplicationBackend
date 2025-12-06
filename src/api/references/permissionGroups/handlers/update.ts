@@ -5,6 +5,61 @@ import { referencesPermissionGroupsTable } from '../../../../db/schemas/referenc
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 
+/**
+ * @swagger
+ * /api/references/permission-groups/update:
+ *   put:
+ *     summary: Update an existing permission group's nameUz and nameRu
+ *     tags: [References]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the permission group to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nameUz
+ *               - nameRu
+ *             properties:
+ *               nameUz:
+ *                 type: string
+ *                 description: Permission group name in Uzbek
+ *               nameRu:
+ *                 type: string
+ *                 description: Permission group name in Russian
+ *     responses:
+ *       200:
+ *         description: Permission group updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
 	res: Response

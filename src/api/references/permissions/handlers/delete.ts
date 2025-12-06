@@ -4,6 +4,45 @@ import { referencesPermissionsTable } from '../../../../db/schemas/references/pe
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 
+/**
+ * @swagger
+ * /api/references/permissions/delete:
+ *   delete:
+ *     summary: Soft-delete a permission by setting its status to 'deleted'
+ *     tags: [References]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the permission to delete
+ *     responses:
+ *       200:
+ *         description: Permission deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,
 	res: Response

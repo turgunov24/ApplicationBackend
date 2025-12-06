@@ -1,31 +1,124 @@
-import { Request, Response } from 'express';
-import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
-import { ilike } from 'drizzle-orm';
-import { and } from 'drizzle-orm';
-import { count } from 'drizzle-orm';
-import { asc } from 'drizzle-orm';
-import { desc } from 'drizzle-orm';
-import { referencesDistrictsTable } from '../../../../db/schemas/references/districts';
-import db from '../../../../db';
-import { handleError } from '../../../../utils/handleError';
+import { Request, Response } from 'express'
+import { eq, InferSelectModel, ne, or } from 'drizzle-orm'
+import { ilike } from 'drizzle-orm'
+import { and } from 'drizzle-orm'
+import { count } from 'drizzle-orm'
+import { asc } from 'drizzle-orm'
+import { referencesDistrictsTable } from '../../../../db/schemas/references/districts'
+import db from '../../../../db'
+import { handleError } from '../../../../utils/handleError'
+import {
+	normalizePagination,
+	calculatePaginationMeta,
+} from '../../../../utils/pagination'
+
+/**
+ * @swagger
+ * /api/references/districts:
+ *   get:
+ *     summary: Get districts list or single district
+ *     tags: [References]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: District ID to get single district
+ *       - in: query
+ *         name: currentPage
+ *         schema:
+ *           type: string
+ *           default: '0'
+ *         description: Current page number (0-based)
+ *       - in: query
+ *         name: dataPerPage
+ *         schema:
+ *           type: string
+ *           default: '5'
+ *         description: Number of items per page (max 100)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for nameUz or nameRu
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, deleted, all]
+ *           default: all
+ *         description: Filter by status
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nameUz:
+ *                         type: string
+ *                       nameRu:
+ *                         type: string
+ *                       regionId:
+ *                         type: integer
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *                       status:
+ *                         type: string
+ *                         enum: [active, deleted]
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                     dataPerPage:
+ *                       type: integer
+ *                     totalData:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     hasNextPage:
+ *                       type: boolean
+ *                     hasPrevPage:
+ *                       type: boolean
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
 
 type IStatuses = Pick<
 	InferSelectModel<typeof referencesDistrictsTable>,
 	'status'
 >;
 
-type ISortableFields = Pick<
-	InferSelectModel<typeof referencesDistrictsTable>,
-	'nameUz' | 'nameRu' | 'createdAt'
->;
-
 interface QueryParams {
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
-	sortBy?: keyof ISortableFields;
-	sortOrder?: 'asc' | 'desc';
-	status?: IStatuses['status'];
+	status?: IStatuses['status'] | 'all';
 	id?: string;
 }
 
@@ -38,28 +131,25 @@ export const indexHandler = async (
 			currentPage = '0',
 			dataPerPage = '5',
 			search,
-			// sortBy = 'createdAt',
-			sortOrder = 'desc',
-			// status = 'active',
+			status = 'all',
 			id,
 		} = req.query;
 
 		if (id) {
-			const user = await db
-				.select()
-				.from(referencesDistrictsTable)
-				.where(eq(referencesDistrictsTable.id, Number(id)));
+			const district = await db.query.referencesDistrictsTable.findFirst({
+				where: eq(referencesDistrictsTable.id, Number(id)),
+			});
 
-			res.json(user[0]);
-			return;
+			return res.json(district);
 		}
 
-		const _currentPage = Math.max(0, parseInt(currentPage));
-		const _dataPerPage = Math.min(100, Math.max(0, parseInt(dataPerPage)));
-
-		const offset = _currentPage * _dataPerPage;
-
 		const whereConditions = [];
+
+		if (status !== 'all') {
+			whereConditions.push(eq(referencesDistrictsTable.status, status));
+		} else {
+			whereConditions.push(ne(referencesDistrictsTable.status, 'deleted'));
+		}
 
 		if (search) {
 			const searchTerm = `%${search}%`;
@@ -74,39 +164,37 @@ export const indexHandler = async (
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
+		// Get total count excluding deleted records
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(referencesDistrictsTable)
-			.where(and(whereClause, ne(referencesDistrictsTable.status, 'deleted')));
+			.where(and(whereClause));
 
 		const totalCount = totalCountResult[0].count;
 
-		const users = await db
+		const {
+			currentPage: _currentPage,
+			dataPerPage: _dataPerPage,
+			offset,
+		} = normalizePagination(currentPage, dataPerPage);
+
+		const pagination = calculatePaginationMeta(
+			_currentPage,
+			_dataPerPage,
+			totalCount
+		);
+
+		const districts = await db
 			.select()
-				.from(referencesDistrictsTable)
-			.where(and(whereClause, ne(referencesDistrictsTable.status, 'deleted')))
-			.orderBy(
-				sortOrder === 'asc'
-					? asc(referencesDistrictsTable.createdAt)
-					: desc(referencesDistrictsTable.createdAt)
-			)
+			.from(referencesDistrictsTable)
+			.where(and(whereClause))
+			.orderBy(asc(referencesDistrictsTable.createdAt))
 			.limit(_dataPerPage)
 			.offset(offset);
 
-		const totalPages = Math.ceil(totalCount / _dataPerPage);
-		const hasNextPage = _currentPage + 1 < totalPages;
-		const hasPrevPage = _currentPage > 0;
-
 		res.json({
-			result: users,
-			pagination: {
-				currentPage: _currentPage,
-				dataPerPage: _dataPerPage,
-				totalData: totalCount,
-				totalPages: totalPages,
-				hasNextPage,
-				hasPrevPage,
-			},
+			result: districts,
+			pagination,
 		});
 	} catch (error: unknown) {
 		handleError(res, error);
