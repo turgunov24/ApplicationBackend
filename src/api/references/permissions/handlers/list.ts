@@ -10,7 +10,7 @@ import { ListValidationSchema } from '../validators';
  * /api/references/permissions/list:
  *   get:
  *     summary: Get non-deleted permissions (id, nameUz, nameRu, permissionGroupId)
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     parameters:
  *       - in: query
  *         name: permissionGroupId

@@ -17,7 +17,7 @@ import {
  * /api/references/districts:
  *   get:
  *     summary: Get districts list or single district
- *     tags: [References]
+ *     tags: [References - Districts]
  *     parameters:
  *       - in: query
  *         name: id

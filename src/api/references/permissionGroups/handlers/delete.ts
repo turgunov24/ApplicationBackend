@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permission-groups/delete:
  *   delete:
  *     summary: Soft-delete a permission group by setting its status to 'deleted'
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     parameters:
  *       - in: query
  *         name: id

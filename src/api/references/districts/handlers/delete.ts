@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/districts/delete:
  *   delete:
  *     summary: Soft-delete a district by setting its status to 'deleted'
- *     tags: [References]
+ *     tags: [References - Districts]
  *     parameters:
  *       - in: query
  *         name: id

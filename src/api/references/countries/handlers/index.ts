@@ -1,23 +1,23 @@
-import { Request, Response } from 'express'
-import { eq, InferSelectModel, ne, or } from 'drizzle-orm'
-import { ilike } from 'drizzle-orm'
-import { and } from 'drizzle-orm'
-import { count } from 'drizzle-orm'
-import { asc } from 'drizzle-orm'
-import { referencesCountriesTable } from '../../../../db/schemas'
-import db from '../../../../db'
-import { handleError } from '../../../../utils/handleError'
+import { Request, Response } from 'express';
+import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
+import { ilike } from 'drizzle-orm';
+import { and } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
+import { referencesCountriesTable } from '../../../../db/schemas';
+import db from '../../../../db';
+import { handleError } from '../../../../utils/handleError';
 import {
 	normalizePagination,
 	calculatePaginationMeta,
-} from '../../../../utils/pagination'
+} from '../../../../utils/pagination';
 
 /**
  * @swagger
  * /api/references/countries:
  *   get:
  *     summary: Get countries list or single country
- *     tags: [References]
+ *     tags: [References - Countries]
  *     parameters:
  *       - in: query
  *         name: id

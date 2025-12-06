@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/regions/update:
  *   put:
  *     summary: Update an existing region's nameUz, nameRu and countryId
- *     tags: [References]
+ *     tags: [References - Regions]
  *     parameters:
  *       - in: query
  *         name: id

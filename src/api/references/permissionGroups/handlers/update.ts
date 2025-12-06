@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permission-groups/update:
  *   put:
  *     summary: Update an existing permission group's nameUz and nameRu
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     parameters:
  *       - in: query
  *         name: id

@@ -5,6 +5,67 @@ import { referencesRolesTable } from '../../../../db/schemas/references/roles';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 
+/**
+ * @swagger
+ * /api/references/roles/update:
+ *   put:
+ *     summary: Update an existing role
+ *     tags: [References - Roles]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the role to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nameUz
+ *               - nameRu
+ *             properties:
+ *               nameUz:
+ *                 type: string
+ *                 description: Role name in Uzbek
+ *               nameRu:
+ *                 type: string
+ *                 description: Role name in Russian
+ *               descriptionUz:
+ *                 type: string
+ *                 description: Role description in Uzbek
+ *               descriptionRu:
+ *                 type: string
+ *                 description: Role description in Russian
+ *     responses:
+ *       200:
+ *         description: Role updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
 	res: Response

@@ -1,15 +1,15 @@
-import { Request, Response } from 'express'
-import db from '../../../../db'
-import { referencesCountriesTable } from '../../../../db/schemas'
-import { handleError } from '../../../../utils/handleError'
-import { asc, ne } from 'drizzle-orm'
+import { Request, Response } from 'express';
+import db from '../../../../db';
+import { referencesCountriesTable } from '../../../../db/schemas';
+import { handleError } from '../../../../utils/handleError';
+import { asc, ne } from 'drizzle-orm';
 
 /**
  * @swagger
  * /api/references/countries/list:
  *   get:
  *     summary: Get non-deleted countries (id, nameUz, nameRu)
- *     tags: [References]
+ *     tags: [References - Countries]
  *     responses:
  *       200:
  *         description: Success
@@ -41,7 +41,6 @@ import { asc, ne } from 'drizzle-orm'
  *                       message:
  *                         type: string
  */
-
 
 export const listHandler = async (req: Request, res: Response) => {
 	try {

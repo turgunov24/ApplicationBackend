@@ -17,7 +17,7 @@ import {
  * /api/references/permission-groups:
  *   get:
  *     summary: Get permission groups list or single permission group
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     parameters:
  *       - in: query
  *         name: id

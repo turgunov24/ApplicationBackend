@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError'
  * /api/references/regions/counts-by-status:
  *   get:
  *     summary: Get counts of regions by status (and total count)
- *     tags: [References]
+ *     tags: [References - Regions]
  *     responses:
  *       200:
  *         description: Success

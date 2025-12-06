@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/districts/counts-by-status:
  *   get:
  *     summary: Get counts of districts by status (and total count)
- *     tags: [References]
+ *     tags: [References - Districts]
  *     responses:
  *       200:
  *         description: Success

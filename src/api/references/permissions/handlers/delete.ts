@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permissions/delete:
  *   delete:
  *     summary: Soft-delete a permission by setting its status to 'deleted'
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     parameters:
  *       - in: query
  *         name: id

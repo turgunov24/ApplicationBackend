@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/regions/create:
  *   post:
  *     summary: Create a new region
- *     tags: [References]
+ *     tags: [References - Regions]
  *     requestBody:
  *       required: true
  *       content:

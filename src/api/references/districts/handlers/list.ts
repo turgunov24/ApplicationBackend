@@ -10,7 +10,7 @@ import { ListValidationSchema } from '../validators'
  * /api/references/districts/list:
  *   get:
  *     summary: Get non-deleted districts (id, nameUz, nameRu, regionId)
- *     tags: [References]
+ *     tags: [References - Districts]
  *     parameters:
  *       - in: query
  *         name: regionId

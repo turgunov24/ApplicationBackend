@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/countries/create:
  *   post:
  *     summary: Create a new country
- *     tags: [References]
+ *     tags: [References - Countries]
  *     requestBody:
  *       required: true
  *       content:
@@ -63,7 +63,6 @@ import { handleError } from '../../../../utils/handleError';
  *                       message:
  *                         type: string
  */
-
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,

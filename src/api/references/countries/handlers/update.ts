@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/countries/update:
  *   put:
  *     summary: Update an existing country's nameUz and nameRu
- *     tags: [References]
+ *     tags: [References - Countries]
  *     parameters:
  *       - in: query
  *         name: id
@@ -59,7 +59,6 @@ import { handleError } from '../../../../utils/handleError';
  *                       message:
  *                         type: string
  */
-
 
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,

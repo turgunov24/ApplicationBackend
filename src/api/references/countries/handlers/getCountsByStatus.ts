@@ -1,16 +1,16 @@
-import { Request, Response } from 'express'
-import { eq, count } from 'drizzle-orm'
-import db from '../../../../db'
-import { referencesCountriesTable } from '../../../../db/schemas'
-import { statuses } from '../../../../db/schemas/references/countries'
-import { handleError } from '../../../../utils/handleError'
+import { Request, Response } from 'express';
+import { eq, count } from 'drizzle-orm';
+import db from '../../../../db';
+import { referencesCountriesTable } from '../../../../db/schemas';
+import { statuses } from '../../../../db/schemas/references/countries';
+import { handleError } from '../../../../utils/handleError';
 
 /**
  * @swagger
  * /api/references/countries/counts-by-status:
  *   get:
  *     summary: Get counts of countries by status (and total count)
- *     tags: [References]
+ *     tags: [References - Countries]
  *     responses:
  *       200:
  *         description: Success
@@ -43,7 +43,6 @@ import { handleError } from '../../../../utils/handleError'
  *                       message:
  *                         type: string
  */
-
 
 export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 	try {

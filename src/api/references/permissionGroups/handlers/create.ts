@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permission-groups/create:
  *   post:
  *     summary: Create a new permission group
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     requestBody:
  *       required: true
  *       content:

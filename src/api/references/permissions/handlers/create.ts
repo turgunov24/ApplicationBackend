@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permissions/create:
  *   post:
  *     summary: Create a new permission
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     requestBody:
  *       required: true
  *       content:

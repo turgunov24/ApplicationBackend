@@ -10,7 +10,7 @@ import { ListValidationSchema } from '../validators'
  * /api/references/regions/list:
  *   get:
  *     summary: Get non-deleted regions (id, nameUz, nameRu, countryId)
- *     tags: [References]
+ *     tags: [References - Regions]
  *     parameters:
  *       - in: query
  *         name: countryId

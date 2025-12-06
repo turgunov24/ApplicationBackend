@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permissions/update:
  *   put:
  *     summary: Update an existing permission
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     parameters:
  *       - in: query
  *         name: id

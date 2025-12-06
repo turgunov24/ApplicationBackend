@@ -12,7 +12,7 @@ import { asc, ne } from 'drizzle-orm';
  * /api/references/permission-groups/list:
  *   get:
  *     summary: Get non-deleted permission groups with their permissions
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     responses:
  *       200:
  *         description: Success

@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permission-groups/counts-by-status:
  *   get:
  *     summary: Get counts of permission groups by status (and total count)
- *     tags: [References]
+ *     tags: [References - Permission Groups]
  *     responses:
  *       200:
  *         description: Success

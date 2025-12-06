@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/districts/update:
  *   put:
  *     summary: Update an existing district's nameUz, nameRu and regionId
- *     tags: [References]
+ *     tags: [References - Districts]
  *     parameters:
  *       - in: query
  *         name: id

@@ -17,7 +17,7 @@ import {
  * /api/references/permissions:
  *   get:
  *     summary: Get permissions list or single permission
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     parameters:
  *       - in: query
  *         name: id

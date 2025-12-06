@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/countries/delete:
  *   delete:
  *     summary: Soft-delete a country by setting its status to 'deleted'
- *     tags: [References]
+ *     tags: [References - Countries]
  *     parameters:
  *       - in: query
  *         name: id
@@ -42,7 +42,6 @@ import { handleError } from '../../../../utils/handleError';
  *                       message:
  *                         type: string
  */
-
 
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,

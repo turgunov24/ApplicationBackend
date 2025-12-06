@@ -17,7 +17,7 @@ import {
  * /api/references/regions:
  *   get:
  *     summary: Get regions list or single region
- *     tags: [References]
+ *     tags: [References - Regions]
  *     parameters:
  *       - in: query
  *         name: id

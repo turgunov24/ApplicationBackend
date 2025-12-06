@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/regions/delete:
  *   delete:
  *     summary: Soft-delete a region by setting its status to 'deleted'
- *     tags: [References]
+ *     tags: [References - Regions]
  *     parameters:
  *       - in: query
  *         name: id

@@ -9,7 +9,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/districts/create:
  *   post:
  *     summary: Create a new district
- *     tags: [References]
+ *     tags: [References - Districts]
  *     requestBody:
  *       required: true
  *       content:

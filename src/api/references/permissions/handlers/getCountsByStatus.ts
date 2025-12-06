@@ -10,7 +10,7 @@ import { handleError } from '../../../../utils/handleError';
  * /api/references/permissions/counts-by-status:
  *   get:
  *     summary: Get counts of permissions by status (and total count)
- *     tags: [References]
+ *     tags: [References - Permissions]
  *     responses:
  *       200:
  *         description: Success
