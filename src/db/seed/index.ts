@@ -20,6 +20,9 @@ import {
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
+import { users } from './users';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 async function main() {
 	try {
@@ -216,6 +219,86 @@ async function main() {
 						}))
 				);
 			}
+		}
+
+		for (const user of users) {
+			const hashedPassword = await bcrypt.hash(user.password, 10);
+
+			const district = await db.query.referencesDistrictsTable.findFirst({
+				where: eq(schemas.referencesDistrictsTable.nameUz, user.districtName),
+				columns: {
+					id: true,
+					regionId: true,
+				},
+				with: {
+					region: {
+						columns: {
+							countryId: true,
+						},
+					},
+				},
+			});
+
+			if (!district) {
+				throw new Error('District not found while seeding');
+			}
+
+			const newUser = await db
+				.insert(schemas.usersTable)
+				.values({
+					username: user.username,
+					fullName: user.fullName,
+					email: user.email,
+					phone: user.phone,
+					password: hashedPassword,
+					countryId: district.region.countryId,
+					regionId: district.regionId,
+					districtId: district.id,
+				})
+				.returning({
+					id: schemas.usersTable.id,
+					username: schemas.usersTable.username,
+					email: schemas.usersTable.email,
+				});
+
+			const role = await db.query.referencesRolesTable.findFirst({
+				where: eq(schemas.referencesRolesTable.nameUz, user.roleName),
+				columns: {
+					id: true,
+				},
+			});
+
+			if (!role) {
+				throw new Error('Role not found while seeding');
+			}
+
+			await db.insert(schemas.usersRolesTable).values([
+				{
+					userId: newUser[0].id,
+					roleId: role.id,
+				},
+			]);
+
+			const secret = process.env.JWT_SECRET;
+
+			if (!secret) {
+				throw new Error('JWT_SECRET is not set');
+			}
+
+			const accessToken = jwt.sign(
+				{
+					id: newUser[0].id,
+					username: newUser[0].username,
+					email: newUser[0].email,
+				},
+				secret,
+				{ expiresIn: '1h' }
+			);
+
+			await db
+				.update(schemas.usersTable)
+				.set({ token: accessToken, status: 'active' })
+				.where(eq(schemas.usersTable.id, newUser[0].id));
 		}
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');

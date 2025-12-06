@@ -33,5 +33,3 @@ export const referenceRolesPermissionsRelations = relations(
 		}),
 	})
 );
-
-// db.query.referencesRolesPermissionsTable.findMany({with:{}})

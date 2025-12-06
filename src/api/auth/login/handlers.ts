@@ -1,19 +1,54 @@
-import { Request, Response } from 'express'
-import { LoginPayload } from './validator'
-import db from '../../../db'
-import { usersTable } from '../../../db/schemas/users'
-import { and, eq } from 'drizzle-orm'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { generateErrorMessage } from '../../../utils/generateErrorMessage'
-import { handleError } from '../../../utils/handleError'
+import { Request, Response } from 'express';
+import { LoginPayload } from './validator';
+import db from '../../../db';
+import { usersTable } from '../../../db/schemas/users';
+import { and, eq } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { generateErrorMessage } from '../../../utils/generateErrorMessage';
+import { handleError } from '../../../utils/handleError';
 import {
 	referencesPermissionsTable,
 	referencesRolesPermissionsTable,
 	referencesRolesTable,
-	usersRolesTable
-} from '../../../db/schemas'
+	usersRolesTable,
+} from '../../../db/schemas';
 
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required: [username, password]
+ *     responses:
+ *       200:
+ *         description: Login success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                 permissions:
+ *                   type: array
+ *       400:
+ *         description: Invalid credentials
+ */
 export const loginHandler = async (
 	req: Request<{}, {}, LoginPayload>,
 	res: Response

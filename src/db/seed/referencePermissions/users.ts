@@ -39,4 +39,10 @@ export const usersPermissions: Array<
 		resource: USERS_CONTROLLER.concat('/counts-by-status'),
 		action: ResourceActions.READ,
 	},
+	{
+		nameUz: 'users-avatar',
+		nameRu: 'users-avatar',
+		resource: USERS_CONTROLLER.concat('/avatar'),
+		action: ResourceActions.UPDATE,
+	}
 ];

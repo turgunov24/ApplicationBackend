@@ -13,7 +13,7 @@ export type CreatePayload = Pick<
 	| 'phone'
 	| 'countryId'
 	| 'regionId'
-	| 'cityId'
+	| 'districtId'
 > & {
 	roles: number[];
 };
@@ -147,15 +147,16 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'User region id is required',
 	},
-	cityId: {
+	districtId: {
 		in: 'body',
 		isInt: true,
 		notEmpty: true,
-		errorMessage: 'User city id is required',
+		errorMessage: 'User district id is required',
 	},
 	roles: {
 		in: 'body',
-		optional: true,
+		notEmpty: true,
+		errorMessage: 'User roles are required',
 		custom: {
 			options: async (value: CreatePayload['roles']) => {
 				if (Array.isArray(value)) {
@@ -174,7 +175,7 @@ const createSchema: CreateValidationSchema = {
 					}
 				}
 
-				return true;
+				throw new Error('User roles are invalid');
 			},
 		},
 	},
@@ -254,3 +255,4 @@ export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
+export const uploadAvatarValidator = checkSchema(deleteSchema)
