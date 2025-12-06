@@ -26,6 +26,7 @@ import referencesPermissionsRouter from './api/references/permissions/controller
 import referencesRolesRouter from './api/references/roles/controller';
 import referencesRolesPermissionsRouter from './api/references/rolesPermissions/controller';
 import referencesResourcesRouter from './api/references/resources/controller';
+import swaggerRouter from './api/swagger/index';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -65,7 +66,7 @@ app.use(
 	referencesRolesPermissionsRouter
 );
 app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
-
+app.use('/swagger', swaggerRouter);
 // Start the server
 app.listen(port, () => {
 	logger.info(`Server is running on http://localhost:${port}`);

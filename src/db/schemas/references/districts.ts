@@ -1,7 +1,8 @@
 import { integer } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { referencesRegionsTable } from './regions';
-import { text } from 'drizzle-orm/pg-core'
+import { text } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -16,3 +17,13 @@ export const referencesDistrictsTable = pgTable('references_districts', {
 	updatedAt: timestamp().notNull().defaultNow(),
 	status: text('status', { enum: statuses }).notNull().default('active'),
 });
+
+export const referencesDistrictsRelations = relations(
+	referencesDistrictsTable,
+	({ one }) => ({
+		region: one(referencesRegionsTable, {
+			fields: [referencesDistrictsTable.regionId],
+			references: [referencesRegionsTable.id],
+		}),
+	})
+);

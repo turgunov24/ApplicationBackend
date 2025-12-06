@@ -1,11 +1,31 @@
 // Export all database table schemas for Drizzle migrations
-export { usersTable } from './users';
-export { usersRolesTable } from './usersRoles';
-export { referencesCountriesTable } from './references/countries';
-export { referencesRegionsTable } from './references/regions';
-export { referencesDistrictsTable } from './references/districts';
-export { referencesPermissionGroupsTable } from './references/permissionGroups';
-export { referencesPermissionsTable } from './references/permissions';
-export { referencesRolesTable } from './references/roles';
-export { referencesRolesPermissionsTable } from './references/rolesPermissions';
-export { userRelPermissionsTable } from './userRelPermissions';
+export { usersTable, usersRelations } from './users';
+export { usersRolesTable, usersRolesRelations } from './usersRoles';
+export {
+	referencesCountriesTable,
+	referencesCountriesRelations,
+} from './references/countries';
+export {
+	referencesRegionsTable,
+	referencesRegionsRelations,
+} from './references/regions';
+export {
+	referencesDistrictsTable,
+	referencesDistrictsRelations,
+} from './references/districts';
+export {
+	referencesPermissionGroupsTable,
+	referencesPermissionGroupsRelations,
+} from './references/permissionGroups';
+export {
+	referencesPermissionsTable,
+	referencesPermissionsRelations,
+} from './references/permissions';
+export {
+	referencesRolesTable,
+	referenceRolesRelations,
+} from './references/roles';
+export {
+	referencesRolesPermissionsTable,
+	referenceRolesPermissionsRelations,
+} from './references/rolesPermissions';

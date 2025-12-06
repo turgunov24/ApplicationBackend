@@ -1,7 +1,7 @@
-import { referencesCountriesTable } from '../../../db/schemas/references/countries';
-import { checkSchema, ParamSchema } from 'express-validator';
-import { and, eq, InferInsertModel, ne } from 'drizzle-orm';
-import db from '../../../db';
+import { referencesCountriesTable } from '../../../db/schemas/references/countries'
+import { checkSchema, ParamSchema } from 'express-validator'
+import { eq, InferInsertModel } from 'drizzle-orm'
+import db from '../../../db'
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesCountriesTable>,

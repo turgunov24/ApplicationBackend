@@ -4,6 +4,46 @@ import { referencesCountriesTable } from '../../../../db/schemas/references/coun
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 
+/**
+ * @swagger
+ * /api/references/countries/delete:
+ *   delete:
+ *     summary: Soft-delete a country by setting its status to 'deleted'
+ *     tags: [References]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the country to delete
+ *     responses:
+ *       200:
+ *         description: Country deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
+
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,
 	res: Response

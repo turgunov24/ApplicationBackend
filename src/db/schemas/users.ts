@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { text } from 'drizzle-orm/pg-core';
 import {
 	pgTable,
@@ -6,6 +7,7 @@ import {
 	serial,
 	integer,
 } from 'drizzle-orm/pg-core';
+import { usersRolesTable } from './usersRoles';
 
 export const statuses = [
 	'active',
@@ -23,13 +25,15 @@ export const usersTable = pgTable('users', {
 	phone: varchar({ length: 255 }).notNull().unique(),
 	countryId: integer('country_id').notNull(),
 	regionId: integer('region_id').notNull(),
-	cityId: integer('city_id').notNull(),
+	districtId: integer('city_id').notNull(),
 	token: varchar({ length: 500 }),
 	password: varchar({ length: 100 }).notNull(),
 	status: text('status', { enum: statuses }).notNull().default('pending'),
-	avatarPath: text('avatar_path')
-		.notNull()
-		.default('uploads/avatars/default-avatar.jpg'),
+	avatarPath: text('avatar_path'),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
 });
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+	usersRoles: many(usersRolesTable),
+}));

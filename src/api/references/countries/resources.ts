@@ -3,6 +3,7 @@ import { Resource, ResourceActions } from '../../../types/auth';
 
 const resources: Resource[] = [
 	{
+		// bu yerda bittalab junatishimiz kerak
 		name: 'countries-crud',
 		endpoint: REFERENCES_COUNTRIES_CONTROLLER,
 		allowedActions: [

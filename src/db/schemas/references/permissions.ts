@@ -7,6 +7,8 @@ import {
 	integer,
 } from 'drizzle-orm/pg-core';
 import { referencesPermissionGroupsTable } from './permissionGroups';
+import { relations } from 'drizzle-orm';
+import { referencesRolesPermissionsTable } from './rolesPermissions';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -24,6 +26,17 @@ export const referencesPermissionsTable = pgTable('references_permissions', {
 		.references(() => referencesPermissionGroupsTable.id, {
 			onDelete: 'cascade',
 		}),
-	resource: varchar({ length: 255 }),	
-	action: varchar({ length: 255 }),
+	resource: varchar({ length: 255 }).notNull(),
+	action: varchar({ length: 255 }).notNull(),
 });
+
+export const referencesPermissionsRelations = relations(
+	referencesPermissionsTable,
+	({ one, many }) => ({
+		permissionGroup: one(referencesPermissionGroupsTable, {
+			fields: [referencesPermissionsTable.permissionGroupId],
+			references: [referencesPermissionGroupsTable.id],
+		}),
+		rolesPermissions: many(referencesRolesPermissionsTable),
+	})
+);

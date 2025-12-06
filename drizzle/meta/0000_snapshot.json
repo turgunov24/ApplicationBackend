@@ -1,5 +1,5 @@
 {
-  "id": "5cf2f5c0-ed7a-462c-844f-86153f80aaae",
+  "id": "f24a109c-586d-4675-8bb9-2a988d63b294",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -249,17 +249,17 @@
           "primaryKey": false,
           "notNull": true
         },
-        "recource": {
-          "name": "recource",
+        "resource": {
+          "name": "resource",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "action": {
           "name": "action",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -362,12 +362,6 @@
       "name": "references_roles_permissions",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "role_id": {
           "name": "role_id",
           "type": "integer",
@@ -424,17 +418,16 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "references_roles_permissions_role_id_permission_id_unique": {
-          "name": "references_roles_permissions_role_id_permission_id_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "references_roles_permissions_role_id_permission_id_pk": {
+          "name": "references_roles_permissions_role_id_permission_id_pk",
           "columns": [
             "role_id",
             "permission_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -509,12 +502,6 @@
       "name": "users_roles",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
         "user_id": {
           "name": "user_id",
           "type": "integer",
@@ -571,17 +558,16 @@
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "users_roles_user_id_role_id_unique": {
-          "name": "users_roles_user_id_role_id_unique",
-          "nullsNotDistinct": false,
+      "compositePrimaryKeys": {
+        "users_roles_user_id_role_id_pk": {
+          "name": "users_roles_user_id_role_id_pk",
           "columns": [
             "user_id",
             "role_id"
           ]
         }
       },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -661,8 +647,7 @@
           "name": "avatar_path",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'uploads/avatars/default-avatar.jpg'"
+          "notNull": false
         },
         "createdAt": {
           "name": "createdAt",

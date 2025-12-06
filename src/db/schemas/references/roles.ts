@@ -1,5 +1,7 @@
-import { text } from 'drizzle-orm/pg-core';
-import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+import { pgTable, varchar, timestamp, serial, text } from 'drizzle-orm/pg-core';
+import { referencesRolesPermissionsTable } from './rolesPermissions';
+import { usersRolesTable } from '../usersRoles';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -13,3 +15,11 @@ export const referencesRolesTable = pgTable('references_roles', {
 	updatedAt: timestamp().notNull().defaultNow(),
 	status: text('status', { enum: statuses }).notNull().default('active'),
 });
+
+export const referenceRolesRelations = relations(
+	referencesRolesTable,
+	({ many }) => ({
+		rolesPermissions: many(referencesRolesPermissionsTable),
+		rolesUsers: many(usersRolesTable),
+	})
+);

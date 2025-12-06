@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1759062452340,
-      "tag": "0000_flaky_nebula",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1759075325291,
-      "tag": "0001_strange_zodiak",
+      "when": 1765041425857,
+      "tag": "0000_bumpy_crusher_hogan",
       "breakpoints": true
     }
   ]
