@@ -9,17 +9,19 @@ import { usersRolesTable } from '../../../db/schemas';
 
 /**
  * @swagger
- * /api/users/update:
+ * /api/users:
  *   put:
  *     summary: Update an existing user
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: ID of the user to update
+ *         description: User ID to update
  *     requestBody:
  *       required: true
  *       content:
@@ -29,32 +31,31 @@ import { usersRolesTable } from '../../../db/schemas';
  *             required:
  *               - fullName
  *               - username
+ *               - email
+ *               - phone
+ *               - countryId
+ *               - regionId
+ *               - districtId
  *               - roles
  *             properties:
  *               fullName:
  *                 type: string
- *                 description: User's full name
  *               username:
  *                 type: string
- *                 description: Username for login
  *               password:
  *                 type: string
- *                 description: User's password (optional for update)
+ *                 description: Optional - only provide if changing password
  *               email:
  *                 type: string
- *                 description: User's email
+ *                 format: email
  *               phone:
  *                 type: string
- *                 description: User's phone number
  *               countryId:
  *                 type: integer
- *                 description: Country ID
  *               regionId:
  *                 type: integer
- *                 description: Region ID
  *               districtId:
  *                 type: integer
- *                 description: District ID
  *               roles:
  *                 type: array
  *                 items:
@@ -68,6 +69,8 @@ import { usersRolesTable } from '../../../db/schemas';
  *             schema:
  *               type: object
  *               properties:
+ *                 id:
+ *                   type: integer
  *                 message:
  *                   type: string
  *       400:
@@ -84,7 +87,10 @@ import { usersRolesTable } from '../../../db/schemas';
  *                     properties:
  *                       message:
  *                         type: string
+ *       404:
+ *         description: User not found
  */
+
 
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
@@ -108,14 +114,28 @@ export const updateHandler = async (
 
 		if (password) {
 			hashedPassword = await bcrypt.hash(password, 10);
+			await db
+				.update(usersTable)
+				.set({
+					fullName,
+					username,
+					password: hashedPassword,
+					email,
+					phone,
+					countryId,
+					regionId,
+					districtId,
+					updatedAt: new Date(),
+				})
+				.where(eq(usersTable.id, Number(id)))
+				.returning();
 		}
 
-		await db
+		const user = await db
 			.update(usersTable)
 			.set({
 				fullName,
 				username,
-				password: hashedPassword,
 				email,
 				phone,
 				countryId,
@@ -137,7 +157,7 @@ export const updateHandler = async (
 
 		await db.insert(usersRolesTable).values(userRoles);
 
-		res.json({ message: 'User updated successfully' });
+		res.json({ message: 'User updated successfully', id: user[0].id });
 	} catch (error: unknown) {
 		handleError(res, error);
 	}

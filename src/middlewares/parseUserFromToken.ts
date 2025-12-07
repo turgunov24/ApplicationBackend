@@ -13,9 +13,7 @@ export const parseUserFromToken = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	if (process.env.SKIP_AUTH) {
-		return next();
-	}
+	if (process.env.SKIP_AUTH === 'true') return next();
 
 	try {
 		// Get token from Authorization header

@@ -111,7 +111,7 @@ router.post(
 router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
 
 router.put(
-	'/avatar',
+	'/upload-avatar',
 	upload.single('file'),
 	multerErrorHandler,
 	validateFileRequired,

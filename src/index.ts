@@ -34,8 +34,6 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 app.use(
 	cors({
 		origin: '*',
@@ -43,6 +41,8 @@ app.use(
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	})
 );
+
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Basic route
 app.get('/', (req, res) => {

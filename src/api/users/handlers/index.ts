@@ -18,38 +18,37 @@ import { omit } from 'es-toolkit/compat';
  * @swagger
  * /api/users:
  *   get:
- *     summary: Get users list or single user
+ *     summary: Get users list with pagination and filtering
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: id
- *         schema:
- *           type: string
- *         description: User ID to get single user
  *       - in: query
  *         name: currentPage
  *         schema:
  *           type: string
- *           default: '0'
- *         description: Current page number (0-based)
+ *         description: Current page number
  *       - in: query
  *         name: dataPerPage
  *         schema:
  *           type: string
- *           default: '5'
- *         description: Number of items per page (max 100)
+ *         description: Number of items per page
  *       - in: query
  *         name: search
  *         schema:
  *           type: string
- *         description: Search term for fullName or username
+ *         description: Search term for filtering users
  *       - in: query
  *         name: status
  *         schema:
  *           type: string
- *           enum: [active, deleted, all]
- *           default: all
- *         description: Filter by status
+ *           enum: [active, inactive, all]
+ *         description: Filter by user status
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: Get specific user by ID
  *       - in: query
  *         name: roles
  *         schema:
@@ -59,13 +58,13 @@ import { omit } from 'es-toolkit/compat';
  *         description: Filter by role IDs
  *     responses:
  *       200:
- *         description: Success
+ *         description: Users list retrieved successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 result:
+ *                 data:
  *                   type: array
  *                   items:
  *                     type: object
@@ -88,44 +87,25 @@ import { omit } from 'es-toolkit/compat';
  *                         type: integer
  *                       status:
  *                         type: string
- *                         enum: [active, deleted]
  *                       avatarPath:
  *                         type: string
  *                         nullable: true
- *                       roles:
- *                         type: array
- *                         items:
- *                           type: integer
- *                         description: Array of role IDs
- *                 pagination:
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                 meta:
  *                   type: object
  *                   properties:
  *                     currentPage:
  *                       type: integer
  *                     dataPerPage:
  *                       type: integer
- *                     totalData:
- *                       type: integer
  *                     totalPages:
  *                       type: integer
- *                     hasNextPage:
- *                       type: boolean
- *                     hasPrevPage:
- *                       type: boolean
+ *                     totalData:
+ *                       type: integer
  *       400:
  *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       message:
- *                         type: string
  */
 
 type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
@@ -167,13 +147,7 @@ export const indexHandler = async (
 
 			if (user) {
 				return res.json({
-					...omit(user, [
-						'token',
-						'createdAt',
-						'updatedAt',
-						'password',
-						'userRoles',
-					]),
+					...omit(user, ['token', 'updatedAt', 'password', 'userRoles']),
 					roles: user.userRoles.map((role) => role.roleId),
 				});
 			}
@@ -251,16 +225,9 @@ export const indexHandler = async (
 		});
 
 		res.json({
-			result: users.map((user) => ({
-				...omit(user, [
-					'token',
-					'createdAt',
-					'updatedAt',
-					'password',
-					'userRoles',
-				]),
-				roles: user.userRoles.map((role) => role.roleId),
-			})),
+			result: users.map((user) =>
+				omit(user, ['token', 'updatedAt', 'password', 'userRoles'])
+			),
 			pagination,
 		});
 	} catch (error: unknown) {

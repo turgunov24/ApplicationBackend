@@ -8,10 +8,12 @@ import { handleError } from '../../../utils/handleError';
 
 /**
  * @swagger
- * /api/users/create:
+ * /api/users:
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -22,32 +24,30 @@ import { handleError } from '../../../utils/handleError';
  *               - fullName
  *               - username
  *               - password
+ *               - email
+ *               - phone
+ *               - countryId
+ *               - regionId
+ *               - districtId
  *               - roles
  *             properties:
  *               fullName:
  *                 type: string
- *                 description: User's full name
  *               username:
  *                 type: string
- *                 description: Username for login
  *               password:
  *                 type: string
- *                 description: User's password
  *               email:
  *                 type: string
- *                 description: User's email
+ *                 format: email
  *               phone:
  *                 type: string
- *                 description: User's phone number
  *               countryId:
  *                 type: integer
- *                 description: Country ID
  *               regionId:
  *                 type: integer
- *                 description: Region ID
  *               districtId:
  *                 type: integer
- *                 description: District ID
  *               roles:
  *                 type: array
  *                 items:
@@ -71,14 +71,20 @@ import { handleError } from '../../../utils/handleError';
  *                   type: string
  *                 phone:
  *                   type: string
+ *                 countryId:
+ *                   type: integer
+ *                 regionId:
+ *                   type: integer
+ *                 districtId:
+ *                   type: integer
+ *                 status:
+ *                   type: string
+ *                 avatarPath:
+ *                   type: string
+ *                   nullable: true
  *                 createdAt:
  *                   type: string
  *                   format: date-time
- *                 updatedAt:
- *                   type: string
- *                   format: date-time
- *                 status:
- *                   type: string
  *       400:
  *         description: Bad request
  *         content:
@@ -94,6 +100,7 @@ import { handleError } from '../../../utils/handleError';
  *                       message:
  *                         type: string
  */
+
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,

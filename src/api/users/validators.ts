@@ -155,27 +155,26 @@ const createSchema: CreateValidationSchema = {
 	},
 	roles: {
 		in: 'body',
-		notEmpty: true,
-		errorMessage: 'User roles are required',
+		notEmpty: {
+			errorMessage: 'User roles are required',
+			bail: true,
+		},
+		isArray: {
+			errorMessage: 'User roles must be an array',
+			bail: true,
+		},
 		custom: {
 			options: async (value: CreatePayload['roles']) => {
-				if (Array.isArray(value)) {
-					const existingRoles = await db
-						.select({ id: referencesRolesTable.id })
-						.from(referencesRolesTable)
-						.where(
-							and(
-								ne(referencesRolesTable.status, 'deleted'),
-								inArray(referencesRolesTable.id, value)
-							)
-						);
+				const existingRoles = await db.query.referencesRolesTable.findMany({
+					where: and(
+						ne(referencesRolesTable.status, 'deleted'),
+						inArray(referencesRolesTable.id, value)
+					),
+				});
 
-					if (existingRoles.length !== value.length) {
-						throw new Error('One or more roles not found or Invalid roleId');
-					}
+				if (existingRoles.length !== value.length) {
+					throw new Error('One or more roles not found or Invalid roleId');
 				}
-
-				throw new Error('User roles are invalid');
 			},
 		},
 	},
@@ -255,4 +254,4 @@ export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
-export const uploadAvatarValidator = checkSchema(deleteSchema)
+export const uploadAvatarValidator = checkSchema(deleteSchema);
