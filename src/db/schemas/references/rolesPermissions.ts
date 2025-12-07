@@ -1,9 +1,8 @@
-import { pgTable, timestamp, serial, integer } from 'drizzle-orm/pg-core';
-import { referencesRolesTable } from './roles';
-import { referencesPermissionsTable } from './permissions';
-import { primaryKey } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
-import db from '../..'
+import { pgTable, timestamp, integer } from 'drizzle-orm/pg-core'
+import { referencesRolesTable } from './roles'
+import { referencesPermissionsTable } from './permissions'
+import { primaryKey } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
 export const referencesRolesPermissionsTable = pgTable(
 	'references_roles_permissions',

@@ -1,55 +1,74 @@
 import { Request, Response } from 'express';
-import { eq } from 'drizzle-orm';
-import { referencesRolesPermissionsTable } from '../../../../db/schemas/references/rolesPermissions';
+import { ne } from 'drizzle-orm';
 import { referencesRolesTable } from '../../../../db/schemas/references/roles';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
+
+/**
+ * @swagger
+ * /api/references/roles-permissions:
+ *   get:
+ *     summary: Get all role permissions mapping
+ *     tags: [References - Roles Permissions]
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: Role ID
+ *                   permissions:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                     description: Array of permission IDs assigned to this role
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
 
 export const getRolePermissionsHandler = async (
 	req: Request,
 	res: Response
 ) => {
 	try {
-		// Get all role permissions
-		const rolePermissions = await db
-			.select({
-				roleId: referencesRolesPermissionsTable.roleId,
-				permissionId: referencesRolesPermissionsTable.permissionId,
-			})
-			.from(referencesRolesPermissionsTable);
-
-		// Get all roles to ensure we return all roles even if they have no permissions
-		const allRoles = await db
-			.select({
-				id: referencesRolesTable.id,
-			})
-			.from(referencesRolesTable)
-			.where(eq(referencesRolesTable.status, 'active'));
-
-		// Group permissions by role
-		const rolePermissionsMap = new Map<number, number[]>();
-
-		// Initialize all roles with empty permission arrays
-		allRoles.forEach((role) => {
-			rolePermissionsMap.set(role.id, []);
+		const roles = await db.query.referencesRolesTable.findMany({
+			where: ne(referencesRolesTable.status, 'deleted'),
+			columns: {
+				id: true,
+			},
+			with: {
+				rolesPermissions: {
+					columns: {
+						permissionId: true,
+					},
+				},
+			},
 		});
 
-		// Populate permissions for each role
-		rolePermissions.forEach((rp) => {
-			const existingPermissions = rolePermissionsMap.get(rp.roleId) || [];
-			existingPermissions.push(rp.permissionId);
-			rolePermissionsMap.set(rp.roleId, existingPermissions);
-		});
-
-		// Convert to the required format
-		const result: { [key: number]: number[] } = {};
-
-		// Populate the result object
-		rolePermissionsMap.forEach((permissionIds, roleId) => {
-			result[roleId] = permissionIds;
-		});
-
-		res.json(result);
+		res.json(
+			roles.map((role) => ({
+				id: role.id,
+				permissions: role.rolesPermissions.map((rp) => rp.permissionId),
+			}))
+		);
 	} catch (error: unknown) {
 		handleError(res, error);
 	}

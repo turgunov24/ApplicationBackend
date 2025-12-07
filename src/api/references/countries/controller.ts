@@ -17,10 +17,10 @@ import { authorizeUser } from '../../../middlewares/authorizeUser';
 
 const router = Router();
 
+router.use(parseUserFromToken, authorizeUser);
+
 router.get(
 	'/',
-	parseUserFromToken,
-	authorizeUser,
 	indexValidator,
 	withValidationErrorsMiddleware,
 	// @ts-expect-error
@@ -29,38 +29,22 @@ router.get(
 
 router.post(
 	'/',
-	parseUserFromToken,
-	authorizeUser,
 	createValidator,
 	withValidationErrorsMiddleware,
 	createHandler
 );
 
-router.put(
-	'/',
-	parseUserFromToken,
-	authorizeUser,
-	updateValidator,
-	withValidationErrorsMiddleware,
-	updateHandler
-);
+router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
 
 router.delete(
 	'/',
-	parseUserFromToken,
-	authorizeUser,
 	deleteValidator,
 	withValidationErrorsMiddleware,
 	deleteHandler
 );
 
-router.get('/list', parseUserFromToken, authorizeUser, listHandler);
+router.get('/list', listHandler);
 
-router.get(
-	'/counts-by-status',
-	parseUserFromToken,
-	authorizeUser,
-	getCountsByStatusHandler
-);
+router.get('/counts-by-status', getCountsByStatusHandler);
 
 export default router;

@@ -1,13 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { handleError } from '../utils/handleError';
 import db from '../db';
-import {
-	referencesPermissionsTable,
-	referencesRolesPermissionsTable,
-	referencesRolesTable,
-	usersRolesTable,
-} from '../db/schemas';
-import { and, eq } from 'drizzle-orm';
+import { usersRolesTable } from '../db/schemas';
+import { eq } from 'drizzle-orm';
 import resources from '../policy/resources';
 import { generateErrorMessage } from '../utils/generateErrorMessage';
 
@@ -17,9 +12,8 @@ export const authorizeUser = async (
 	next: NextFunction
 ) => {
 	try {
-		if (process.env.SKIP_AUTH) {
-			return next();
-		}
+		if (process.env.SKIP_AUTH === 'true') return next();
+
 		const { user, baseUrl } = req;
 
 		const resource = resources.find((r) => r.endpoint === baseUrl);
@@ -28,56 +22,41 @@ export const authorizeUser = async (
 			return res.status(400).json(generateErrorMessage('Resource not found'));
 		}
 
-		const roles = await db
-			.select()
-			.from(usersRolesTable)
-			.innerJoin(
-				referencesRolesTable,
-				eq(usersRolesTable.roleId, referencesRolesTable.id)
-			)
-			.where(
-				and(
-					eq(usersRolesTable.userId, user.id),
-					eq(referencesRolesTable.status, 'active')
-				)
+		const result = await db.query.usersRolesTable.findMany({
+			where: eq(usersRolesTable.userId, user.id),
+			with: {
+				role: {
+					with: {
+						rolesPermissions: {
+							with: {
+								permission: {
+									columns: {
+										action: true,
+										resource: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+
+		const permissions = result.flatMap((r) =>
+			r.role.rolesPermissions.map((rp) => rp.permission)
+		);
+
+		for (const permission of permissions) {
+			if (!permission.action) continue;
+			if (!permission.resource) continue;
+
+			if (permission.resource !== resource.endpoint) continue;
+
+			const granted = resource.allowedActions.some(
+				(allowedAction) => permission.action === allowedAction
 			);
-
-		for (const role of roles) {
-			const permissions = await db
-				.select({
-					permission: referencesPermissionsTable,
-					rolePermission: referencesRolesPermissionsTable,
-				})
-				.from(referencesRolesPermissionsTable)
-				.innerJoin(
-					referencesPermissionsTable,
-					eq(
-						referencesRolesPermissionsTable.permissionId,
-						referencesPermissionsTable.id
-					)
-				)
-				.where(
-					and(
-						eq(
-							referencesRolesPermissionsTable.roleId,
-							role.references_roles.id
-						),
-						eq(referencesPermissionsTable.status, 'active')
-					)
-				);
-
-			for (const { permission } of permissions) {
-				if (!permission.action) continue;
-				if (!permission.resource) continue;
-
-				if (permission.resource !== resource.endpoint) continue;
-
-				const granted = resource.allowedActions.some(
-					(allowedAction) => permission.action === allowedAction
-				);
-				if (granted) {
-					return next();
-				}
+			if (granted) {
+				return next();
 			}
 		}
 		return res.status(403).json(generateErrorMessage('Access denied'));

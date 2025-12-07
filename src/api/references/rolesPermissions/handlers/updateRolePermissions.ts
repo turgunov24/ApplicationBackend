@@ -5,6 +5,59 @@ import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import { UpdateRolePermissionsPayload } from '../validators';
 
+/**
+ * @swagger
+ * /api/references/roles-permissions:
+ *   put:
+ *     summary: Update role permissions mapping for multiple roles
+ *     tags: [References - Roles Permissions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               values:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     roleId:
+ *                       type: integer
+ *                       description: Role ID to update
+ *                     permissionIds:
+ *                       type: array
+ *                       items:
+ *                         type: integer
+ *                       description: Array of new permission IDs for this role
+ *     responses:
+ *       200:
+ *         description: Updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
+
 export const updateRolePermissionsHandler = async (
 	req: Request<{}, {}, UpdateRolePermissionsPayload>,
 	res: Response
