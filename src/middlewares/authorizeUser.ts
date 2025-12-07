@@ -42,22 +42,19 @@ export const authorizeUser = async (
 			},
 		});
 
-		const permissions = result.flatMap((r) =>
-			r.role.rolesPermissions.map((rp) => rp.permission)
+		const permissions = result.flatMap(({ role }) =>
+			role.rolesPermissions.map((rp) => rp.permission)
 		);
 
 		for (const permission of permissions) {
 			if (!permission.action) continue;
-			if (!permission.resource) continue;
-
 			if (permission.resource !== resource.endpoint) continue;
 
-			const granted = resource.allowedActions.some(
+			const granted = resource.allowedActions.find(
 				(allowedAction) => permission.action === allowedAction
 			);
-			if (granted) {
-				return next();
-			}
+
+			if (granted) return next();
 		}
 		return res.status(403).json(generateErrorMessage('Access denied'));
 	} catch (error: unknown) {

@@ -18,11 +18,12 @@ import { authorizeUser } from '../../../middlewares/authorizeUser';
 
 const router = Router();
 
+router.use(parseUserFromToken, authorizeUser);
 // @ts-expect-error
-router.get('/', parseUserFromToken, authorizeUser, indexValidator, withValidationErrorsMiddleware, indexHandler);
-router.get('/counts-by-status', parseUserFromToken, authorizeUser, getCountsByStatusHandler);
+router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
+router.get('/counts-by-status', getCountsByStatusHandler);
 // @ts-expect-error
-router.get('/list', parseUserFromToken, authorizeUser, listValidator, withValidationErrorsMiddleware, listHandler);
+router.get('/list', listValidator, withValidationErrorsMiddleware, listHandler);
 router.post(
 	'/',
 	createValidator,

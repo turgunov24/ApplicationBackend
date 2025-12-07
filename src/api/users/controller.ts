@@ -18,6 +18,7 @@ import { MulterError } from 'multer';
 import { withValidationErrorsMiddleware } from '../../middlewares/withValidationErrors';
 import { parseUserFromToken } from '../../middlewares/parseUserFromToken';
 import { uploadAvatarHandler } from './handlers/uploadAvatar';
+import { authorizeUser } from '../../middlewares/authorizeUser';
 
 export const validationErrorHandler = (
 	req: Request,
@@ -88,7 +89,7 @@ export const validateFileRequired = (
 
 const router = Router();
 
-router.use(parseUserFromToken);
+router.use(parseUserFromToken, authorizeUser);
 
 router.get(
 	'/',

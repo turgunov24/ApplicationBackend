@@ -13,8 +13,12 @@ import { updateHandler } from './handlers/update';
 import { deleteHandler } from './handlers/delete';
 import { getCountsByStatusHandler } from './handlers/getCountsByStatus';
 import { listHandler } from './handlers/list';
+import { parseUserFromToken } from '../../../middlewares/parseUserFromToken';
+import { authorizeUser } from '../../../middlewares/authorizeUser';
 
 const router = Router();
+
+router.use(parseUserFromToken, authorizeUser);
 
 // @ts-expect-error
 router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
