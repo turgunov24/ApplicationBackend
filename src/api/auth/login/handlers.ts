@@ -78,7 +78,7 @@ export const loginHandler = async (
 		const user = await db.query.usersTable.findFirst({
 			where: eq(usersTable.username, username),
 			with: {
-				usersRoles: {
+				userRoles: {
 					with: {
 						role: {
 							with: {
@@ -128,7 +128,7 @@ export const loginHandler = async (
 			.set({ token: accessToken, status: 'active' })
 			.where(eq(usersTable.id, user.id));
 
-		const permissions = user.usersRoles.map(({ role }) =>
+		const permissions = user.userRoles.map(({ role }) =>
 			role.rolesPermissions.map(({ permission }) => ({
 				action: permission.action,
 				resource: permission.resource,

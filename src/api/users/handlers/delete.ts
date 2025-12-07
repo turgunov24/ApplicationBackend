@@ -4,6 +4,45 @@ import db from '../../../db';
 import { eq } from 'drizzle-orm';
 import { handleError } from '../../../utils/handleError';
 
+/**
+ * @swagger
+ * /api/users/delete:
+ *   delete:
+ *     summary: Soft-delete a user by setting its status to 'deleted'
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the user to delete
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,
 	res: Response

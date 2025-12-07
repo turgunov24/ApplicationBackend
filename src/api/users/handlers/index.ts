@@ -2,27 +2,138 @@ import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
 import { usersRolesTable } from '../../../db/schemas/usersRoles';
-import { eq, inArray, InferSelectModel, ne, or } from 'drizzle-orm';
+import { eq, exists, inArray, InferSelectModel, ne, or } from 'drizzle-orm';
 import { ilike } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
-import { desc } from 'drizzle-orm';
 import { handleError } from '../../../utils/handleError';
+import {
+	normalizePagination,
+	calculatePaginationMeta,
+} from '../../../utils/pagination';
+import { omit } from 'es-toolkit/compat';
+
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get users list or single user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: User ID to get single user
+ *       - in: query
+ *         name: currentPage
+ *         schema:
+ *           type: string
+ *           default: '0'
+ *         description: Current page number (0-based)
+ *       - in: query
+ *         name: dataPerPage
+ *         schema:
+ *           type: string
+ *           default: '5'
+ *         description: Number of items per page (max 100)
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for fullName or username
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, deleted, all]
+ *           default: all
+ *         description: Filter by status
+ *       - in: query
+ *         name: roles
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description: Filter by role IDs
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 result:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       fullName:
+ *                         type: string
+ *                       username:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       phone:
+ *                         type: string
+ *                       countryId:
+ *                         type: integer
+ *                       regionId:
+ *                         type: integer
+ *                       districtId:
+ *                         type: integer
+ *                       status:
+ *                         type: string
+ *                         enum: [active, deleted]
+ *                       avatarPath:
+ *                         type: string
+ *                         nullable: true
+ *                       roles:
+ *                         type: array
+ *                         items:
+ *                           type: integer
+ *                         description: Array of role IDs
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                     dataPerPage:
+ *                       type: integer
+ *                     totalData:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *                     hasNextPage:
+ *                       type: boolean
+ *                     hasPrevPage:
+ *                       type: boolean
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
 
 type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
-
-type ISortableFields = Pick<
-	InferSelectModel<typeof usersTable>,
-	'fullName' | 'username' | 'createdAt'
->;
 
 interface QueryParams {
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
-	sortBy?: keyof ISortableFields;
-	sortOrder?: 'asc' | 'desc';
 	status?: IStatuses['status'] | 'all';
 	id?: string;
 	roles: string[];
@@ -37,42 +148,36 @@ export const indexHandler = async (
 			currentPage = '0',
 			dataPerPage = '5',
 			search,
-			sortBy = 'createdAt',
-			sortOrder = 'desc',
 			status = 'all',
 			id,
 			roles,
 		} = req.query;
 
 		if (id) {
-			const user = await db
-				.select()
-				.from(usersTable)
-				.where(eq(usersTable.id, Number(id)));
+			const user = await db.query.usersTable.findFirst({
+				where: eq(usersTable.id, Number(id)),
+				with: {
+					userRoles: {
+						columns: {
+							roleId: true,
+						},
+					},
+				},
+			});
 
-			if (user[0]) {
-				// Get user's role IDs
-				const userRoles = await db
-					.select({ roleId: usersRolesTable.roleId })
-					.from(usersRolesTable)
-					.where(eq(usersRolesTable.userId, Number(id)));
-
-				const roles = userRoles.map((role) => role.roleId);
-
-				res.json({
-					...user[0],
-					roles,
+			if (user) {
+				return res.json({
+					...omit(user, [
+						'token',
+						'createdAt',
+						'updatedAt',
+						'password',
+						'userRoles',
+					]),
+					roles: user.userRoles.map((role) => role.roleId),
 				});
-			} else {
-				res.json(null);
 			}
-			return;
 		}
-
-		const _currentPage = Math.max(0, parseInt(currentPage));
-		const _dataPerPage = Math.min(100, Math.max(0, parseInt(dataPerPage)));
-
-		const offset = _currentPage * _dataPerPage;
 
 		const whereConditions = [];
 
@@ -95,12 +200,16 @@ export const indexHandler = async (
 		if (roles && roles.length > 0) {
 			const roleIds = roles.map((role) => Number(role));
 			whereConditions.push(
-				inArray(
-					usersTable.id,
+				exists(
 					db
-						.select({ userId: usersRolesTable.userId })
+						.select()
 						.from(usersRolesTable)
-						.where(inArray(usersRolesTable.roleId, roleIds))
+						.where(
+							and(
+								eq(usersRolesTable.userId, usersTable.id),
+								inArray(usersRolesTable.roleId, roleIds)
+							)
+						)
 				)
 			);
 		}
@@ -115,32 +224,44 @@ export const indexHandler = async (
 
 		const totalCount = totalCountResult[0].count;
 
-		const users = await db
-			.select()
-			.from(usersTable)
-			.where(and(whereClause))
-			.orderBy(
-				sortOrder === 'asc'
-					? asc(usersTable.createdAt)
-					: desc(usersTable.createdAt)
-			)
-			.limit(_dataPerPage)
-			.offset(offset);
+		const {
+			currentPage: _currentPage,
+			dataPerPage: _dataPerPage,
+			offset,
+		} = normalizePagination(currentPage, dataPerPage);
 
-		const totalPages = Math.ceil(totalCount / _dataPerPage);
-		const hasNextPage = _currentPage + 1 < totalPages;
-		const hasPrevPage = _currentPage > 0;
+		const pagination = calculatePaginationMeta(
+			_currentPage,
+			_dataPerPage,
+			totalCount
+		);
+
+		const users = await db.query.usersTable.findMany({
+			where: and(whereClause),
+			orderBy: asc(usersTable.createdAt),
+			limit: _dataPerPage,
+			offset: offset,
+			with: {
+				userRoles: {
+					columns: {
+						roleId: true,
+					},
+				},
+			},
+		});
 
 		res.json({
-			result: users,
-			pagination: {
-				currentPage: _currentPage,
-				dataPerPage: _dataPerPage,
-				totalData: totalCount,
-				totalPages: totalPages,
-				hasNextPage,
-				hasPrevPage,
-			},
+			result: users.map((user) => ({
+				...omit(user, [
+					'token',
+					'createdAt',
+					'updatedAt',
+					'password',
+					'userRoles',
+				]),
+				roles: user.userRoles.map((role) => role.roleId),
+			})),
+			pagination,
 		});
 	} catch (error: unknown) {
 		handleError(res, error);

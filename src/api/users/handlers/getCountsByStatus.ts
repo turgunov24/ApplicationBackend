@@ -2,11 +2,50 @@ import { Request, Response } from 'express';
 import db from '../../../db';
 import { usersTable, statuses } from '../../../db/schemas/users';
 import { eq, count, ne } from 'drizzle-orm';
-import { generateErrorMessage } from '../../../utils/generateErrorMessage';
+import { handleError } from '../../../utils/handleError';
+
+/**
+ * @swagger
+ * /api/users/counts-by-status:
+ *   get:
+ *     summary: Get counts of users by status (and total count)
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 all:
+ *                   type: integer
+ *                   description: Total count of all users (excluding deleted)
+ *                 active:
+ *                   type: integer
+ *                   description: Count of active users
+ *                 deleted:
+ *                   type: integer
+ *                   description: Count of deleted users
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
 
 export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 	try {
-		// Get total count
+		// Get total count (excluding deleted)
 		const totalCountResult = await db
 			.select({ count: count() })
 			.from(usersTable)
@@ -30,10 +69,6 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 
 		res.json(statusCounts);
 	} catch (error: unknown) {
-		if (error instanceof Error) {
-			res.status(500).json(generateErrorMessage(error.message));
-		} else {
-			res.status(500).json(generateErrorMessage('Internal server error'));
-		}
+		handleError(res, error);
 	}
 };

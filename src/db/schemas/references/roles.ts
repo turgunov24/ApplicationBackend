@@ -20,6 +20,6 @@ export const referenceRolesRelations = relations(
 	referencesRolesTable,
 	({ many }) => ({
 		rolesPermissions: many(referencesRolesPermissionsTable),
-		rolesUsers: many(usersRolesTable),
+		roleUsers: many(usersRolesTable),
 	})
 );

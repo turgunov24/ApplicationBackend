@@ -7,6 +7,85 @@ import bcrypt from 'bcryptjs';
 import { handleError } from '../../../utils/handleError';
 import { usersRolesTable } from '../../../db/schemas';
 
+/**
+ * @swagger
+ * /api/users/update:
+ *   put:
+ *     summary: Update an existing user
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - fullName
+ *               - username
+ *               - roles
+ *             properties:
+ *               fullName:
+ *                 type: string
+ *                 description: User's full name
+ *               username:
+ *                 type: string
+ *                 description: Username for login
+ *               password:
+ *                 type: string
+ *                 description: User's password (optional for update)
+ *               email:
+ *                 type: string
+ *                 description: User's email
+ *               phone:
+ *                 type: string
+ *                 description: User's phone number
+ *               countryId:
+ *                 type: integer
+ *                 description: Country ID
+ *               regionId:
+ *                 type: integer
+ *                 description: Region ID
+ *               districtId:
+ *                 type: integer
+ *                 description: District ID
+ *               roles:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 description: Array of role IDs
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ */
+
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
 	res: Response
