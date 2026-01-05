@@ -44,6 +44,8 @@ import { pick } from 'es-toolkit/object';
  *                       type: string
  *                     username:
  *                       type: string
+ *                     email:
+ *                       type: string
  *                 permissions:
  *                   type: array
  *                   items:
@@ -136,7 +138,7 @@ export const loginHandler = async (
 		);
 		return res.status(200).json({
 			accessToken,
-			user: pick(user, ['fullName', 'username']),
+			user: pick(user, ['fullName', 'username', 'email']),
 			permissions: permissions.flat(),
 		});
 	} catch (error: unknown) {

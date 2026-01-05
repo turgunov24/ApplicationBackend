@@ -29,7 +29,8 @@ import referencesResourcesRouter from './api/references/resources/controller';
 import swaggerRouter from './api/swagger/index';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3003;
+console.log("🚀 ~ port:", port)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
