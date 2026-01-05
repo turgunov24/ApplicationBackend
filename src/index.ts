@@ -32,18 +32,18 @@ const app = express();
 const port = process.env.PORT || 3003;
 console.log("🚀 ~ port:", port)
 
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// app.use(
-// 	cors({
-// 		origin: '*',
-// 		credentials: true,
-// 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-// 	})
-// );
+app.use(
+	cors({
+		origin: '*',
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	})
+);
 
-// app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -51,23 +51,23 @@ app.get('/', (req, res) => {
 });
 
 // // Use users router
-// app.use(USERS_CONTROLLER, usersRouter);
-// app.use(AUTH_CONTROLLER, authRouter);
-// app.use(REFERENCES_COUNTRIES_CONTROLLER, referencesCountriesRouter);
-// app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);
-// app.use(REFERENCES_DISTRICTS_CONTROLLER, referencesDistrictsRouter);
-// app.use(
-// 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
-// 	referencesPermissionGroupsRouter
-// );
-// app.use(REFERENCES_PERMISSIONS_CONTROLLER, referencesPermissionsRouter);
-// app.use(REFERENCES_ROLES_CONTROLLER, referencesRolesRouter);
-// app.use(
-// 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
-// 	referencesRolesPermissionsRouter
-// );
-// app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
-// app.use('/swagger', swaggerRouter);
+app.use(USERS_CONTROLLER, usersRouter);
+app.use(AUTH_CONTROLLER, authRouter);
+app.use(REFERENCES_COUNTRIES_CONTROLLER, referencesCountriesRouter);
+app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);
+app.use(REFERENCES_DISTRICTS_CONTROLLER, referencesDistrictsRouter);
+app.use(
+	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
+	referencesPermissionGroupsRouter
+);
+app.use(REFERENCES_PERMISSIONS_CONTROLLER, referencesPermissionsRouter);
+app.use(REFERENCES_ROLES_CONTROLLER, referencesRolesRouter);
+app.use(
+	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
+	referencesRolesPermissionsRouter
+);
+app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
+app.use('/swagger', swaggerRouter);
 // Start the server
 app.listen(port, () => {
 	logger.info(`Server is running on http://localhost:${port}`);
