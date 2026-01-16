@@ -1,9 +1,6 @@
-import { Router } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import path from 'path';
-
-const router = Router();
 
 export const swaggerSpec = swaggerJSDoc({
 	definition: {
@@ -21,11 +18,13 @@ export const swaggerSpec = swaggerJSDoc({
 		],
 	},
 	apis: [
-		path.join(__dirname, '../**/*.ts'),
-		path.join(__dirname, '../**/*.js'),
-	], // Paths to files containing Swagger annotations
+		path.join(__dirname, '../**/handlers/*.ts'),
+		path.join(__dirname, '../**/handlers/*.js'),
+		path.join(__dirname, '../**/handlers.ts'),
+		path.join(__dirname, '../**/handlers.js'),
+	], // Paths to files containing Swagger annotations - only matching specific handler files
 });
 
-router.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
-export default router;
+// Export serve and setup for direct mounting on app
+export const swaggerServe = swaggerUi.serve;
+export const swaggerSetup = swaggerUi.setup(swaggerSpec);

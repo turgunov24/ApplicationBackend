@@ -5,17 +5,13 @@
 	"type": "commonjs",
 	"scripts": {
 		"dev": "nodemon",
-		"start": "ts-node src/index.ts",
+		"start": "node dist/index.js",
 		"generate": "npx drizzle-kit generate",
 		"migrate": "npx drizzle-kit migrate",
 		"studio": "npx drizzle-kit studio",
 		"seed": "ts-node src/db/seed/index.ts",
-		"build": "rm -rf dist && esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp",
-		"build:watch": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp --watch",
-		"build:clean": "rm -rf dist",
-		"start:prod": "node dist/index.js",
-		"dev:build": "ts-node-dev --respawn --transpile-only src/index.ts",
-		"dev:render": "ts-node-dev --respawn --transpile-only src/index.ts && node dist/index.js"
+		"build": "rm -rf dist && esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --format=cjs --external:pg-native --external:bcrypt --external:sharp --external:swagger-ui-express --external:swagger-jsdoc --external:swagger-ui-dist",
+		"clean": "rm -rf dist"
 	},
 	"keywords": [],
 	"author": "",

@@ -1,2 +1,0 @@
-createdb -h localhost -p 5432 -U postgres test3
-psql -h localhost -p 5432 -U postgres -d test3
