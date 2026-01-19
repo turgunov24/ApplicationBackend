@@ -11,7 +11,7 @@ import { AuthenticatedUser } from '../types/auth';
 export const parseUserFromToken = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
+	next: NextFunction,
 ) => {
 	if (process.env.SKIP_AUTH === 'true') return next();
 

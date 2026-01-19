@@ -6,6 +6,7 @@ import { CreatePayload } from '../validators';
 import bcrypt from 'bcryptjs';
 import { handleError } from '../../../utils/handleError';
 import { usersRolesTable } from '../../../db/schemas';
+import { notifyPermissionUpdate } from '../../../websocket';
 
 /**
  * @swagger
@@ -91,10 +92,9 @@ import { usersRolesTable } from '../../../db/schemas';
  *         description: User not found
  */
 
-
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { id } = req.query;
@@ -156,6 +156,9 @@ export const updateHandler = async (
 		}));
 
 		await db.insert(usersRolesTable).values(userRoles);
+
+		// Notify user about permission update via WebSocket
+		notifyPermissionUpdate(Number(id));
 
 		res.json({ message: 'User updated successfully', id: user[0].id });
 	} catch (error: unknown) {

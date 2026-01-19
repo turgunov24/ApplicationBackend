@@ -4,6 +4,8 @@ import { referencesRolesPermissionsTable } from '../../../../db/schemas/referenc
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import { UpdateRolePermissionsPayload } from '../validators';
+import { usersRolesTable } from '../../../../db/schemas';
+import { notifyUsersPermissionUpdate } from '../../../../websocket';
 
 /**
  * @swagger
@@ -57,10 +59,9 @@ import { UpdateRolePermissionsPayload } from '../validators';
  *                         type: string
  */
 
-
 export const updateRolePermissionsHandler = async (
 	req: Request<{}, {}, UpdateRolePermissionsPayload>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { values } = req.body;
@@ -93,6 +94,15 @@ export const updateRolePermissionsHandler = async (
 					.values(newRolePermissions);
 			}
 		});
+
+		// Find all users who have these roles and notify them
+		const usersWithRoles = await db
+			.select({ userId: usersRolesTable.userId })
+			.from(usersRolesTable)
+			.where(inArray(usersRolesTable.roleId, roleIds));
+
+		const affectedUserIds = [...new Set(usersWithRoles.map((u) => u.userId))];
+		notifyUsersPermissionUpdate(affectedUserIds);
 
 		res.json({
 			message: 'Role permissions updated successfully',

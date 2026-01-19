@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import http from 'http';
 import usersRouter from './api/users/controller';
 import {
 	AUTH_CONTROLLER,
@@ -27,8 +28,10 @@ import referencesRolesRouter from './api/references/roles/controller';
 import referencesRolesPermissionsRouter from './api/references/rolesPermissions/controller';
 import referencesResourcesRouter from './api/references/resources/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
+import { initializeWebSocket } from './websocket';
 
 const app = express();
+const server = http.createServer(app);
 const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,7 +41,7 @@ app.use(
 		origin: '*',
 		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-	})
+	}),
 );
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -56,17 +59,19 @@ app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);
 app.use(REFERENCES_DISTRICTS_CONTROLLER, referencesDistrictsRouter);
 app.use(
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
-	referencesPermissionGroupsRouter
+	referencesPermissionGroupsRouter,
 );
 app.use(REFERENCES_PERMISSIONS_CONTROLLER, referencesPermissionsRouter);
 app.use(REFERENCES_ROLES_CONTROLLER, referencesRolesRouter);
 app.use(
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
-	referencesRolesPermissionsRouter
+	referencesRolesPermissionsRouter,
 );
 app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
+
 // Start the server
-app.listen(port, () => {
+server.listen(port, () => {
 	logger.info(`Server is running on http://localhost:${port}`);
+	initializeWebSocket(server);
 });
