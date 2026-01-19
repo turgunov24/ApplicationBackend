@@ -21,6 +21,7 @@ interface JwtPayload {
 
 export function initializeWebSocket() {
 	const wsPort = process.env.WS_PORT || 3006;
+	console.log("🚀 ~ initializeWebSocket ~ wsPort:", wsPort)
 	const wsServer = http.createServer();
 	wss = new WebSocketServer({ server: wsServer });
 
