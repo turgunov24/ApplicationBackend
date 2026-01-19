@@ -1,5 +1,5 @@
 import { WebSocketServer, WebSocket } from 'ws';
-import { Server } from 'http';
+import http from 'http';
 import { logger } from '../utils/logger';
 import jwt from 'jsonwebtoken';
 
@@ -19,8 +19,14 @@ interface JwtPayload {
 	email: string;
 }
 
-export function initializeWebSocket(server: Server) {
-	wss = new WebSocketServer({ server });
+export function initializeWebSocket() {
+	const wsPort = process.env.WS_PORT || 3006;
+	const wsServer = http.createServer();
+	wss = new WebSocketServer({ server: wsServer });
+
+	wsServer.listen(wsPort, () => {
+		logger.info(`WebSocket server is running on port ${wsPort}`);
+	});
 
 	wss.on('connection', (ws: WebSocket, req) => {
 		logger.info('New WebSocket connection');
