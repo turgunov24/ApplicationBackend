@@ -4,7 +4,9 @@ import http from 'http';
 import usersRouter from './api/users/controller';
 import {
 	AUTH_CONTROLLER,
+	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
+	REFERENCES_CURRENCIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 	REFERENCES_PERMISSIONS_CONTROLLER,
@@ -12,6 +14,7 @@ import {
 	REFERENCES_RESOURCES_CONTROLLER,
 	REFERENCES_ROLES_CONTROLLER,
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
+	REFERENCES_TARIFFS_CONTROLLER,
 	USERS_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
@@ -27,6 +30,9 @@ import referencesPermissionsRouter from './api/references/permissions/controller
 import referencesRolesRouter from './api/references/roles/controller';
 import referencesRolesPermissionsRouter from './api/references/rolesPermissions/controller';
 import referencesResourcesRouter from './api/references/resources/controller';
+import referencesCurrenciesRouter from './api/references/currencies/controller';
+import referencesClientTypesRouter from './api/references/clientTypes/controller';
+import referencesTariffsRouter from './api/references/tariffs/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -68,6 +74,9 @@ app.use(
 	referencesRolesPermissionsRouter,
 );
 app.use(REFERENCES_RESOURCES_CONTROLLER, referencesResourcesRouter);
+app.use(REFERENCES_CURRENCIES_CONTROLLER, referencesCurrenciesRouter);
+app.use(REFERENCES_CLIENT_TYPES_CONTROLLER, referencesClientTypesRouter);
+app.use(REFERENCES_TARIFFS_CONTROLLER, referencesTariffsRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

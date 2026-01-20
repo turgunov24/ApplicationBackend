@@ -9,14 +9,16 @@ import { generateErrorMessage } from '../utils/generateErrorMessage';
 export const authorizeUser = async (
 	req: Request,
 	res: Response,
-	next: NextFunction
+	next: NextFunction,
 ) => {
 	try {
 		if (process.env.SKIP_AUTH === 'true') return next();
 
 		const { user, baseUrl } = req;
+		console.log("🚀 ~ authorizeUser ~ baseUrl:", baseUrl)
 
 		const resource = resources.find((r) => r.endpoint === baseUrl);
+		console.log("🚀 ~ authorizeUser ~ resources:", resources)
 
 		if (!resource) {
 			return res.status(400).json(generateErrorMessage('Resource not found'));
@@ -43,7 +45,7 @@ export const authorizeUser = async (
 		});
 
 		const permissions = result.flatMap(({ role }) =>
-			role.rolesPermissions.map((rp) => rp.permission)
+			role.rolesPermissions.map((rp) => rp.permission),
 		);
 
 		for (const permission of permissions) {
@@ -51,7 +53,7 @@ export const authorizeUser = async (
 			if (permission.resource !== resource.endpoint) continue;
 
 			const granted = resource.allowedActions.find(
-				(allowedAction) => permission.action === allowedAction
+				(allowedAction) => permission.action === allowedAction,
 			);
 
 			if (granted) return next();

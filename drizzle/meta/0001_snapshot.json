@@ -1,9 +1,63 @@
 {
-  "id": "a6b6d262-0950-4854-90e4-a83aad929715",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "90da88ff-405b-404e-a16a-063aa5941ebc",
+  "prevId": "a6b6d262-0950-4854-90e4-a83aad929715",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.references_client_types": {
+      "name": "references_client_types",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nameUz": {
+          "name": "nameUz",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'client_type_name_uz'"
+        },
+        "nameRu": {
+          "name": "nameRu",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'client_type_name_ru'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.references_countries": {
       "name": "references_countries",
       "schema": "",

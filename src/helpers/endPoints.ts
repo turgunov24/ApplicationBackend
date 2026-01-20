@@ -10,3 +10,7 @@ export const REFERENCES_ROLES_CONTROLLER = '/api/references/roles';
 export const REFERENCES_ROLES_PERMISSIONS_CONTROLLER =
 	'/api/references/roles-permissions';
 export const REFERENCES_RESOURCES_CONTROLLER = '/api/references/resources';
+export const REFERENCES_CURRENCIES_CONTROLLER = '/api/references/currencies';
+export const REFERENCES_CLIENT_TYPES_CONTROLLER =
+	'/api/references/client-types';
+export const REFERENCES_TARIFFS_CONTROLLER = '/api/references/tariffs';

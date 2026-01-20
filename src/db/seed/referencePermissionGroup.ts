@@ -16,14 +16,26 @@ export const permissionGroups: Array<
 	},
 	{
 		nameUz: "Viloyatlar ma'lumotnomalari",
-		nameRu: 'Вилоятлар маълумотномалари',	
+		nameRu: 'Вилоятлар маълумотномалари',
 	},
 	{
 		nameUz: "Tumanlar ma'lumotnomalari",
-		nameRu: 'Туманлар маълумотномалари',	
+		nameRu: 'Туманлар маълумотномалари',
 	},
 	{
-		nameUz: "Adminga aloqador ruxsatlar",
-		nameRu: 'Админга алоқадор рухсатлар',	
-	}
+		nameUz: 'Adminga aloqador ruxsatlar',
+		nameRu: 'Админга алоқадор рухсатлар',
+	},
+	{
+		nameUz: "Valyutalar ma'lumotnomalari",
+		nameRu: 'Валюталар маълумотномалари',
+	},
+	{
+		nameUz: "Mijoz turlari ma'lumotnomalari",
+		nameRu: 'Мижоз турлари маълумотномалари',
+	},
+	{
+		nameUz: "Tariflar ma'lumotnomalari",
+		nameRu: 'Тарифлар маълумотномалари',
+	},
 ];

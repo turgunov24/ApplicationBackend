@@ -1,6 +1,9 @@
 import { InferSelectModel } from 'drizzle-orm';
 import * as schemas from '../../schemas/index';
 import { countriesPermissions } from './countries';
+import { clientTypesPermissions } from './clientTypes';
+import { currenciesPermissions } from './currencies';
+import { tariffsPermissions } from './tariffs';
 import { districtsPermissions } from './districts';
 import { regionsPermissions } from './regions';
 import { rolesPermissions } from './roles';
@@ -16,7 +19,10 @@ export const permissions: Array<
 		'nameRu' | 'nameUz' | 'resource' | 'action'
 	>
 > = [
+	...clientTypesPermissions,
 	...countriesPermissions,
+	...currenciesPermissions,
+	...tariffsPermissions,
 	...districtsPermissions,
 	...regionsPermissions,
 	...rolesPermissions,

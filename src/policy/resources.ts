@@ -7,10 +7,16 @@ import referencesPermissionGroupsResources from '../api/references/permissionGro
 import referencesRolesPermissionsResources from '../api/references/rolesPermissions/resources';
 import usersResources from '../api/users/resources';
 import referencesResources from '../api/references/resources/resources';
+import referencesCurrenciesResources from '../api/references/currencies/resources';
+import referencesClientTypesResources from '../api/references/clientTypes/resources';
+import referencesTariffsResources from '../api/references/tariffs/resources';
 
 const resources = [
+	...referencesClientTypesResources,
 	...referencesCountriesResources,
+	...referencesCurrenciesResources,
 	...referencesDistrictsResources,
+	...referencesTariffsResources,
 	...referencesPermissionGroupsResources,
 	...referencesPermissionsResources,
 	...referencesRegionsResources,

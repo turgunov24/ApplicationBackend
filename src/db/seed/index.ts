@@ -9,7 +9,9 @@ import { roles } from './referenceRoles';
 import { permissionGroups } from './referencePermissionGroup';
 import { permissions } from './referencePermissions';
 import {
+	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
+	REFERENCES_CURRENCIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 	REFERENCES_PERMISSIONS_CONTROLLER,
@@ -17,6 +19,7 @@ import {
 	REFERENCES_RESOURCES_CONTROLLER,
 	REFERENCES_ROLES_CONTROLLER,
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
+	REFERENCES_TARIFFS_CONTROLLER,
 	USERS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
@@ -79,8 +82,8 @@ async function main() {
 					.where(
 						eq(
 							schemas.referencesPermissionGroupsTable.nameUz,
-							"Mamlakatlar ma'lumotnomalari"
-						)
+							"Mamlakatlar ma'lumotnomalari",
+						),
 					);
 
 				await db.insert(schemas.referencesPermissionsTable).values({
@@ -101,8 +104,8 @@ async function main() {
 					.where(
 						eq(
 							schemas.referencesPermissionGroupsTable.nameUz,
-							"Viloyatlar ma'lumotnomalari"
-						)
+							"Viloyatlar ma'lumotnomalari",
+						),
 					);
 
 				await db.insert(schemas.referencesPermissionsTable).values({
@@ -123,8 +126,74 @@ async function main() {
 					.where(
 						eq(
 							schemas.referencesPermissionGroupsTable.nameUz,
-							"Tumanlar ma'lumotnomalari"
-						)
+							"Tumanlar ma'lumotnomalari",
+						),
+					);
+
+				await db.insert(schemas.referencesPermissionsTable).values({
+					nameRu: permission.nameRu,
+					nameUz: permission.nameUz,
+					resource: permission.resource,
+					action: permission.action,
+					permissionGroupId: permissionGroup[0].id,
+				});
+
+				continue;
+			}
+
+			if (permission.resource.startsWith(REFERENCES_CURRENCIES_CONTROLLER)) {
+				const permissionGroup = await db
+					.select()
+					.from(schemas.referencesPermissionGroupsTable)
+					.where(
+						eq(
+							schemas.referencesPermissionGroupsTable.nameUz,
+							"Valyutalar ma'lumotnomalari",
+						),
+					);
+
+				await db.insert(schemas.referencesPermissionsTable).values({
+					nameRu: permission.nameRu,
+					nameUz: permission.nameUz,
+					resource: permission.resource,
+					action: permission.action,
+					permissionGroupId: permissionGroup[0].id,
+				});
+
+				continue;
+			}
+
+			if (permission.resource.startsWith(REFERENCES_CLIENT_TYPES_CONTROLLER)) {
+				const permissionGroup = await db
+					.select()
+					.from(schemas.referencesPermissionGroupsTable)
+					.where(
+						eq(
+							schemas.referencesPermissionGroupsTable.nameUz,
+							"Mijoz turlari ma'lumotnomalari",
+						),
+					);
+
+				await db.insert(schemas.referencesPermissionsTable).values({
+					nameRu: permission.nameRu,
+					nameUz: permission.nameUz,
+					resource: permission.resource,
+					action: permission.action,
+					permissionGroupId: permissionGroup[0].id,
+				});
+
+				continue;
+			}
+
+			if (permission.resource.startsWith(REFERENCES_TARIFFS_CONTROLLER)) {
+				const permissionGroup = await db
+					.select()
+					.from(schemas.referencesPermissionGroupsTable)
+					.where(
+						eq(
+							schemas.referencesPermissionGroupsTable.nameUz,
+							"Tariflar ma'lumotnomalari",
+						),
 					);
 
 				await db.insert(schemas.referencesPermissionsTable).values({
@@ -142,10 +211,12 @@ async function main() {
 				permission.resource.startsWith(USERS_CONTROLLER) ||
 				permission.resource.startsWith(REFERENCES_PERMISSIONS_CONTROLLER) ||
 				permission.resource.startsWith(
-					REFERENCES_PERMISSION_GROUPS_CONTROLLER
+					REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 				) ||
 				permission.resource.startsWith(REFERENCES_ROLES_CONTROLLER) ||
-				permission.resource.startsWith(REFERENCES_ROLES_PERMISSIONS_CONTROLLER) ||
+				permission.resource.startsWith(
+					REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
+				) ||
 				permission.resource.startsWith(REFERENCES_RESOURCES_CONTROLLER)
 			) {
 				const permissionGroup = await db
@@ -154,8 +225,8 @@ async function main() {
 					.where(
 						eq(
 							schemas.referencesPermissionGroupsTable.nameUz,
-							'Adminga aloqador ruxsatlar'
-						)
+							'Adminga aloqador ruxsatlar',
+						),
 					);
 
 				await db.insert(schemas.referencesPermissionsTable).values({
@@ -190,7 +261,7 @@ async function main() {
 					allPermissions.map((permission) => ({
 						roleId: newRole[0].id,
 						permissionId: permission.id,
-					}))
+					})),
 				);
 			}
 
@@ -201,13 +272,13 @@ async function main() {
 							if (permission.action === ResourceActions.READ) {
 								if (
 									permission.resource.startsWith(
-										REFERENCES_COUNTRIES_CONTROLLER
+										REFERENCES_COUNTRIES_CONTROLLER,
 									) ||
 									permission.resource.startsWith(
-										REFERENCES_REGIONS_CONTROLLER
+										REFERENCES_REGIONS_CONTROLLER,
 									) ||
 									permission.resource.startsWith(
-										REFERENCES_DISTRICTS_CONTROLLER
+										REFERENCES_DISTRICTS_CONTROLLER,
 									)
 								) {
 									return true;
@@ -218,7 +289,7 @@ async function main() {
 						.map((permission) => ({
 							roleId: newRole[0].id,
 							permissionId: permission.id,
-						}))
+						})),
 				);
 			}
 		}
@@ -294,7 +365,7 @@ async function main() {
 					email: newUser[0].email,
 				},
 				secret,
-				{ expiresIn: '1h' }
+				{ expiresIn: '1h' },
 			);
 
 			await db

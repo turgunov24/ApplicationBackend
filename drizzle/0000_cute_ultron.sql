@@ -7,6 +7,15 @@ CREATE TABLE "references_countries" (
 	"status" text DEFAULT 'active' NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "references_currencies" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"nameUz" varchar(255) DEFAULT 'currency_name_uz' NOT NULL,
+	"nameRu" varchar(255) DEFAULT 'currency_name_ru' NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
+	"status" text DEFAULT 'active' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "references_districts" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"nameUz" varchar(255) DEFAULT 'district_name_uz' NOT NULL,
