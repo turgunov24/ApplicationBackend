@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { CreatePayload } from '../validators';
 import bcrypt from 'bcryptjs';
 import { handleError } from '../../../utils/handleError';
+import { generateErrorMessage } from '../../../utils/generateErrorMessage'
 
 /**
  * @swagger
@@ -101,10 +102,9 @@ import { handleError } from '../../../utils/handleError';
  *                         type: string
  */
 
-
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -119,11 +119,18 @@ export const createHandler = async (
 			roles,
 		} = req.body;
 
+		const userId = req.user?.id;
+
+		if (!userId) {
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+		}
+
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		const result = await db
 			.insert(usersTable)
 			.values({
+				createdBy: userId,
 				fullName,
 				username,
 				password: hashedPassword,

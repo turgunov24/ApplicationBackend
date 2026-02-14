@@ -32,6 +32,7 @@ export const usersTable = pgTable('users', {
 	avatarPath: text('avatar_path'),
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
+	createdBy: integer('created_by').notNull(),
 });
 
 export const usersRelations = relations(usersTable, ({ many }) => ({

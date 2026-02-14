@@ -2,7 +2,6 @@ import { text } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { referencesRegionsTable } from './regions';
-import db from '../..';
 
 export const statuses = ['active', 'deleted'] as const;
 
