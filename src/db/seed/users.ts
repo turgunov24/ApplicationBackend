@@ -38,7 +38,7 @@ export const users: Array<
 	{
 		id: 2,
 		createdBy: 1,
-		username: 'admin',
+		username: 'admin1',
 		fullName: 'Admin Adminovich Adminov',
 		email: 'admin@gmail.com',
 		phone: '998937334337',
@@ -48,6 +48,17 @@ export const users: Array<
 	},
 	{
 		id: 3,
+		createdBy: 1,
+		username: 'admin2',
+		fullName: 'Admin Adminovich Adminov 2',
+		email: 'admin2@gmail.com',
+		phone: '998937334339',
+		password: 'admin1234',
+		districtName: 'Abayskiy tumani',
+		roleName: roleNamesForSeeding.ADMIN,
+	},
+	{
+		id: 4,
 		createdBy: 2,
 		username: 'user',
 		fullName: 'User Userovich Userov',

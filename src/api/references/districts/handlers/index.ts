@@ -1,16 +1,19 @@
-import { Request, Response } from 'express'
-import { eq, InferSelectModel, ne, or } from 'drizzle-orm'
-import { ilike } from 'drizzle-orm'
-import { and } from 'drizzle-orm'
-import { count } from 'drizzle-orm'
-import { asc } from 'drizzle-orm'
-import { referencesDistrictsTable } from '../../../../db/schemas/references/districts'
-import db from '../../../../db'
-import { handleError } from '../../../../utils/handleError'
+import { Request, Response } from 'express';
+import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
+import { ilike } from 'drizzle-orm';
+import { and } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
+import { referencesDistrictsTable } from '../../../../db/schemas/references/districts';
+import db from '../../../../db';
+import { handleError } from '../../../../utils/handleError';
 import {
 	normalizePagination,
 	calculatePaginationMeta,
-} from '../../../../utils/pagination'
+} from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -115,6 +118,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -124,7 +128,7 @@ interface QueryParams {
 
 export const indexHandler = async (
 	req: Request<{}, {}, {}, QueryParams>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -135,6 +139,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const district = await db.query.referencesDistrictsTable.findFirst({
 				where: eq(referencesDistrictsTable.id, Number(id)),
@@ -144,6 +153,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesDistrictsTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesDistrictsTable.status, status));
@@ -156,8 +169,8 @@ export const indexHandler = async (
 			whereConditions.push(
 				or(
 					ilike(referencesDistrictsTable.nameUz, searchTerm),
-					ilike(referencesDistrictsTable.nameRu, searchTerm)
-				)
+					ilike(referencesDistrictsTable.nameRu, searchTerm),
+				),
 			);
 		}
 
@@ -181,7 +194,7 @@ export const indexHandler = async (
 		const pagination = calculatePaginationMeta(
 			_currentPage,
 			_dataPerPage,
-			totalCount
+			totalCount,
 		);
 
 		const districts = await db

@@ -2,6 +2,9 @@ import { referencesRolesTable } from '../../../db/schemas/references/roles';
 import { checkSchema, ParamSchema } from 'express-validator';
 import { eq, InferInsertModel } from 'drizzle-orm';
 import db from '../../../db';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesRolesTable>,
@@ -22,7 +25,7 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const role = await db
 						.select()
@@ -30,6 +33,13 @@ const indexSchema: DeleteValidationSchema = {
 						.where(eq(referencesRolesTable.id, value));
 
 					if (!role.length) throw new Error('Role not found');
+
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (role[0].createdBy !== userId)
+						throw new Error('You are not allowed to modify this role');
 				}
 
 				return true;
@@ -44,7 +54,7 @@ const listSchema: ListValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const role = await db
 						.select()
@@ -52,6 +62,13 @@ const listSchema: ListValidationSchema = {
 						.where(eq(referencesRolesTable.id, value));
 
 					if (!role.length) throw new Error('Role not found');
+
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (role[0].createdBy !== userId)
+						throw new Error('You are not allowed to view this role');
 				}
 
 				return true;
@@ -67,13 +84,20 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Role id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const role = await db
 					.select()
 					.from(referencesRolesTable)
 					.where(eq(referencesRolesTable.id, value));
 
 				if (!role.length) throw new Error('Role not found');
+
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (role[0].createdBy !== userId)
+					throw new Error('You are not allowed to delete this role');
 
 				return true;
 			},

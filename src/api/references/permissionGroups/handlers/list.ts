@@ -5,7 +5,10 @@ import {
 	referencesPermissionsTable,
 } from '../../../../db/schemas';
 import { handleError } from '../../../../utils/handleError';
-import { asc, ne } from 'drizzle-orm';
+import { and, asc, eq, ne } from 'drizzle-orm';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -58,25 +61,41 @@ import { asc, ne } from 'drizzle-orm';
 
 export const listHandler = async (req: Request, res: Response) => {
 	try {
-		const permissionGroups = await db.query.referencesPermissionGroupsTable.findMany({
-			where: ne(referencesPermissionGroupsTable.status, 'deleted'),
-			orderBy: asc(referencesPermissionGroupsTable.createdAt),
-			columns: {
-				id: true,
-				nameUz: true,
-				nameRu: true,
-			},
-			with: {
-				permissions: {
-					where: ne(referencesPermissionsTable.status, 'deleted'),
-					columns: {
-						id: true,
-						nameUz: true,
-						nameRu: true,
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
+		const whereConditions = [
+			ne(referencesPermissionGroupsTable.status, 'deleted'),
+		];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(
+				eq(referencesPermissionGroupsTable.createdBy, userId),
+			);
+		}
+
+		const permissionGroups =
+			await db.query.referencesPermissionGroupsTable.findMany({
+				where: and(...whereConditions),
+				orderBy: asc(referencesPermissionGroupsTable.createdAt),
+				columns: {
+					id: true,
+					nameUz: true,
+					nameRu: true,
+				},
+				with: {
+					permissions: {
+						where: ne(referencesPermissionsTable.status, 'deleted'),
+						columns: {
+							id: true,
+							nameUz: true,
+							nameRu: true,
+						},
 					},
 				},
-			},
-		});
+			});
 
 		res.json(permissionGroups);
 	} catch (error) {

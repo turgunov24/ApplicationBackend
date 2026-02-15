@@ -95,7 +95,6 @@ router.get(
 	'/',
 	indexValidator,
 	withValidationErrorsMiddleware,
-	// @ts-expect-error
 	indexHandler
 );
 

@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
-import { ne } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { referencesRolesTable } from '../../../../db/schemas/references/roles';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config'
 
 /**
  * @swagger
@@ -46,11 +49,23 @@ import { handleError } from '../../../../utils/handleError';
 
 export const getRolePermissionsHandler = async (
 	req: Request,
-	res: Response
+	res: Response,
 ) => {
 	try {
+		const userId = getAuthUserId(req);
+
+		if (!userId) {
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+		}
+
+		const whereConditions = [ne(referencesRolesTable.status, 'deleted')];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesRolesTable.createdBy, userId));
+		}
+
 		const roles = await db.query.referencesRolesTable.findMany({
-			where: ne(referencesRolesTable.status, 'deleted'),
+			where: and(...whereConditions),
 			columns: {
 				id: true,
 			},
@@ -67,7 +82,7 @@ export const getRolePermissionsHandler = async (
 			roles.map((role) => ({
 				id: role.id,
 				permissions: role.rolesPermissions.map((rp) => rp.permissionId),
-			}))
+			})),
 		);
 	} catch (error: unknown) {
 		handleError(res, error);

@@ -1,0 +1,2 @@
+ALTER TABLE "references_client_types" ADD COLUMN "created_by" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "references_client_types" ADD CONSTRAINT "references_client_types_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

@@ -4,6 +4,9 @@ import { referencesPermissionsTable } from '../../../../db/schemas';
 import { handleError } from '../../../../utils/handleError';
 import { and, asc, eq, ne } from 'drizzle-orm';
 import { ListValidationSchema } from '../validators';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -51,33 +54,40 @@ import { ListValidationSchema } from '../validators';
  *                         type: string
  */
 
+interface QueryParams {
+	[key: string]: string | undefined;
+	permissionGroupId?: string;
+}
+
 export const listHandler = async (
-	req: Request<{}, {}, {}, ListValidationSchema>,
-	res: Response
+	req: Request<{}, {}, {}, QueryParams>,
+	res: Response,
 ) => {
 	try {
 		const { permissionGroupId } = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
+		const whereConditions = [ne(referencesPermissionsTable.status, 'deleted')];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesPermissionsTable.createdBy, userId));
+		}
+
 		if (permissionGroupId) {
-			const permissions = await db.query.referencesPermissionsTable.findMany({
-				where: and(
-					ne(referencesPermissionsTable.status, 'deleted'),
-					eq(referencesPermissionsTable.permissionGroupId, Number(permissionGroupId))
+			whereConditions.push(
+				eq(
+					referencesPermissionsTable.permissionGroupId,
+					Number(permissionGroupId),
 				),
-				orderBy: asc(referencesPermissionsTable.createdAt),
-				columns: {
-					id: true,
-					nameUz: true,
-					nameRu: true,
-					permissionGroupId: true,
-				},
-			});
-			res.json(permissions);
-			return;
+			);
 		}
 
 		const permissions = await db.query.referencesPermissionsTable.findMany({
-			where: ne(referencesPermissionsTable.status, 'deleted'),
+			where: and(...whereConditions),
 			orderBy: asc(referencesPermissionsTable.createdAt),
 			columns: {
 				id: true,

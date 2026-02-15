@@ -2,6 +2,9 @@ import { referencesPermissionGroupsTable } from '../../../db/schemas/references/
 import { checkSchema, ParamSchema } from 'express-validator';
 import { and, eq, InferInsertModel, ne } from 'drizzle-orm';
 import db from '../../../db';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesPermissionGroupsTable>,
@@ -21,7 +24,7 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const permissionGroup = await db
 						.select()
@@ -30,6 +33,15 @@ const indexSchema: DeleteValidationSchema = {
 
 					if (!permissionGroup.length)
 						throw new Error('Permission group not found');
+
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (permissionGroup[0].createdBy !== userId)
+						throw new Error(
+							'You are not allowed to modify this permission group',
+						);
 				}
 
 				return true;
@@ -45,7 +57,7 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Permission group id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const permissionGroup = await db
 					.select()
 					.from(referencesPermissionGroupsTable)
@@ -53,6 +65,15 @@ const deleteSchema: DeleteValidationSchema = {
 
 				if (!permissionGroup.length)
 					throw new Error('Permission group not found');
+
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (permissionGroup[0].createdBy !== userId)
+					throw new Error(
+						'You are not allowed to modify this permission group',
+					);
 
 				return true;
 			},

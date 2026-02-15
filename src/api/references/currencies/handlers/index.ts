@@ -11,6 +11,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -113,6 +116,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -133,6 +137,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const currency = await db.query.referencesCurrenciesTable.findFirst({
 				where: eq(referencesCurrenciesTable.id, Number(id)),
@@ -142,6 +151,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesCurrenciesTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesCurrenciesTable.status, status));

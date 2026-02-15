@@ -19,10 +19,8 @@ import { authorizeUser } from '../../../middlewares/authorizeUser';
 const router = Router();
 
 router.use(parseUserFromToken, authorizeUser);
-// @ts-expect-error
 router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
 router.get('/counts-by-status', getCountsByStatusHandler);
-// @ts-expect-error
 router.get('/list', listValidator, withValidationErrorsMiddleware, listHandler);
 router.post(
 	'/',

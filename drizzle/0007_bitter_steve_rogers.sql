@@ -1,0 +1,2 @@
+ALTER TABLE "references_tariffs" ADD COLUMN "created_by" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "references_tariffs" ADD CONSTRAINT "references_tariffs_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

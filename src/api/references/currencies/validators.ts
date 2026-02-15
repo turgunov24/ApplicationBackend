@@ -2,6 +2,9 @@ import { referencesCurrenciesTable } from '../../../db/schemas/references/curren
 import { checkSchema, ParamSchema } from 'express-validator';
 import { eq, InferInsertModel } from 'drizzle-orm';
 import db from '../../../db';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesCurrenciesTable>,
@@ -21,7 +24,7 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const currency = await db
 						.select()
@@ -29,6 +32,12 @@ const indexSchema: DeleteValidationSchema = {
 						.where(eq(referencesCurrenciesTable.id, value));
 
 					if (!currency.length) throw new Error('Currency not found');
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (currency[0].createdBy !== userId)
+						throw new Error('You are not allowed to modify this currency');
 				}
 
 				return true;
@@ -44,13 +53,19 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Currency id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const currency = await db
 					.select()
 					.from(referencesCurrenciesTable)
 					.where(eq(referencesCurrenciesTable.id, value));
 
 				if (!currency.length) throw new Error('Currency not found');
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (currency[0].createdBy !== userId)
+					throw new Error('You are not allowed to modify this currency');
 
 				return true;
 			},

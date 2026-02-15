@@ -11,6 +11,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage'
+import { SUPER_ADMIN_ID } from '../../../../helpers/config'
 
 /**
  * @swagger
@@ -113,6 +116,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -122,7 +126,7 @@ interface QueryParams {
 
 export const indexHandler = async (
 	req: Request<{}, {}, {}, QueryParams>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -133,6 +137,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const country = await db.query.referencesCountriesTable.findFirst({
 				where: eq(referencesCountriesTable.id, Number(id)),
@@ -142,6 +151,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesCountriesTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesCountriesTable.status, status));
@@ -154,8 +167,8 @@ export const indexHandler = async (
 			whereConditions.push(
 				or(
 					ilike(referencesCountriesTable.nameUz, searchTerm),
-					ilike(referencesCountriesTable.nameRu, searchTerm)
-				)
+					ilike(referencesCountriesTable.nameRu, searchTerm),
+				),
 			);
 		}
 
@@ -179,7 +192,7 @@ export const indexHandler = async (
 		const pagination = calculatePaginationMeta(
 			_currentPage,
 			_dataPerPage,
-			totalCount
+			totalCount,
 		);
 
 		const users = await db

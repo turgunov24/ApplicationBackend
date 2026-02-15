@@ -3,6 +3,8 @@ import { CreatePayload } from '../validators';
 import { referencesDistrictsTable } from '../../../../db/schemas/references/districts';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
 
 /**
  * @swagger
@@ -72,14 +74,20 @@ import { handleError } from '../../../../utils/handleError';
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { nameUz, nameRu, regionId } = req.body;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		const result = await db
 			.insert(referencesDistrictsTable)
 			.values({
+				createdBy: userId,
 				nameUz,
 				nameRu,
 				regionId,

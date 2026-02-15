@@ -4,6 +4,7 @@ import { referencesCountriesTable } from './countries';
 import { text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { referencesDistrictsTable } from './districts';
+import { usersTable } from '../users';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -17,6 +18,9 @@ export const referencesRegionsTable = pgTable('references_regions', {
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
 	status: text('status', { enum: statuses }).notNull().default('active'),
+	createdBy: integer('created_by')
+		.notNull()
+		.references(() => usersTable.id),
 });
 
 export const referencesRegionsRelations = relations(
@@ -27,5 +31,5 @@ export const referencesRegionsRelations = relations(
 			references: [referencesCountriesTable.id],
 		}),
 		districts: many(referencesDistrictsTable),
-	})
+	}),
 );

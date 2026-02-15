@@ -14,6 +14,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 type IStatuses = Pick<
 	InferSelectModel<typeof referencesTariffsTable>,
@@ -21,6 +24,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -41,6 +45,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const tariff = await db.query.referencesTariffsTable.findFirst({
 				where: eq(referencesTariffsTable.id, Number(id)),
@@ -53,6 +62,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesTariffsTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesTariffsTable.status, status));

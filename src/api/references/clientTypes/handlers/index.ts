@@ -11,6 +11,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 type IStatuses = Pick<
 	InferSelectModel<typeof referencesClientTypesTable>,
@@ -18,6 +21,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -38,6 +42,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const clientType = await db.query.referencesClientTypesTable.findFirst({
 				where: eq(referencesClientTypesTable.id, Number(id)),
@@ -47,6 +56,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesClientTypesTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesClientTypesTable.status, status));

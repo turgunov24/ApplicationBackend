@@ -3,6 +3,9 @@ import { eq, InferInsertModel } from 'drizzle-orm';
 import db from '../../../db';
 import { referencesPermissionsTable } from '../../../db/schemas/references/permissions';
 import { referencesPermissionGroupsTable } from '../../../db/schemas/references/permissionGroups';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesPermissionsTable>,
@@ -23,7 +26,7 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const permission = await db
 						.select()
@@ -31,6 +34,12 @@ const indexSchema: DeleteValidationSchema = {
 						.where(eq(referencesPermissionsTable.id, value));
 
 					if (!permission.length) throw new Error('Permission not found');
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (permission[0].createdBy !== userId)
+						throw new Error('You are not allowed to modify this permission');
 				}
 
 				return true;
@@ -46,13 +55,19 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Permission id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const permission = await db
 					.select()
 					.from(referencesPermissionsTable)
 					.where(eq(referencesPermissionsTable.id, value));
 
 				if (!permission.length) throw new Error('Permission not found');
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (permission[0].createdBy !== userId)
+					throw new Error('You are not allowed to modify this permission');
 
 				return true;
 			},
@@ -81,7 +96,7 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Permission group id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const permissionGroup = await db
 					.select()
 					.from(referencesPermissionGroupsTable)
@@ -89,6 +104,13 @@ const createSchema: CreateValidationSchema = {
 
 				if (!permissionGroup.length)
 					throw new Error('Permission group not found');
+
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (permissionGroup[0].createdBy !== userId)
+					throw new Error('You are not allowed to use this permission group');
 
 				return true;
 			},
@@ -114,7 +136,7 @@ const listSchema: ListValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const permissionGroup = await db
 						.select()
@@ -123,6 +145,15 @@ const listSchema: ListValidationSchema = {
 
 					if (!permissionGroup.length)
 						throw new Error('Permission group not found');
+
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (permissionGroup[0].createdBy !== userId)
+						throw new Error(
+							'You are not allowed to view permissions of this group',
+						);
 				}
 
 				return true;

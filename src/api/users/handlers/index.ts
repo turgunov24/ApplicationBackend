@@ -13,6 +13,9 @@ import {
 	calculatePaginationMeta,
 } from '../../../utils/pagination';
 import { omit } from 'es-toolkit/compat';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../helpers/config'
 
 /**
  * @swagger
@@ -111,6 +114,7 @@ import { omit } from 'es-toolkit/compat';
 type IStatuses = Pick<InferSelectModel<typeof usersTable>, 'status'>;
 
 interface QueryParams {
+	[key: string]: string | string[] | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -121,7 +125,7 @@ interface QueryParams {
 
 export const indexHandler = async (
 	req: Request<{}, {}, {}, QueryParams>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -132,6 +136,12 @@ export const indexHandler = async (
 			id,
 			roles,
 		} = req.query;
+
+		const userId = getAuthUserId(req);
+
+		if (!userId) {
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+		}
 
 		if (id) {
 			const user = await db.query.usersTable.findFirst({
@@ -155,6 +165,10 @@ export const indexHandler = async (
 
 		const whereConditions = [];
 
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(usersTable.createdBy, userId));
+		}
+
 		if (status !== 'all') {
 			whereConditions.push(eq(usersTable.status, status));
 		} else {
@@ -166,8 +180,8 @@ export const indexHandler = async (
 			whereConditions.push(
 				or(
 					ilike(usersTable.fullName, searchTerm),
-					ilike(usersTable.username, searchTerm)
-				)
+					ilike(usersTable.username, searchTerm),
+				),
 			);
 		}
 
@@ -181,10 +195,10 @@ export const indexHandler = async (
 						.where(
 							and(
 								eq(usersRolesTable.userId, usersTable.id),
-								inArray(usersRolesTable.roleId, roleIds)
-							)
-						)
-				)
+								inArray(usersRolesTable.roleId, roleIds),
+							),
+						),
+				),
 			);
 		}
 
@@ -207,7 +221,7 @@ export const indexHandler = async (
 		const pagination = calculatePaginationMeta(
 			_currentPage,
 			_dataPerPage,
-			totalCount
+			totalCount,
 		);
 
 		const users = await db.query.usersTable.findMany({
@@ -226,7 +240,7 @@ export const indexHandler = async (
 
 		res.json({
 			result: users.map((user) =>
-				omit(user, ['token', 'updatedAt', 'password', 'userRoles'])
+				omit(user, ['token', 'updatedAt', 'password', 'userRoles']),
 			),
 			pagination,
 		});

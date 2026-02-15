@@ -9,7 +9,6 @@ import { usersTable } from './users';
 import { referencesRolesTable } from './references/roles';
 import { primaryKey } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import db from '..'
 
 export const usersRolesTable = pgTable(
 	'users_roles',

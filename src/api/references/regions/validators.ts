@@ -3,6 +3,9 @@ import { checkSchema, ParamSchema } from 'express-validator';
 import { eq, InferInsertModel } from 'drizzle-orm';
 import db from '../../../db';
 import { referencesCountriesTable } from '../../../db/schemas/references/countries';
+import { getAuthUserId } from '../../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesRegionsTable>,
@@ -23,16 +26,20 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
-				
-
 					const region = await db
 						.select()
 						.from(referencesRegionsTable)
 						.where(eq(referencesRegionsTable.id, value));
 
 					if (!region.length) throw new Error('Region not found');
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (region[0].createdBy !== userId)
+						throw new Error('You are not allowed to modify this region');
 				}
 
 				return true;
@@ -48,15 +55,19 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Region id is required',
 		custom: {
-			options: async (value) => {
-				
-
+			options: async (value, { req }) => {
 				const region = await db
 					.select()
 					.from(referencesRegionsTable)
 					.where(eq(referencesRegionsTable.id, value));
 
 				if (!region.length) throw new Error('Region not found');
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (region[0].createdBy !== userId)
+					throw new Error('You are not allowed to modify this region');
 
 				return true;
 			},
@@ -85,15 +96,19 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Country id is required',
 		custom: {
-			options: async (value) => {
-				
-
+			options: async (value, { req }) => {
 				const country = await db
 					.select()
 					.from(referencesCountriesTable)
 					.where(eq(referencesCountriesTable.id, value));
 
 				if (!country.length) throw new Error('Country not found');
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (country[0].createdBy !== userId)
+					throw new Error('You are not allowed to access this country');
 
 				return true;
 			},
@@ -107,16 +122,20 @@ const listSchema: ListValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
-				
-
 					const country = await db
 						.select()
 						.from(referencesCountriesTable)
 						.where(eq(referencesCountriesTable.id, value));
 
 					if (!country.length) throw new Error('Country not found');
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (country[0].createdBy !== userId)
+						throw new Error('You are not allowed to access this country');
 				}
 
 				return true;

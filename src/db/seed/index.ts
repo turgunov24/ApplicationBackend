@@ -27,6 +27,7 @@ import { ResourceActions } from '../../types/auth';
 import { roleNamesForSeeding, users } from './users';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { SUPER_ADMIN_ID } from '../../helpers/config';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -78,6 +79,7 @@ async function seedCountries() {
 			.values({
 				nameRu: country.nameRu,
 				nameUz: country.nameUz,
+				createdBy: 2,
 			})
 			.returning({ id: schemas.referencesCountriesTable.id });
 
@@ -88,6 +90,7 @@ async function seedCountries() {
 					nameRu: region.nameRu,
 					nameUz: region.nameUz,
 					countryId: newCountry[0].id,
+					createdBy: 2,
 				})
 				.returning({ id: schemas.referencesRegionsTable.id });
 
@@ -96,6 +99,7 @@ async function seedCountries() {
 					regionId: newRegion[0].id,
 					nameRu: district.nameRu,
 					nameUz: district.nameUz,
+					createdBy: 2,
 				});
 			}
 		}
@@ -112,6 +116,7 @@ async function seedPermissionGroups() {
 			.values({
 				nameRu: permissionGroup.nameRu,
 				nameUz: permissionGroup.nameUz,
+				createdBy: 2,
 			})
 			.returning({ id: schemas.referencesPermissionGroupsTable.id });
 	}
@@ -135,6 +140,7 @@ async function seedPermissions() {
 			resource: permission.resource,
 			action: permission.action,
 			permissionGroupId: permissionGroup[0].id,
+			createdBy: 2,
 		});
 	}
 }
@@ -153,10 +159,15 @@ async function seedRoles() {
 			.values({
 				nameRu: role.nameRu,
 				nameUz: role.nameUz,
+				createdBy: 2,
 			})
 			.returning({ id: schemas.referencesRolesTable.id });
 
-		if ([roleNamesForSeeding.ADMIN, roleNamesForSeeding.SUPER_ADMIN].includes(role.nameUz)) {
+		if (
+			[roleNamesForSeeding.ADMIN, roleNamesForSeeding.SUPER_ADMIN].includes(
+				role.nameUz,
+			)
+		) {
 			await db.insert(schemas.referencesRolesPermissionsTable).values(
 				allPermissions.map((permission) => ({
 					roleId: newRole[0].id,
@@ -192,12 +203,36 @@ async function seedRoles() {
 }
 
 /**
- * Foydalanuvchilarni yaratadi, parolini hash qiladi va JWT token generatsiya qiladi
+ * Foydalanuvchilarni yaratadi (dastlabki bosqich - locationlarsiz)
  */
-async function seedUsers() {
+async function seedUsersInitial() {
 	for (const user of users) {
 		const hashedPassword = await bcrypt.hash(user.password, 10);
 
+		// Dastlabki yaratishda location_id larni 0 qilib turamiz
+		await db
+			.insert(schemas.usersTable)
+			.values({
+				id: user.id,
+				createdBy: user.createdBy,
+				username: user.username,
+				fullName: user.fullName,
+				email: user.email,
+				phone: user.phone,
+				password: hashedPassword,
+				countryId: 0,
+				regionId: 0,
+				districtId: 0,
+			})
+			// .onConflictDoNothing(); // Agar user allaqachon bor bo'lsa, hech narsa qilmaymiz
+	}
+}
+
+/**
+ * Foydalanuvchilarni update qiladi (locationlar va rollarni qo'shadi)
+ */
+async function seedUsersUpdate() {
+	for (const user of users) {
 		const district = await db.query.referencesDistrictsTable.findFirst({
 			where: eq(schemas.referencesDistrictsTable.nameUz, user.districtName),
 			columns: {
@@ -214,28 +249,8 @@ async function seedUsers() {
 		});
 
 		if (!district) {
-			throw new Error('District not found while seeding');
+			throw new Error(`District not found for user ${user.username}`);
 		}
-
-		const newUser = await db
-			.insert(schemas.usersTable)
-			.values({
-				id: user.id,
-				createdBy: user.createdBy,
-				username: user.username,
-				fullName: user.fullName,
-				email: user.email,
-				phone: user.phone,
-				password: hashedPassword,
-				countryId: district.region.countryId,
-				regionId: district.regionId,
-				districtId: district.id,
-			})
-			.returning({
-				id: schemas.usersTable.id,
-				username: schemas.usersTable.username,
-				email: schemas.usersTable.email,
-			});
 
 		const role = await db.query.referencesRolesTable.findFirst({
 			where: eq(schemas.referencesRolesTable.nameUz, user.roleName),
@@ -245,36 +260,44 @@ async function seedUsers() {
 		});
 
 		if (!role) {
-			throw new Error('Role not found while seeding');
+			throw new Error(`Role not found for user ${user.username}`);
 		}
 
-		await db.insert(schemas.usersRolesTable).values([
-			{
-				userId: newUser[0].id,
-				roleId: role.id,
-			},
-		]);
-
 		const secret = process.env.JWT_SECRET;
-
 		if (!secret) {
 			throw new Error('JWT_SECRET is not set');
 		}
 
 		const accessToken = jwt.sign(
 			{
-				id: newUser[0].id,
-				username: newUser[0].username,
-				email: newUser[0].email,
+				id: user.id,
+				username: user.username,
+				email: user.email,
 			},
 			secret,
 			{ expiresIn: '1h' },
 		);
 
+		// Userni update qilamiz
 		await db
 			.update(schemas.usersTable)
-			.set({ token: accessToken, status: 'active' })
-			.where(eq(schemas.usersTable.id, newUser[0].id));
+			.set({
+				countryId: district.region.countryId,
+				regionId: district.regionId,
+				districtId: district.id,
+				token: accessToken,
+				status: 'active',
+			})
+			.where(eq(schemas.usersTable.id, user.id));
+
+		// Role ni biriktiramiz
+		await db
+			.insert(schemas.usersRolesTable)
+			.values({
+				userId: user.id,
+				roleId: role.id,
+			})
+			.onConflictDoNothing();
 	}
 }
 
@@ -287,11 +310,17 @@ async function main() {
 		await reset(db, schemas);
 		logger.info('SUCCESSFULLY RESET DATABASE ✅');
 
+		// 1. Dastlabki userlarni yaratish (locationsiz)
+		await seedUsersInitial();
+
+		// 2. Referencelarni yaratish (endi user create qilingan bo'ladi)
 		await seedCountries();
 		await seedPermissionGroups();
 		await seedPermissions();
 		await seedRoles();
-		await seedUsers();
+
+		// 3. Userlarni update qilish (location va role qo'shish)
+		await seedUsersUpdate();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

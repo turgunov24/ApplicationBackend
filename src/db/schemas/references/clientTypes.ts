@@ -1,5 +1,6 @@
-import { text } from 'drizzle-orm/pg-core';
+import { integer, text } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
+import { usersTable } from '../users';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -10,4 +11,7 @@ export const referencesClientTypesTable = pgTable('references_client_types', {
 	createdAt: timestamp().notNull().defaultNow(),
 	updatedAt: timestamp().notNull().defaultNow(),
 	status: text('status', { enum: statuses }).notNull().default('active'),
+	createdBy: integer('created_by')
+		.notNull()
+		.references(() => usersTable.id),
 });

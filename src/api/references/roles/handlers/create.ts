@@ -3,6 +3,8 @@ import { CreatePayload } from '../validators';
 import { referencesRolesTable } from '../../../../db/schemas/references/roles';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
 
 /**
  * @swagger
@@ -76,14 +78,20 @@ import { handleError } from '../../../../utils/handleError';
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { nameUz, nameRu, descriptionUz, descriptionRu } = req.body;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		const result = await db
 			.insert(referencesRolesTable)
 			.values({
+				createdBy: userId,
 				nameUz,
 				nameRu,
 				descriptionUz,

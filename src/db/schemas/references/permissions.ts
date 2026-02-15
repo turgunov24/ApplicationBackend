@@ -9,6 +9,7 @@ import {
 import { referencesPermissionGroupsTable } from './permissionGroups';
 import { relations } from 'drizzle-orm';
 import { referencesRolesPermissionsTable } from './rolesPermissions';
+import { usersTable } from '../users';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -28,6 +29,9 @@ export const referencesPermissionsTable = pgTable('references_permissions', {
 		}),
 	resource: varchar({ length: 255 }).notNull(),
 	action: varchar({ length: 255 }).notNull(),
+	createdBy: integer('created_by')
+		.notNull()
+		.references(() => usersTable.id),
 });
 
 export const referencesPermissionsRelations = relations(
@@ -38,5 +42,5 @@ export const referencesPermissionsRelations = relations(
 			references: [referencesPermissionGroupsTable.id],
 		}),
 		rolesPermissions: many(referencesRolesPermissionsTable),
-	})
+	}),
 );

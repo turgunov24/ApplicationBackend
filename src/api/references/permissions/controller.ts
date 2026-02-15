@@ -23,7 +23,6 @@ router.get(
 	'/',
 	indexValidator,
 	withValidationErrorsMiddleware,
-	// @ts-expect-error
 	indexHandler
 );
 
@@ -46,7 +45,6 @@ router.get(
 	'/list',
 	listValidator,
 	withValidationErrorsMiddleware,
-	// @ts-expect-error
 	listHandler
 );
 

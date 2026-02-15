@@ -20,35 +20,23 @@ const router = Router();
 
 router.use(parseUserFromToken, authorizeUser);
 
-router.get(
-	'/',
-	indexValidator,
-	withValidationErrorsMiddleware,
-	// @ts-expect-error
-	indexHandler
-);
+router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
 
 router.post(
 	'/',
 	createValidator,
 	withValidationErrorsMiddleware,
-	createHandler
+	createHandler,
 );
 router.put('/', updateValidator, withValidationErrorsMiddleware, updateHandler);
 router.delete(
 	'/',
 	deleteValidator,
 	withValidationErrorsMiddleware,
-	deleteHandler
+	deleteHandler,
 );
 
 router.get('/counts-by-status', getCountsByStatusHandler);
-router.get(
-	'/list',
-	listValidator,
-	withValidationErrorsMiddleware,
-	// @ts-expect-error
-	listHandler
-);
+router.get('/list', listValidator, withValidationErrorsMiddleware, listHandler);
 
 export default router;

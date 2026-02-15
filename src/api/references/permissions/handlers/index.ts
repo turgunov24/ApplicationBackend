@@ -11,6 +11,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -119,6 +122,7 @@ type IStatuses = Pick<
 >;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -128,7 +132,7 @@ interface QueryParams {
 
 export const indexHandler = async (
 	req: Request<{}, {}, {}, QueryParams>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -139,6 +143,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const permission = await db.query.referencesPermissionsTable.findFirst({
 				where: eq(referencesPermissionsTable.id, Number(id)),
@@ -148,6 +157,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesPermissionsTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesPermissionsTable.status, status));
@@ -160,8 +173,8 @@ export const indexHandler = async (
 			whereConditions.push(
 				or(
 					ilike(referencesPermissionsTable.nameUz, searchTerm),
-					ilike(referencesPermissionsTable.nameRu, searchTerm)
-				)
+					ilike(referencesPermissionsTable.nameRu, searchTerm),
+				),
 			);
 		}
 
@@ -185,7 +198,7 @@ export const indexHandler = async (
 		const pagination = calculatePaginationMeta(
 			_currentPage,
 			_dataPerPage,
-			totalCount
+			totalCount,
 		);
 
 		const permissions = await db

@@ -1,3 +1,4 @@
+import { getAuthUserId } from '../../../utils/getAuthUserId';
 import db from '../../../db';
 import { usersTable } from '../../../db/schemas/users';
 import { usersRolesTable } from '../../../db/schemas/usersRoles';
@@ -5,7 +6,7 @@ import { Request, Response } from 'express';
 import { CreatePayload } from '../validators';
 import bcrypt from 'bcryptjs';
 import { handleError } from '../../../utils/handleError';
-import { generateErrorMessage } from '../../../utils/generateErrorMessage'
+import { generateErrorMessage } from '../../../utils/generateErrorMessage';
 
 /**
  * @swagger
@@ -119,7 +120,7 @@ export const createHandler = async (
 			roles,
 		} = req.body;
 
-		const userId = req.user?.id;
+		const userId = getAuthUserId(req);
 
 		if (!userId) {
 			return res.status(401).json(generateErrorMessage('Unauthorized'));

@@ -1,9 +1,11 @@
-import { Request, Response } from 'express'
-import db from '../../../../db'
-import { referencesDistrictsTable } from '../../../../db/schemas'
-import { handleError } from '../../../../utils/handleError'
-import { and, asc, eq, ne } from 'drizzle-orm'
-import { ListValidationSchema } from '../validators'
+import { Request, Response } from 'express';
+import db from '../../../../db';
+import { referencesDistrictsTable } from '../../../../db/schemas';
+import { handleError } from '../../../../utils/handleError';
+import { and, asc, eq, ne } from 'drizzle-orm';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -51,34 +53,32 @@ import { ListValidationSchema } from '../validators'
  *                         type: string
  */
 
-
 export const listHandler = async (
-	req: Request<{}, {}, {}, ListValidationSchema>,
-	res: Response
+	req: Request<{}, {}, {}, { regionId?: string }>,
+	res: Response,
 ) => {
 	try {
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		const { regionId } = req.query;
 
+		const whereConditions = [ne(referencesDistrictsTable.status, 'deleted')];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesDistrictsTable.createdBy, userId));
+		}
+
 		if (regionId) {
-			const districts = await db.query.referencesDistrictsTable.findMany({
-				where: and(
-					ne(referencesDistrictsTable.status, 'deleted'),
-					eq(referencesDistrictsTable.regionId, Number(regionId))
-				),
-				orderBy: asc(referencesDistrictsTable.createdAt),
-				columns: {
-					id: true,
-					nameUz: true,
-					nameRu: true,
-					regionId: true,
-				},
-			});
-			res.json(districts);
-			return;
+			whereConditions.push(
+				eq(referencesDistrictsTable.regionId, Number(regionId)),
+			);
 		}
 
 		const districts = await db.query.referencesDistrictsTable.findMany({
-			where: ne(referencesDistrictsTable.status, 'deleted'),
+			where: and(...whereConditions),
 			orderBy: asc(referencesDistrictsTable.createdAt),
 			columns: {
 				id: true,

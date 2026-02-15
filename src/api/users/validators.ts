@@ -3,6 +3,9 @@ import { checkSchema, ParamSchema } from 'express-validator';
 import { and, eq, inArray, InferInsertModel, ne } from 'drizzle-orm';
 import db from '../../db';
 import { referencesRolesTable } from '../../db/schemas';
+import { getAuthUserId } from '../../utils/getAuthUserId';
+import { Request } from 'express';
+import { SUPER_ADMIN_ID } from '../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof usersTable>,
@@ -31,7 +34,7 @@ const indexSchema: DeleteValidationSchema = {
 		isInt: true,
 		optional: true,
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				if (value) {
 					const user = await db
 						.select()
@@ -39,6 +42,14 @@ const indexSchema: DeleteValidationSchema = {
 						.where(eq(usersTable.id, value));
 
 					if (!user.length) throw new Error('User not found');
+
+					const userId = getAuthUserId(req as Request);
+
+					if (userId === SUPER_ADMIN_ID) return true;
+
+					if (user[0].createdBy !== userId && user[0].id !== userId) {
+						throw new Error('You are not allowed to view this user');
+					}
 				}
 
 				return true;
@@ -54,13 +65,20 @@ const deleteSchema: DeleteValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'User id is required',
 		custom: {
-			options: async (value) => {
+			options: async (value, { req }) => {
 				const user = await db
 					.select()
 					.from(usersTable)
 					.where(eq(usersTable.id, value));
 
 				if (!user.length) throw new Error('User not found');
+
+				const userId = getAuthUserId(req as Request);
+
+				if (userId === SUPER_ADMIN_ID) return true;
+
+				if (user[0].createdBy !== userId)
+					throw new Error('You are not allowed to modify/delete this user');
 
 				return true;
 			},
@@ -168,7 +186,7 @@ const createSchema: CreateValidationSchema = {
 				const existingRoles = await db.query.referencesRolesTable.findMany({
 					where: and(
 						ne(referencesRolesTable.status, 'deleted'),
-						inArray(referencesRolesTable.id, value)
+						inArray(referencesRolesTable.id, value),
 					),
 				});
 
@@ -213,7 +231,10 @@ const updateSchema: UpdateValidationSchema = {
 					.select()
 					.from(usersTable)
 					.where(
-						and(eq(usersTable.username, value), ne(usersTable.id, parseInt(id)))
+						and(
+							eq(usersTable.username, value),
+							ne(usersTable.id, parseInt(id)),
+						),
 					);
 
 				if (users.length > 0) throw new Error('User username already exists');
@@ -239,7 +260,7 @@ const updateSchema: UpdateValidationSchema = {
 					.select()
 					.from(usersTable)
 					.where(
-						and(eq(usersTable.email, value), ne(usersTable.id, parseInt(id)))
+						and(eq(usersTable.email, value), ne(usersTable.id, parseInt(id))),
 					);
 
 				if (users.length > 0) throw new Error('User email already exists');

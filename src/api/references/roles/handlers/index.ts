@@ -11,6 +11,9 @@ import {
 	normalizePagination,
 	calculatePaginationMeta,
 } from '../../../../utils/pagination';
+import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 /**
  * @swagger
@@ -114,6 +117,7 @@ import {
 type IStatuses = Pick<InferSelectModel<typeof referencesRolesTable>, 'status'>;
 
 interface QueryParams {
+	[key: string]: string | undefined;
 	currentPage: string;
 	dataPerPage: string;
 	search?: string;
@@ -123,7 +127,7 @@ interface QueryParams {
 
 export const indexHandler = async (
 	req: Request<{}, {}, {}, QueryParams>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const {
@@ -134,6 +138,11 @@ export const indexHandler = async (
 			id,
 		} = req.query;
 
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
 		if (id) {
 			const role = await db.query.referencesRolesTable.findFirst({
 				where: eq(referencesRolesTable.id, Number(id)),
@@ -143,6 +152,10 @@ export const indexHandler = async (
 		}
 
 		const whereConditions = [];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesRolesTable.createdBy, userId));
+		}
 
 		if (status !== 'all') {
 			whereConditions.push(eq(referencesRolesTable.status, status));
@@ -155,8 +168,8 @@ export const indexHandler = async (
 			whereConditions.push(
 				or(
 					ilike(referencesRolesTable.nameUz, searchTerm),
-					ilike(referencesRolesTable.nameRu, searchTerm)
-				)
+					ilike(referencesRolesTable.nameRu, searchTerm),
+				),
 			);
 		}
 
@@ -180,7 +193,7 @@ export const indexHandler = async (
 		const pagination = calculatePaginationMeta(
 			_currentPage,
 			_dataPerPage,
-			totalCount
+			totalCount,
 		);
 
 		const roles = await db
