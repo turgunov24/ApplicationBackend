@@ -35,3 +35,4 @@ export {
 	referencesTariffsTable,
 	referencesTariffsRelations,
 } from './references/tariffs';
+export { principalsTable } from './principals';

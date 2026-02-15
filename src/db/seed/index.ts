@@ -25,6 +25,7 @@ import {
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
 import { roleNamesForSeeding, users } from './users';
+import { principals } from './principals';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { SUPER_ADMIN_ID } from '../../helpers/config';
@@ -210,21 +211,19 @@ async function seedUsersInitial() {
 		const hashedPassword = await bcrypt.hash(user.password, 10);
 
 		// Dastlabki yaratishda location_id larni 0 qilib turamiz
-		await db
-			.insert(schemas.usersTable)
-			.values({
-				id: user.id,
-				createdBy: user.createdBy,
-				username: user.username,
-				fullName: user.fullName,
-				email: user.email,
-				phone: user.phone,
-				password: hashedPassword,
-				countryId: 0,
-				regionId: 0,
-				districtId: 0,
-			})
-			// .onConflictDoNothing(); // Agar user allaqachon bor bo'lsa, hech narsa qilmaymiz
+		await db.insert(schemas.usersTable).values({
+			id: user.id,
+			createdBy: user.createdBy,
+			username: user.username,
+			fullName: user.fullName,
+			email: user.email,
+			phone: user.phone,
+			password: hashedPassword,
+			countryId: 0,
+			regionId: 0,
+			districtId: 0,
+		});
+		// .onConflictDoNothing(); // Agar user allaqachon bor bo'lsa, hech narsa qilmaymiz
 	}
 }
 
@@ -302,6 +301,53 @@ async function seedUsersUpdate() {
 }
 
 /**
+ * Principallarni seed qiladi
+ */
+async function seedPrincipals() {
+	for (const principal of principals) {
+		const district = await db.query.referencesDistrictsTable.findFirst({
+			where: eq(
+				schemas.referencesDistrictsTable.nameUz,
+				principal.districtName,
+			),
+			columns: {
+				id: true,
+				regionId: true,
+			},
+			with: {
+				region: {
+					columns: {
+						countryId: true,
+					},
+				},
+			},
+		});
+
+		if (!district) {
+			throw new Error(`District not found for principal ${principal.username}`);
+		}
+
+		const hashedPassword = await bcrypt.hash(principal.password, 10);
+
+		await db
+			.insert(schemas.principalsTable)
+			.values({
+				username: principal.username,
+				fullName: principal.fullName,
+				email: principal.email,
+				phone: principal.phone,
+				password: hashedPassword,
+				createdBy: principal.createdBy,
+				countryId: district.region.countryId,
+				regionId: district.regionId,
+				districtId: district.id,
+				status: 'active',
+			})
+			.onConflictDoNothing();
+	}
+}
+
+/**
  * Asosiy seed funksiya — barcha bosqichlarni ketma-ket ishga tushiradi
  */
 async function main() {
@@ -321,6 +367,7 @@ async function main() {
 
 		// 3. Userlarni update qilish (location va role qo'shish)
 		await seedUsersUpdate();
+		await seedPrincipals();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

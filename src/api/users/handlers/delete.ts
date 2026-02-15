@@ -45,7 +45,7 @@ import { handleError } from '../../../utils/handleError';
 
 export const deleteHandler = async (
 	req: Request<{}, {}, {}, { id: string }>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { id } = req.query;
@@ -53,8 +53,7 @@ export const deleteHandler = async (
 		await db
 			.update(usersTable)
 			.set({ status: 'deleted', updatedAt: new Date() })
-			.where(eq(usersTable.id, Number(id)))
-			.returning();
+			.where(eq(usersTable.id, Number(id)));
 
 		res.json({ message: 'User deleted successfully' });
 	} catch (error: unknown) {

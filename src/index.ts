@@ -2,8 +2,10 @@ import 'dotenv/config';
 import express from 'express';
 import http from 'http';
 import usersRouter from './api/users/controller';
+import principalsRouter from './api/principals/controller';
 import {
 	AUTH_CONTROLLER,
+	PRINCIPALS_CONTROLLER,
 	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_CURRENCIES_CONTROLLER,
@@ -59,6 +61,7 @@ app.get('/', (req, res) => {
 
 // // Use users router
 app.use(USERS_CONTROLLER, usersRouter);
+app.use(PRINCIPALS_CONTROLLER, principalsRouter);
 app.use(AUTH_CONTROLLER, authRouter);
 app.use(REFERENCES_COUNTRIES_CONTROLLER, referencesCountriesRouter);
 app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);

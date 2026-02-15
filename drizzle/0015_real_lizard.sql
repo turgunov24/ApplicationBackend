@@ -1,0 +1,20 @@
+CREATE TABLE "principals" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"fullName" varchar(255) NOT NULL,
+	"username" varchar(50) NOT NULL,
+	"email" varchar(255) NOT NULL,
+	"phone" varchar(255) NOT NULL,
+	"country_id" integer NOT NULL,
+	"region_id" integer NOT NULL,
+	"city_id" integer NOT NULL,
+	"token" varchar(500),
+	"password" varchar(100) NOT NULL,
+	"status" text DEFAULT 'pending' NOT NULL,
+	"avatar_path" text,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
+	"created_by" integer NOT NULL,
+	CONSTRAINT "principals_username_unique" UNIQUE("username"),
+	CONSTRAINT "principals_email_unique" UNIQUE("email"),
+	CONSTRAINT "principals_phone_unique" UNIQUE("phone")
+);

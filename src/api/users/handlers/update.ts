@@ -127,8 +127,7 @@ export const updateHandler = async (
 					districtId,
 					updatedAt: new Date(),
 				})
-				.where(eq(usersTable.id, Number(id)))
-				.returning();
+				.where(eq(usersTable.id, Number(id)));
 		}
 
 		const user = await db
