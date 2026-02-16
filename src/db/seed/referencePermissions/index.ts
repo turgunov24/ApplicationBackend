@@ -11,6 +11,7 @@ import { permissionGroupsPermissions } from './permissionGroups';
 import { permissionsPermissions } from './permissions';
 import { rolesPermissionsPermissions } from './rolesPermissions';
 import { usersPermissions } from './users';
+import { principalsPermissions } from './principals';
 import { resourcesPermissions } from './resources';
 
 export const permissions: Array<
@@ -30,5 +31,6 @@ export const permissions: Array<
 	...permissionsPermissions,
 	...rolesPermissionsPermissions,
 	...usersPermissions,
+	...principalsPermissions,
 	...resourcesPermissions,
 ];

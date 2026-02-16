@@ -10,6 +10,7 @@ import referencesResources from '../api/references/resources/resources';
 import referencesCurrenciesResources from '../api/references/currencies/resources';
 import referencesClientTypesResources from '../api/references/clientTypes/resources';
 import referencesTariffsResources from '../api/references/tariffs/resources';
+import principalsResources from '../api/principals/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -24,6 +25,7 @@ const resources = [
 	...referencesRolesResources,
 	...referencesRolesPermissionsResources,
 	...usersResources,
+	...principalsResources,
 ];
 
 export default resources;

@@ -15,10 +15,10 @@ export const authorizeUser = async (
 		if (process.env.SKIP_AUTH === 'true') return next();
 
 		const { user, baseUrl } = req;
-		console.log("🚀 ~ authorizeUser ~ baseUrl:", baseUrl)
+		// console.log("🚀 ~ authorizeUser ~ baseUrl:", baseUrl)
 
 		const resource = resources.find((r) => r.endpoint === baseUrl);
-		console.log("🚀 ~ authorizeUser ~ resources:", resources)
+		// console.log("🚀 ~ authorizeUser ~ resources:", resources)
 
 		if (!resource) {
 			return res.status(400).json(generateErrorMessage('Resource not found'));

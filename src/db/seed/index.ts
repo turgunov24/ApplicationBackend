@@ -21,6 +21,7 @@ import {
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
 	REFERENCES_TARIFFS_CONTROLLER,
 	USERS_CONTROLLER,
+	PRINCIPALS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -28,7 +29,6 @@ import { roleNamesForSeeding, users } from './users';
 import { principals } from './principals';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { SUPER_ADMIN_ID } from '../../helpers/config';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -43,6 +43,7 @@ const controllerToGroupMap: Record<string, string> = {
 // Admin-related controllers — barchasi bitta gruppa
 const adminControllers = [
 	USERS_CONTROLLER,
+	PRINCIPALS_CONTROLLER,
 	REFERENCES_PERMISSIONS_CONTROLLER,
 	REFERENCES_PERMISSION_GROUPS_CONTROLLER,
 	REFERENCES_ROLES_CONTROLLER,
