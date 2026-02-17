@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import db from '../db';
-import { usersTable } from '../db/schemas/users';
+import { principalsTable } from '../db/schemas/principals';
 import { eq } from 'drizzle-orm';
 import { generateErrorMessage } from '../utils/generateErrorMessage';
 import { handleError } from '../utils/handleError';
 import '../types/auth';
-import { AuthenticatedUser } from '../types/auth';
+import { AuthenticatedPrincipal } from '../types/auth';
 
-export const parseUserFromToken = async (
+export const parsePrincipalFromToken = async (
 	req: Request,
 	res: Response,
 	next: NextFunction,
@@ -43,7 +43,7 @@ export const parseUserFromToken = async (
 			if (typeof result === 'object') {
 				decoded = result;
 			} else {
-				throw Error('Decoded user is string');
+				throw Error('Decoded principal is string');
 			}
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -56,32 +56,32 @@ export const parseUserFromToken = async (
 
 		const { username, type } = decoded;
 
-		if (type !== 'user')
+		if (type !== 'principal')
 			return res.status(401).json(generateErrorMessage('Invalid token type'));
 
 		if (!username)
 			return res.status(401).json(generateErrorMessage('Username undefined'));
 
-		// Get user from database
-		const users = await db
+		// Get principal from database
+		const principals = await db
 			.select()
-			.from(usersTable)
-			.where(eq(usersTable.username, username));
+			.from(principalsTable)
+			.where(eq(principalsTable.username, username));
 
-		if (!users.length) {
-			return res.status(401).json(generateErrorMessage('User not found'));
+		if (!principals.length) {
+			return res.status(401).json(generateErrorMessage('Principal not found'));
 		}
 
-		const user = users[0];
+		const principal = principals[0];
 
-		// Check if user is active
-		if (user.status !== 'active') {
+		// Check if principal is active
+		if (principal.status !== 'active') {
 			return res
 				.status(403)
-				.json(generateErrorMessage('User account is not active'));
+				.json(generateErrorMessage('Principal account is not active'));
 		}
 
-		req.user = user as AuthenticatedUser;
+		req.principal = principal as AuthenticatedPrincipal;
 
 		next();
 	} catch (error: unknown) {

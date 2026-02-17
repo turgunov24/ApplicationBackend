@@ -7,7 +7,7 @@ import { generateErrorMessage } from '../../../utils/generateErrorMessage';
 
 /**
  * @swagger
- * /api/auth/get-user-permissions:
+ * /api/core/auth/get-user-permissions:
  *   get:
  *     summary: Get current user's permissions
  *     tags: [Auth]

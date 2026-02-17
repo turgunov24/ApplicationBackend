@@ -11,7 +11,7 @@ import { pick } from 'es-toolkit/object';
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/core/auth/login:
  *   post:
  *     summary: Login user
  *     tags: [Auth]
@@ -72,7 +72,7 @@ import { pick } from 'es-toolkit/object';
  */
 export const loginHandler = async (
 	req: Request<{}, {}, LoginPayload>,
-	res: Response
+	res: Response,
 ) => {
 	try {
 		const { username, password } = req.body;
@@ -120,9 +120,9 @@ export const loginHandler = async (
 		}
 
 		const accessToken = jwt.sign(
-			{ id: user.id, username: user.username, email: user.email },
+			{ id: user.id, username: user.username, email: user.email, type: 'user' },
 			secret,
-			{ expiresIn: '1h' }
+			{ expiresIn: '1h' },
 		);
 
 		await db
@@ -134,7 +134,7 @@ export const loginHandler = async (
 			role.rolesPermissions.map(({ permission }) => ({
 				action: permission.action,
 				resource: permission.resource,
-			}))
+			})),
 		);
 		return res.status(200).json({
 			accessToken,

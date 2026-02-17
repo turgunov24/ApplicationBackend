@@ -5,6 +5,7 @@ import usersRouter from './api/users/controller';
 import principalsRouter from './api/principals/controller';
 import {
 	AUTH_CONTROLLER,
+	AUTH_PRINCIPALS_CONTROLLER,
 	PRINCIPALS_CONTROLLER,
 	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
@@ -22,7 +23,8 @@ import {
 import cors from 'cors';
 
 import { logger } from './utils/logger';
-import authRouter from './api/auth/login/controller';
+import authRouter from './api/auth/core/controller';
+import authPrincipalsRouter from './api/auth/principals/controller';
 import path from 'path';
 import referencesCountriesRouter from './api/references/countries/controller';
 import referencesRegionsRouter from './api/references/regions/controller';
@@ -63,6 +65,7 @@ app.get('/', (req, res) => {
 app.use(USERS_CONTROLLER, usersRouter);
 app.use(PRINCIPALS_CONTROLLER, principalsRouter);
 app.use(AUTH_CONTROLLER, authRouter);
+app.use(AUTH_PRINCIPALS_CONTROLLER, authPrincipalsRouter);
 app.use(REFERENCES_COUNTRIES_CONTROLLER, referencesCountriesRouter);
 app.use(REFERENCES_REGIONS_CONTROLLER, referencesRegionsRouter);
 app.use(REFERENCES_DISTRICTS_CONTROLLER, referencesDistrictsRouter);
