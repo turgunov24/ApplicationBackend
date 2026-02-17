@@ -53,7 +53,7 @@ export const authorizeUser = async (
 			if (permission.resource !== resource.endpoint) continue;
 
 			const granted = resource.allowedActions.find(
-				(allowedAction) => permission.action === allowedAction,
+				(allowedAction: string) => permission.action === allowedAction,
 			);
 
 			if (granted) return next();

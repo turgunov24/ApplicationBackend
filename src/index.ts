@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import http from 'http';
-import usersRouter from './api/users/controller';
-import principalsRouter from './api/principals/controller';
+import usersRouter from './api/core/users/controller';
+import principalsRouter from './api/core/principals/controller';
 import {
 	AUTH_CONTROLLER,
 	AUTH_PRINCIPALS_CONTROLLER,
@@ -23,20 +23,20 @@ import {
 import cors from 'cors';
 
 import { logger } from './utils/logger';
-import authRouter from './api/auth/core/controller';
-import authPrincipalsRouter from './api/auth/principals/controller';
+import authRouter from './api/core/auth/controller';
+import authPrincipalsRouter from './api/principals/auth/controller';
 import path from 'path';
-import referencesCountriesRouter from './api/references/countries/controller';
-import referencesRegionsRouter from './api/references/regions/controller';
-import referencesDistrictsRouter from './api/references/districts/controller';
-import referencesPermissionGroupsRouter from './api/references/permissionGroups/controller';
-import referencesPermissionsRouter from './api/references/permissions/controller';
-import referencesRolesRouter from './api/references/roles/controller';
-import referencesRolesPermissionsRouter from './api/references/rolesPermissions/controller';
-import referencesResourcesRouter from './api/references/resources/controller';
-import referencesCurrenciesRouter from './api/references/currencies/controller';
-import referencesClientTypesRouter from './api/references/clientTypes/controller';
-import referencesTariffsRouter from './api/references/tariffs/controller';
+import referencesCountriesRouter from './api/core/references/countries/controller';
+import referencesRegionsRouter from './api/core/references/regions/controller';
+import referencesDistrictsRouter from './api/core/references/districts/controller';
+import referencesPermissionGroupsRouter from './api/core/references/permissionGroups/controller';
+import referencesPermissionsRouter from './api/core/references/permissions/controller';
+import referencesRolesRouter from './api/core/references/roles/controller';
+import referencesRolesPermissionsRouter from './api/core/references/rolesPermissions/controller';
+import referencesResourcesRouter from './api/core/references/resources/controller';
+import referencesCurrenciesRouter from './api/core/references/currencies/controller';
+import referencesClientTypesRouter from './api/core/references/clientTypes/controller';
+import referencesTariffsRouter from './api/core/references/tariffs/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
