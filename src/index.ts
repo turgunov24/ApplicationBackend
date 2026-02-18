@@ -8,6 +8,8 @@ import {
 	AUTH_PRINCIPALS_CONTROLLER,
 	PRINCIPALS_CONTROLLER,
 	PRINCIPAL_CUSTOMERS_CONTROLLER,
+	PRINCIPALS_CLIENT_TYPES_CONTROLLER,
+	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_CURRENCIES_CONTROLLER,
@@ -39,6 +41,8 @@ import referencesCurrenciesRouter from './api/core/references/currencies/control
 import referencesClientTypesRouter from './api/core/references/clientTypes/controller';
 import referencesTariffsRouter from './api/core/references/tariffs/controller';
 import principalCustomersRouter from './api/core/principalCustomers/controller';
+import principalsClientTypesRouter from './api/principals/clientTypes/controller';
+import principalsPrincipalCustomersRouter from './api/principals/principalCustomers/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -86,6 +90,11 @@ app.use(REFERENCES_CURRENCIES_CONTROLLER, referencesCurrenciesRouter);
 app.use(REFERENCES_CLIENT_TYPES_CONTROLLER, referencesClientTypesRouter);
 app.use(REFERENCES_TARIFFS_CONTROLLER, referencesTariffsRouter);
 app.use(PRINCIPAL_CUSTOMERS_CONTROLLER, principalCustomersRouter);
+app.use(PRINCIPALS_CLIENT_TYPES_CONTROLLER, principalsClientTypesRouter);
+app.use(
+	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	principalsPrincipalCustomersRouter,
+);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server
