@@ -11,6 +11,7 @@ import referencesCurrenciesResources from '../api/core/references/currencies/res
 import referencesClientTypesResources from '../api/core/references/clientTypes/resources';
 import referencesTariffsResources from '../api/core/references/tariffs/resources';
 import principalsResources from '../api/core/principals/resources';
+import principalCustomersResources from '../api/core/principalCustomers/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -26,6 +27,7 @@ const resources = [
 	...referencesRolesPermissionsResources,
 	...usersResources,
 	...principalsResources,
+	...principalCustomersResources,
 ];
 
 export default resources;

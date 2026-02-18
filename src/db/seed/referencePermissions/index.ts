@@ -12,6 +12,7 @@ import { permissionsPermissions } from './permissions';
 import { rolesPermissionsPermissions } from './rolesPermissions';
 import { usersPermissions } from './users';
 import { principalsPermissions } from './principals';
+import { principalCustomersPermissions } from './principalCustomers';
 import { resourcesPermissions } from './resources';
 
 export const permissions: Array<
@@ -32,5 +33,6 @@ export const permissions: Array<
 	...rolesPermissionsPermissions,
 	...usersPermissions,
 	...principalsPermissions,
+	...principalCustomersPermissions,
 	...resourcesPermissions,
 ];

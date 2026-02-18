@@ -18,3 +18,4 @@ export const REFERENCES_CURRENCIES_CONTROLLER =
 export const REFERENCES_CLIENT_TYPES_CONTROLLER =
 	'/api/core/references/client-types';
 export const REFERENCES_TARIFFS_CONTROLLER = '/api/core/references/tariffs';
+export const PRINCIPAL_CUSTOMERS_CONTROLLER = '/api/core/principal-customers';

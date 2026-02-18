@@ -19,6 +19,7 @@ import { withValidationErrorsMiddleware } from '../../../middlewares/withValidat
 import { parseUserFromToken } from '../../../middlewares/parseUserFromToken';
 import { uploadAvatarHandler } from './handlers/uploadAvatar';
 import { authorizeUser } from '../../../middlewares/authorizeUser';
+import { listHandler } from './handlers/list';
 
 export const validationErrorHandler = (
 	req: Request,
@@ -67,7 +68,7 @@ export const multerErrorHandler = (
 	// Handle other file-related errors
 	if (error.message) {
 		return res.status(400).json({
-			error: error.message, 
+			error: error.message,
 		});
 	}
 
@@ -120,5 +121,7 @@ router.delete(
 	withValidationErrorsMiddleware,
 	deleteHandler,
 );
+
+router.get('/list', listHandler);
 
 export default router;

@@ -36,3 +36,4 @@ export {
 	referencesTariffsRelations,
 } from './references/tariffs';
 export { principalsTable } from './principals';
+export { principalCustomersTable } from './principalCustomers';

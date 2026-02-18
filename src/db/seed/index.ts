@@ -22,6 +22,7 @@ import {
 	REFERENCES_TARIFFS_CONTROLLER,
 	USERS_CONTROLLER,
 	PRINCIPALS_CONTROLLER,
+	PRINCIPAL_CUSTOMERS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -49,6 +50,7 @@ const adminControllers = [
 	REFERENCES_ROLES_CONTROLLER,
 	REFERENCES_ROLES_PERMISSIONS_CONTROLLER,
 	REFERENCES_RESOURCES_CONTROLLER,
+	PRINCIPAL_CUSTOMERS_CONTROLLER,
 ];
 
 /**
@@ -349,6 +351,71 @@ async function seedPrincipals() {
 }
 
 /**
+ * Client turlarini seed qiladi
+ */
+async function seedClientTypes() {
+	const clientTypes = [
+		{ nameUz: 'Jismoniy shaxs', nameRu: 'Физическое лицо' },
+		{ nameUz: 'Yuridik shaxs', nameRu: 'Юридическое лицо' },
+	];
+
+	for (const clientType of clientTypes) {
+		await db.insert(schemas.referencesClientTypesTable).values({
+			nameUz: clientType.nameUz,
+			nameRu: clientType.nameRu,
+			createdBy: 2,
+		});
+		// .onConflictDoNothing();
+	}
+	logger.info('Client types seeded ✅');
+}
+
+/**
+ * Principal customerlarni seed qiladi
+ */
+async function seedPrincipalCustomers() {
+	const principals = await db
+		.select({ id: schemas.principalsTable.id })
+		.from(schemas.principalsTable);
+
+	const clientTypes = await db
+		.select({ id: schemas.referencesClientTypesTable.id })
+		.from(schemas.referencesClientTypesTable);
+
+	if (!principals.length || !clientTypes.length) {
+		logger.info(
+			'Skipping principal customers seed — no principals or client types found',
+		);
+		return;
+	}
+
+	const principalCustomers = [
+		{
+			name: 'Aliyev Trading',
+			principalId: principals[0].id,
+			clientTypeId: clientTypes[0].id,
+		},
+		{
+			name: 'Global Textile LLC',
+			principalId: principals[0].id,
+			clientTypeId: clientTypes[1].id,
+		},
+	];
+
+	for (const pc of principalCustomers) {
+		await db.insert(schemas.principalCustomersTable).values({
+			name: pc.name,
+			principalId: pc.principalId,
+			clientTypeId: pc.clientTypeId,
+			createdBy: 2,
+			status: 'active',
+		});
+		// .onConflictDoNothing();
+	}
+	logger.info('Principal customers seeded ✅');
+}
+
+/**
  * Asosiy seed funksiya — barcha bosqichlarni ketma-ket ishga tushiradi
  */
 async function main() {
@@ -369,6 +436,8 @@ async function main() {
 		// 3. Userlarni update qilish (location va role qo'shish)
 		await seedUsersUpdate();
 		await seedPrincipals();
+		await seedClientTypes();
+		await seedPrincipalCustomers();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {
