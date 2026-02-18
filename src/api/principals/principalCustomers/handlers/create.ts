@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
+import { eq } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
 import { principalCustomersTable } from '../../../../db/schemas/principalCustomers';
+import { principalsTable } from '../../../../db/schemas';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
@@ -17,10 +19,21 @@ export const createHandler = async (
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
+		// Principal ni yaratgan admin ID ni topamiz
+		const principalRecord = await db.query.principalsTable.findFirst({
+			where: eq(principalsTable.id, principal.id),
+			columns: {
+				createdBy: true,
+			},
+		});
+
+		if (!principalRecord)
+			return res.status(404).json(generateErrorMessage('Principal not found'));
+
 		const result = await db
 			.insert(principalCustomersTable)
 			.values({
-				createdBy: principal.id,
+				createdBy: principalRecord.createdBy,
 				name,
 				principalId: principal.id,
 				clientTypeId,
