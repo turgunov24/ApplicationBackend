@@ -11,13 +11,14 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { name, clientTypeId } = req.body;
+		const { name, clientTypeId, counterpartyId } = req.body;
 
 		await db
 			.update(principalCustomersTable)
 			.set({
 				name,
 				clientTypeId,
+				counterpartyId,
 				updatedAt: new Date(),
 			})
 			.where(eq(principalCustomersTable.id, Number(id)))

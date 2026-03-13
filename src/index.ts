@@ -10,7 +10,9 @@ import {
 	PRINCIPAL_CUSTOMERS_CONTROLLER,
 	PRINCIPALS_CLIENT_TYPES_CONTROLLER,
 	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	PRINCIPALS_COUNTERPARTIES_CONTROLLER,
 	REFERENCES_CLIENT_TYPES_CONTROLLER,
+	REFERENCES_COUNTERPARTIES_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_CURRENCIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
@@ -43,6 +45,8 @@ import referencesTariffsRouter from './api/core/references/tariffs/controller';
 import principalCustomersRouter from './api/core/principalCustomers/controller';
 import principalsClientTypesRouter from './api/principals/clientTypes/controller';
 import principalsPrincipalCustomersRouter from './api/principals/principalCustomers/controller';
+import referencesCounterpartiesRouter from './api/core/references/counterparties/controller';
+import principalsCounterpartiesRouter from './api/principals/counterparties/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -95,6 +99,8 @@ app.use(
 	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	principalsPrincipalCustomersRouter,
 );
+app.use(REFERENCES_COUNTERPARTIES_CONTROLLER, referencesCounterpartiesRouter);
+app.use(PRINCIPALS_COUNTERPARTIES_CONTROLLER, principalsCounterpartiesRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

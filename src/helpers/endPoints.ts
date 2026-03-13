@@ -23,3 +23,7 @@ export const PRINCIPALS_CLIENT_TYPES_CONTROLLER =
 	'/api/principals/client-types';
 export const PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER =
 	'/api/principals/principal-customers';
+export const REFERENCES_COUNTERPARTIES_CONTROLLER =
+	'/api/core/references/counterparties';
+export const PRINCIPALS_COUNTERPARTIES_CONTROLLER =
+	'/api/principals/counterparties';

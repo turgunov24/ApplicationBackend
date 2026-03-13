@@ -30,6 +30,7 @@ export {
 	referenceRolesPermissionsRelations,
 } from './references/rolesPermissions';
 export { referencesCurrenciesTable } from './references/currencies';
+export { referencesCounterpartiesTable } from './references/counterparties';
 export { referencesClientTypesTable } from './references/clientTypes';
 export {
 	referencesTariffsTable,

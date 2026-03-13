@@ -12,7 +12,7 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name, clientTypeId } = req.body;
+		const { name, clientTypeId, counterpartyId } = req.body;
 
 		const principal = req.principal;
 
@@ -37,6 +37,7 @@ export const createHandler = async (
 				name,
 				principalId: principal.id,
 				clientTypeId,
+				counterpartyId,
 			})
 			.returning();
 

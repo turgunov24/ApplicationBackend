@@ -3,6 +3,7 @@ import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { usersTable } from './users';
 import { principalsTable } from './principals';
 import { referencesClientTypesTable } from './references/clientTypes';
+import { referencesCounterpartiesTable } from './references/counterparties';
 
 export const statuses = [
 	'active',
@@ -22,6 +23,9 @@ export const principalCustomersTable = pgTable('principal_customers', {
 	clientTypeId: integer('client_type_id')
 		.notNull()
 		.references(() => referencesClientTypesTable.id),
+	counterpartyId: integer('counterparty_id')
+		.notNull()
+		.references(() => referencesCounterpartiesTable.id),
 	createdBy: integer('created_by')
 		.notNull()
 		.references(() => usersTable.id),

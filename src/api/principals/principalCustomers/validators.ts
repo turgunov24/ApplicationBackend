@@ -6,7 +6,7 @@ import { Request } from 'express';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof principalCustomersTable>,
-	'name' | 'clientTypeId'
+	'name' | 'clientTypeId' | 'counterpartyId'
 >;
 
 type keys = keyof CreatePayload;
@@ -88,6 +88,12 @@ const createSchema: CreateValidationSchema = {
 		isInt: true,
 		notEmpty: true,
 		errorMessage: 'Client type id is required',
+	},
+	counterpartyId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'Counterparty id is required',
 	},
 };
 
