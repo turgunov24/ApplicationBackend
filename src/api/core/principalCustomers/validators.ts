@@ -8,7 +8,12 @@ import { SUPER_ADMIN_ID } from '../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof principalCustomersTable>,
-	'name' | 'principalId' | 'clientTypeId'
+	| 'name'
+	| 'principalId'
+	| 'clientTypeId'
+	| 'counterpartyId'
+	| 'legalFormId'
+	| 'espExpireDate'
 >;
 
 type keys = keyof CreatePayload;
@@ -99,6 +104,24 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Client type id is required',
 	},
+	counterpartyId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'Counterparty id is required',
+	},
+	legalFormId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'Legal form id is required',
+	},
+	espExpireDate: {
+		in: 'body',
+		optional: true,
+		isISO8601: true,
+		errorMessage: 'Invalid ESP expire date format (must be ISO8601 date)',
+	},
 };
 
 const updateSchema: UpdateValidationSchema = {
@@ -110,3 +133,4 @@ export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
+export const uploadEspKeyValidator = checkSchema(deleteSchema);

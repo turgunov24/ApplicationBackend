@@ -4,6 +4,7 @@ import { usersTable } from './users';
 import { principalsTable } from './principals';
 import { referencesClientTypesTable } from './references/clientTypes';
 import { referencesCounterpartiesTable } from './references/counterparties';
+import { referencesLegalFormsTable } from './references/legalForms';
 
 export const statuses = [
 	'active',
@@ -26,6 +27,11 @@ export const principalCustomersTable = pgTable('principal_customers', {
 	counterpartyId: integer('counterparty_id')
 		.notNull()
 		.references(() => referencesCounterpartiesTable.id),
+	legalFormId: integer('legal_form_id')
+		.notNull()
+		.references(() => referencesLegalFormsTable.id),
+	espPath: text('esp_path'),
+	espExpireDate: timestamp('esp_expire_date'),
 	createdBy: integer('created_by')
 		.notNull()
 		.references(() => usersTable.id),

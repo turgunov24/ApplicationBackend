@@ -11,8 +11,10 @@ import {
 	PRINCIPALS_CLIENT_TYPES_CONTROLLER,
 	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	PRINCIPALS_COUNTERPARTIES_CONTROLLER,
+	PRINCIPALS_LEGAL_FORMS_CONTROLLER,
 	REFERENCES_CLIENT_TYPES_CONTROLLER,
 	REFERENCES_COUNTERPARTIES_CONTROLLER,
+	REFERENCES_LEGAL_FORMS_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_CURRENCIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
@@ -47,6 +49,8 @@ import principalsClientTypesRouter from './api/principals/clientTypes/controller
 import principalsPrincipalCustomersRouter from './api/principals/principalCustomers/controller';
 import referencesCounterpartiesRouter from './api/core/references/counterparties/controller';
 import principalsCounterpartiesRouter from './api/principals/counterparties/controller';
+import referencesLegalFormsRouter from './api/core/references/legalForms/controller';
+import principalsLegalFormsRouter from './api/principals/legalForms/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -95,12 +99,11 @@ app.use(REFERENCES_CLIENT_TYPES_CONTROLLER, referencesClientTypesRouter);
 app.use(REFERENCES_TARIFFS_CONTROLLER, referencesTariffsRouter);
 app.use(PRINCIPAL_CUSTOMERS_CONTROLLER, principalCustomersRouter);
 app.use(PRINCIPALS_CLIENT_TYPES_CONTROLLER, principalsClientTypesRouter);
-app.use(
-	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
-	principalsPrincipalCustomersRouter,
-);
+app.use(PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER, principalsPrincipalCustomersRouter);
 app.use(REFERENCES_COUNTERPARTIES_CONTROLLER, referencesCounterpartiesRouter);
 app.use(PRINCIPALS_COUNTERPARTIES_CONTROLLER, principalsCounterpartiesRouter);
+app.use(REFERENCES_LEGAL_FORMS_CONTROLLER, referencesLegalFormsRouter);
+app.use(PRINCIPALS_LEGAL_FORMS_CONTROLLER, principalsLegalFormsRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

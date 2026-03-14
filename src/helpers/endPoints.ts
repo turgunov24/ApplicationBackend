@@ -27,3 +27,6 @@ export const REFERENCES_COUNTERPARTIES_CONTROLLER =
 	'/api/core/references/counterparties';
 export const PRINCIPALS_COUNTERPARTIES_CONTROLLER =
 	'/api/principals/counterparties';
+export const REFERENCES_LEGAL_FORMS_CONTROLLER =
+	'/api/core/references/legal-forms';
+export const PRINCIPALS_LEGAL_FORMS_CONTROLLER = '/api/principals/legal-forms';

@@ -31,6 +31,7 @@ export {
 } from './references/rolesPermissions';
 export { referencesCurrenciesTable } from './references/currencies';
 export { referencesCounterpartiesTable } from './references/counterparties';
+export { referencesLegalFormsTable } from './references/legalForms';
 export { referencesClientTypesTable } from './references/clientTypes';
 export {
 	referencesTariffsTable,

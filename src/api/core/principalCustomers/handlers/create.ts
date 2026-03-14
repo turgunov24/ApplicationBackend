@@ -11,7 +11,14 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name, principalId, clientTypeId } = req.body;
+		const {
+			name,
+			principalId,
+			clientTypeId,
+			counterpartyId,
+			legalFormId,
+			espExpireDate,
+		} = req.body;
 
 		const userId = getAuthUserId(req);
 
@@ -25,6 +32,9 @@ export const createHandler = async (
 				name,
 				principalId,
 				clientTypeId,
+				counterpartyId,
+				legalFormId,
+				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 			})
 			.returning();
 

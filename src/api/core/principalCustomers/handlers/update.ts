@@ -11,7 +11,14 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { name, principalId, clientTypeId } = req.body;
+		const {
+			name,
+			principalId,
+			clientTypeId,
+			counterpartyId,
+			legalFormId,
+			espExpireDate,
+		} = req.body;
 
 		await db
 			.update(principalCustomersTable)
@@ -19,6 +26,9 @@ export const updateHandler = async (
 				name,
 				principalId,
 				clientTypeId,
+				counterpartyId,
+				legalFormId,
+				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 				updatedAt: new Date(),
 			})
 			.where(eq(principalCustomersTable.id, Number(id)))

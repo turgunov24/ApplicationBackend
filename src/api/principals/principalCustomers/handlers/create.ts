@@ -12,14 +12,15 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name, clientTypeId, counterpartyId } = req.body;
+		const { name, clientTypeId, counterpartyId, legalFormId, espExpireDate } =
+			req.body;
 
+		// Principal ni yaratgan admin ID ni topamiz
 		const principal = req.principal;
 
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		// Principal ni yaratgan admin ID ni topamiz
 		const principalRecord = await db.query.principalsTable.findFirst({
 			where: eq(principalsTable.id, principal.id),
 			columns: {
@@ -38,6 +39,8 @@ export const createHandler = async (
 				principalId: principal.id,
 				clientTypeId,
 				counterpartyId,
+				legalFormId,
+				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 			})
 			.returning();
 

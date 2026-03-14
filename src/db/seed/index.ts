@@ -30,6 +30,9 @@ import { roleNamesForSeeding, users } from './users';
 import { principals } from './principals';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { clientTypes } from './referenceClientTypes';
+import { counterparties } from './referenceCounterparties';
+import { legalForms } from './referenceLegalForms';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -354,10 +357,6 @@ async function seedPrincipals() {
  * Client turlarini seed qiladi
  */
 async function seedClientTypes() {
-	const clientTypes = [
-		{ nameUz: 'Jismoniy shaxs', nameRu: 'Физическое лицо' },
-		{ nameUz: 'Yuridik shaxs', nameRu: 'Юридическое лицо' },
-	];
 
 	for (const clientType of clientTypes) {
 		await db.insert(schemas.referencesClientTypesTable).values({
@@ -368,6 +367,34 @@ async function seedClientTypes() {
 		// .onConflictDoNothing();
 	}
 	logger.info('Client types seeded ✅');
+}
+
+/**
+ * Counterparties ni seed qiladi
+ */
+async function seedCounterparties() {
+
+	for (const counterparty of counterparties) {
+		await db.insert(schemas.referencesCounterpartiesTable).values({
+			name: counterparty.name,
+			createdBy: 2,
+		});
+	}
+	logger.info('Counterparties seeded ✅');
+}
+
+/**
+ * Legal formslarni seed qiladi
+ */
+async function seedLegalForms() {
+
+	for (const legalForm of legalForms) {
+		await db.insert(schemas.referencesLegalFormsTable).values({
+			name: legalForm.name,
+			createdBy: 2,
+		});
+	}
+	logger.info('Legal forms seeded ✅');
 }
 
 /**
@@ -382,9 +409,22 @@ async function seedPrincipalCustomers() {
 		.select({ id: schemas.referencesClientTypesTable.id })
 		.from(schemas.referencesClientTypesTable);
 
-	if (!principals.length || !clientTypes.length) {
+	const counterparties = await db
+		.select({ id: schemas.referencesCounterpartiesTable.id })
+		.from(schemas.referencesCounterpartiesTable);
+
+	const legalForms = await db
+		.select({ id: schemas.referencesLegalFormsTable.id })
+		.from(schemas.referencesLegalFormsTable);
+
+	if (
+		!principals.length ||
+		!clientTypes.length ||
+		!counterparties.length ||
+		!legalForms.length
+	) {
 		logger.info(
-			'Skipping principal customers seed — no principals or client types found',
+			'Skipping principal customers seed — missing required relations',
 		);
 		return;
 	}
@@ -394,11 +434,15 @@ async function seedPrincipalCustomers() {
 			name: 'Aliyev Trading',
 			principalId: principals[0].id,
 			clientTypeId: clientTypes[0].id,
+			counterpartyId: counterparties[0].id,
+			legalFormId: legalForms[0].id,
 		},
 		{
 			name: 'Global Textile LLC',
 			principalId: principals[0].id,
 			clientTypeId: clientTypes[1].id,
+			counterpartyId: counterparties[1].id || counterparties[0].id,
+			legalFormId: legalForms[1].id || legalForms[0].id,
 		},
 	];
 
@@ -407,6 +451,8 @@ async function seedPrincipalCustomers() {
 			name: pc.name,
 			principalId: pc.principalId,
 			clientTypeId: pc.clientTypeId,
+			counterpartyId: pc.counterpartyId,
+			legalFormId: pc.legalFormId,
 			createdBy: 2,
 			status: 'active',
 		});
@@ -437,6 +483,8 @@ async function main() {
 		await seedUsersUpdate();
 		await seedPrincipals();
 		await seedClientTypes();
+		await seedCounterparties();
+		await seedLegalForms();
 		await seedPrincipalCustomers();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
