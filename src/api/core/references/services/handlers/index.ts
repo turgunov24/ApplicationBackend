@@ -4,7 +4,7 @@ import { ilike } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
-import { referencesLegalFormsTable } from '../../../../../db/schemas';
+import { referencesServicesTable } from '../../../../../db/schemas';
 import db from '../../../../../db';
 import { handleError } from '../../../../../utils/handleError';
 import {
@@ -16,7 +16,7 @@ import { generateErrorMessage } from '../../../../../utils/generateErrorMessage'
 import { SUPER_ADMIN_ID } from '../../../../../helpers/config';
 
 type IStatuses = Pick<
-	InferSelectModel<typeof referencesLegalFormsTable>,
+	InferSelectModel<typeof referencesServicesTable>,
 	'status'
 >;
 
@@ -48,30 +48,30 @@ export const indexHandler = async (
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
 		if (id) {
-			const legalForm = await db.query.referencesLegalFormsTable.findFirst({
-				where: eq(referencesLegalFormsTable.id, Number(id)),
+			const service = await db.query.referencesServicesTable.findFirst({
+				where: eq(referencesServicesTable.id, Number(id)),
 			});
 
-			return res.json(legalForm);
+			return res.json(service);
 		}
 
 		const whereConditions = [];
 
 		if (userId !== SUPER_ADMIN_ID) {
-			whereConditions.push(eq(referencesLegalFormsTable.createdBy, userId));
+			whereConditions.push(eq(referencesServicesTable.createdBy, userId));
 		}
 
 		if (status !== 'all') {
-			whereConditions.push(eq(referencesLegalFormsTable.status, status));
+			whereConditions.push(eq(referencesServicesTable.status, status));
 		} else {
-			whereConditions.push(ne(referencesLegalFormsTable.status, 'deleted'));
+			whereConditions.push(ne(referencesServicesTable.status, 'deleted'));
 		}
 
 		if (search) {
 			const searchTerm = `%${search}%`;
 			whereConditions.push(
 				or(
-					ilike(referencesLegalFormsTable.name, searchTerm),
+					ilike(referencesServicesTable.name, searchTerm),
 				),
 			);
 		}
@@ -81,7 +81,7 @@ export const indexHandler = async (
 
 		const totalCountResult = await db
 			.select({ count: count() })
-			.from(referencesLegalFormsTable)
+			.from(referencesServicesTable)
 			.where(and(whereClause));
 
 		const totalCount = totalCountResult[0].count;
@@ -98,16 +98,16 @@ export const indexHandler = async (
 			totalCount,
 		);
 
-		const legalForms = await db
+		const services = await db
 			.select()
-			.from(referencesLegalFormsTable)
+			.from(referencesServicesTable)
 			.where(and(whereClause))
-			.orderBy(asc(referencesLegalFormsTable.createdAt))
+			.orderBy(asc(referencesServicesTable.createdAt))
 			.limit(_dataPerPage)
 			.offset(offset);
 
 		res.json({
-			result: legalForms,
+			result: services,
 			pagination,
 		});
 	} catch (error: unknown) {

@@ -30,3 +30,5 @@ export const PRINCIPALS_COUNTERPARTIES_CONTROLLER =
 export const REFERENCES_LEGAL_FORMS_CONTROLLER =
 	'/api/core/references/legal-forms';
 export const PRINCIPALS_LEGAL_FORMS_CONTROLLER = '/api/principals/legal-forms';
+export const REFERENCES_SERVICES_CONTROLLER = '/api/core/references/services';
+export const PRINCIPALS_SERVICES_CONTROLLER = '/api/principals/services';

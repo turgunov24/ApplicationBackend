@@ -32,6 +32,7 @@ export {
 export { referencesCurrenciesTable } from './references/currencies';
 export { referencesCounterpartiesTable } from './references/counterparties';
 export { referencesLegalFormsTable } from './references/legalForms';
+export { referencesServicesTable } from './references/services';
 export { referencesClientTypesTable } from './references/clientTypes';
 export {
 	referencesTariffsTable,
