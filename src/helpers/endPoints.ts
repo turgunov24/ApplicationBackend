@@ -32,3 +32,7 @@ export const REFERENCES_LEGAL_FORMS_CONTROLLER =
 export const PRINCIPALS_LEGAL_FORMS_CONTROLLER = '/api/principals/legal-forms';
 export const REFERENCES_SERVICES_CONTROLLER = '/api/core/references/services';
 export const PRINCIPALS_SERVICES_CONTROLLER = '/api/principals/services';
+export const REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER =
+	'/api/core/references/principal-customer-credentials';
+export const PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER =
+	'/api/principals/principal-customer-credentials';

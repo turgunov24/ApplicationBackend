@@ -29,14 +29,36 @@ export {
 	referencesRolesPermissionsTable,
 	referenceRolesPermissionsRelations,
 } from './references/rolesPermissions';
-export { referencesCurrenciesTable } from './references/currencies';
-export { referencesCounterpartiesTable } from './references/counterparties';
-export { referencesLegalFormsTable } from './references/legalForms';
-export { referencesServicesTable } from './references/services';
-export { referencesClientTypesTable } from './references/clientTypes';
+export {
+	referencesCurrenciesTable,
+	referencesCurrenciesRelations,
+} from './references/currencies';
+export {
+	referencesCounterpartiesTable,
+	referencesCounterpartiesRelations,
+} from './references/counterparties';
+export {
+	referencesLegalFormsTable,
+	referencesLegalFormsRelations,
+} from './references/legalForms';
+export {
+	referencesServicesTable,
+	referencesServicesRelations,
+} from './references/services';
+export {
+	referencesClientTypesTable,
+	referencesClientTypesRelations,
+} from './references/clientTypes';
 export {
 	referencesTariffsTable,
 	referencesTariffsRelations,
 } from './references/tariffs';
-export { principalsTable } from './principals';
-export { principalCustomersTable } from './principalCustomers';
+export { principalsTable, principalsRelations } from './principals';
+export {
+	principalCustomersTable,
+	principalCustomersRelations,
+} from './principalCustomers';
+export {
+	referencesPrincipalCustomerCredentialsTable,
+	referencesPrincipalCustomerCredentialsRelations,
+} from './references/principalCustomerCredentials';

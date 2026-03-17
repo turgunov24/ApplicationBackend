@@ -17,6 +17,8 @@ import {
 	REFERENCES_LEGAL_FORMS_CONTROLLER,
 	REFERENCES_SERVICES_CONTROLLER,
 	PRINCIPALS_SERVICES_CONTROLLER,
+	REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
+	PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
 	REFERENCES_COUNTRIES_CONTROLLER,
 	REFERENCES_CURRENCIES_CONTROLLER,
 	REFERENCES_DISTRICTS_CONTROLLER,
@@ -55,6 +57,8 @@ import referencesLegalFormsRouter from './api/core/references/legalForms/control
 import principalsLegalFormsRouter from './api/principals/legalForms/controller';
 import referencesServicesRouter from './api/core/references/services/controller';
 import principalsServicesRouter from './api/principals/services/controller';
+import referencesPrincipalCustomerCredentialsRouter from './api/core/references/principalCustomerCredentials/controller';
+import principalsPrincipalCustomerCredentialsRouter from './api/principals/principalCustomerCredentials/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -110,6 +114,8 @@ app.use(REFERENCES_LEGAL_FORMS_CONTROLLER, referencesLegalFormsRouter);
 app.use(PRINCIPALS_LEGAL_FORMS_CONTROLLER, principalsLegalFormsRouter);
 app.use(REFERENCES_SERVICES_CONTROLLER, referencesServicesRouter);
 app.use(PRINCIPALS_SERVICES_CONTROLLER, principalsServicesRouter);
+app.use(REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER, referencesPrincipalCustomerCredentialsRouter);
+app.use(PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER, principalsPrincipalCustomerCredentialsRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

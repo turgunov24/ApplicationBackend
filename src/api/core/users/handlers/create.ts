@@ -131,7 +131,7 @@ export const createHandler = async (
 		const result = await db
 			.insert(usersTable)
 			.values({
-				createdBy: userId,
+				createdBy: userId,	
 				fullName,
 				username,
 				password: hashedPassword,

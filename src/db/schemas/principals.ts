@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { text } from 'drizzle-orm/pg-core';
 import {
 	pgTable,
@@ -6,6 +7,7 @@ import {
 	serial,
 	integer,
 } from 'drizzle-orm/pg-core';
+import { principalCustomersTable } from './principalCustomers';
 
 export const statuses = [
 	'active',
@@ -32,3 +34,7 @@ export const principalsTable = pgTable('principals', {
 	updatedAt: timestamp().notNull().defaultNow(),
 	createdBy: integer('created_by').notNull(),
 });
+
+export const principalsRelations = relations(principalsTable, ({ many }) => ({
+	principalCustomers: many(principalCustomersTable),
+}));

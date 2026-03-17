@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { integer, text } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { usersTable } from '../users';
@@ -16,4 +17,14 @@ export const referencesCounterpartiesTable = pgTable(
 			.notNull()
 			.references(() => usersTable.id),
 	},
+);
+
+export const referencesCounterpartiesRelations = relations(
+	referencesCounterpartiesTable,
+	({ one }) => ({
+		createdBy: one(usersTable, {
+			fields: [referencesCounterpartiesTable.createdBy],
+			references: [usersTable.id],
+		}),
+	}),
 );

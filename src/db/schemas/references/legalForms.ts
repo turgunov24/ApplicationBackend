@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import { integer, text } from 'drizzle-orm/pg-core';
 import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { usersTable } from '../users';
@@ -14,3 +15,13 @@ export const referencesLegalFormsTable = pgTable('references_legal_forms', {
 		.notNull()
 		.references(() => usersTable.id),
 });
+
+export const referencesLegalFormsRelations = relations(
+	referencesLegalFormsTable,
+	({ one }) => ({
+		createdBy: one(usersTable, {
+			fields: [referencesLegalFormsTable.createdBy],
+			references: [usersTable.id],
+		}),
+	}),
+);
