@@ -12,6 +12,7 @@ import referencesClientTypesResources from '../api/core/references/clientTypes/r
 import referencesTariffsResources from '../api/core/references/tariffs/resources';
 import principalsResources from '../api/core/principals/resources';
 import principalCustomersResources from '../api/core/principalCustomers/resources';
+import attachTariffToPrincipalCustomersResources from '../api/core/attachTariffToPrincipalCustomers/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -28,6 +29,7 @@ const resources = [
 	...usersResources,
 	...principalsResources,
 	...principalCustomersResources,
+	...attachTariffToPrincipalCustomersResources,
 ];
 
 export default resources;

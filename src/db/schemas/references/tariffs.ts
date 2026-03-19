@@ -3,6 +3,7 @@ import { pgTable, varchar, timestamp, serial } from 'drizzle-orm/pg-core';
 import { referencesCurrenciesTable } from './currencies';
 import { relations } from 'drizzle-orm';
 import { usersTable } from '../users';
+import { referencesAttachTariffToPrincipalCustomersTable } from './attachTariffToPrincipalCustomers';
 
 export const statuses = ['active', 'deleted'] as const;
 
@@ -24,10 +25,11 @@ export const referencesTariffsTable = pgTable('references_tariffs', {
 
 export const referencesTariffsRelations = relations(
 	referencesTariffsTable,
-	({ one }) => ({
+	({ one, many }) => ({
 		currency: one(referencesCurrenciesTable, {
 			fields: [referencesTariffsTable.currencyId],
 			references: [referencesCurrenciesTable.id],
 		}),
+		attachTariffToPrincipalCustomers: many(referencesAttachTariffToPrincipalCustomersTable),
 	}),
 );

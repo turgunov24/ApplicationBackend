@@ -23,6 +23,11 @@ import {
 	USERS_CONTROLLER,
 	PRINCIPALS_CONTROLLER,
 	PRINCIPAL_CUSTOMERS_CONTROLLER,
+	REFERENCES_COUNTERPARTIES_CONTROLLER,
+	REFERENCES_LEGAL_FORMS_CONTROLLER,
+	REFERENCES_SERVICES_CONTROLLER,
+	REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
+	ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -33,6 +38,10 @@ import jwt from 'jsonwebtoken';
 import { clientTypes } from './referenceClientTypes';
 import { counterparties } from './referenceCounterparties';
 import { legalForms } from './referenceLegalForms';
+import { services } from './referenceServices';
+import { currencies } from './referenceCurrencies';
+import { tariffs } from './referenceTariffs';
+import { principalCustomers } from './principalCustomers';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -42,6 +51,11 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_CURRENCIES_CONTROLLER]: "Valyutalar ma'lumotnomalari",
 	[REFERENCES_CLIENT_TYPES_CONTROLLER]: "Mijoz turlari ma'lumotnomalari",
 	[REFERENCES_TARIFFS_CONTROLLER]: "Tariflar ma'lumotnomalari",
+	[REFERENCES_COUNTERPARTIES_CONTROLLER]: "Kontragentlar ma'lumotnomalari",
+	[REFERENCES_LEGAL_FORMS_CONTROLLER]: "Tashkiliy-huquqiy shakllar ma'lumotnomalari",
+	[REFERENCES_SERVICES_CONTROLLER]: "Xizmatlar ma'lumotnomalari",
+	[REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER]: "Principal mijozlar ma'lumotlari",
+	[ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER]: "Tariflarni biriktirish",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -302,7 +316,7 @@ async function seedUsersUpdate() {
 				userId: user.id,
 				roleId: role.id,
 			})
-			.onConflictDoNothing();
+			// .onConflictDoNothing();
 	}
 }
 
@@ -357,7 +371,6 @@ async function seedPrincipals() {
  * Client turlarini seed qiladi
  */
 async function seedClientTypes() {
-
 	for (const clientType of clientTypes) {
 		await db.insert(schemas.referencesClientTypesTable).values({
 			nameUz: clientType.nameUz,
@@ -373,7 +386,6 @@ async function seedClientTypes() {
  * Counterparties ni seed qiladi
  */
 async function seedCounterparties() {
-
 	for (const counterparty of counterparties) {
 		await db.insert(schemas.referencesCounterpartiesTable).values({
 			name: counterparty.name,
@@ -384,10 +396,9 @@ async function seedCounterparties() {
 }
 
 /**
- * Legal formslarni seed qiladi
+ * Legal forms ni seed qiladi
  */
 async function seedLegalForms() {
-
 	for (const legalForm of legalForms) {
 		await db.insert(schemas.referencesLegalFormsTable).values({
 			name: legalForm.name,
@@ -398,67 +409,163 @@ async function seedLegalForms() {
 }
 
 /**
+ * Services ni seed qiladi
+ */
+async function seedServices() {
+	for (const service of services) {
+		await db.insert(schemas.referencesServicesTable).values({
+			name: service.name,
+			createdBy: 2,
+		});
+	}
+	logger.info('Services seeded ✅');
+}
+
+/**
+ * Currencies ni seed qiladi
+ */
+async function seedCurrencies() {
+	for (const currency of currencies) {
+		await db.insert(schemas.referencesCurrenciesTable).values({
+			nameUz: currency.nameUz,
+			nameRu: currency.nameRu,
+			createdBy: 2,
+		});
+	}
+	logger.info('Currencies seeded ✅');
+}
+
+/**
+ * Tariffs ni seed qiladi
+ */
+async function seedTariffs() {
+	const dbCurrencies = await db
+		.select({ id: schemas.referencesCurrenciesTable.id, nameUz: schemas.referencesCurrenciesTable.nameUz })
+		.from(schemas.referencesCurrenciesTable);
+
+	for (const tariff of tariffs) {
+		const currency = dbCurrencies.find(c => c.nameUz === tariff.currencyNameUz);
+		if (!currency) {
+			logger.warn(`Currency ${tariff.currencyNameUz} not found!`);
+			continue;
+		}
+
+		await db.insert(schemas.referencesTariffsTable).values({
+			nameUz: tariff.nameUz,
+			nameRu: tariff.nameRu,
+			monthlyPrice: tariff.monthlyPrice,
+			currencyId: currency.id,
+			createdBy: 2,
+		});
+	}
+	logger.info('Tariffs seeded ✅');
+}
+
+/**
  * Principal customerlarni seed qiladi
  */
-async function seedPrincipalCustomers() {
-	const principals = await db
-		.select({ id: schemas.principalsTable.id })
-		.from(schemas.principalsTable);
-
-	const clientTypes = await db
-		.select({ id: schemas.referencesClientTypesTable.id })
-		.from(schemas.referencesClientTypesTable);
-
-	const counterparties = await db
-		.select({ id: schemas.referencesCounterpartiesTable.id })
-		.from(schemas.referencesCounterpartiesTable);
-
-	const legalForms = await db
-		.select({ id: schemas.referencesLegalFormsTable.id })
-		.from(schemas.referencesLegalFormsTable);
-
-	if (
-		!principals.length ||
-		!clientTypes.length ||
-		!counterparties.length ||
-		!legalForms.length
-	) {
-		logger.info(
-			'Skipping principal customers seed — missing required relations',
-		);
-		return;
-	}
-
-	const principalCustomers = [
-		{
-			name: 'Aliyev Trading',
-			principalId: principals[0].id,
-			clientTypeId: clientTypes[0].id,
-			counterpartyId: counterparties[0].id,
-			legalFormId: legalForms[0].id,
-		},
-		{
-			name: 'Global Textile LLC',
-			principalId: principals[0].id,
-			clientTypeId: clientTypes[1].id,
-			counterpartyId: counterparties[1].id || counterparties[0].id,
-			legalFormId: legalForms[1].id || legalForms[0].id,
-		},
-	];
-
+async function seedPrincipalCustomersInitial() {
 	for (const pc of principalCustomers) {
+		const principal = await db.query.principalsTable.findFirst({
+			where: eq(schemas.principalsTable.username, pc.principalUsername),
+			columns: { id: true },
+		});
+
+		if (!principal) {
+			throw new Error(`Principal not found for customer ${pc.name}`);
+		}
+
+		const clientType = await db.query.referencesClientTypesTable.findFirst({
+			where: eq(schemas.referencesClientTypesTable.nameUz, pc.clientTypeNameUz),
+			columns: { id: true },
+		});
+
+		if (!clientType) {
+			throw new Error(`Client type not found for customer ${pc.name}`);
+		}
+
+		const counterparty = await db.query.referencesCounterpartiesTable.findFirst({
+			where: eq(schemas.referencesCounterpartiesTable.name, pc.counterpartyName),
+			columns: { id: true },
+		});
+
+		if (!counterparty) {
+			throw new Error(`Counterparty not found for customer ${pc.name}`);
+		}
+
+		const legalForm = await db.query.referencesLegalFormsTable.findFirst({
+			where: eq(schemas.referencesLegalFormsTable.name, pc.legalFormName),
+			columns: { id: true },
+		});
+
+		if (!legalForm) {
+			throw new Error(`Legal form not found for customer ${pc.name}`);
+		}
+
 		await db.insert(schemas.principalCustomersTable).values({
 			name: pc.name,
-			principalId: pc.principalId,
-			clientTypeId: pc.clientTypeId,
-			counterpartyId: pc.counterpartyId,
-			legalFormId: pc.legalFormId,
-			createdBy: 2,
-			status: 'active',
+			principalId: principal.id,
+			clientTypeId: clientType.id,
+			counterpartyId: counterparty.id,
+			legalFormId: legalForm.id,
+			createdBy: pc.createdBy,
+			status: pc.status,
 		});
-		// .onConflictDoNothing();
 	}
-	logger.info('Principal customers seeded ✅');
+	logger.info('Principal customers initial seeded ✅');
+}
+
+/**
+ * Principal customerlarga tegishli credentiallar va tariflarni biriktiradi
+ */
+async function seedPrincipalCustomersUpdate() {
+	const dbServices = await db
+		.select({ id: schemas.referencesServicesTable.id })
+		.from(schemas.referencesServicesTable);
+
+	const dbTariffs = await db
+		.select({ id: schemas.referencesTariffsTable.id })
+		.from(schemas.referencesTariffsTable);
+
+	for (const pc of principalCustomers) {
+		const customer = await db.query.principalCustomersTable.findFirst({
+			where: eq(schemas.principalCustomersTable.name, pc.name),
+			columns: { id: true },
+		});
+
+		if (!customer) {
+			throw new Error(`Principal customer not found: ${pc.name}`);
+		}
+
+		const customerId = customer.id;
+
+		if (dbServices.length > 0) {
+			await db.insert(schemas.referencesPrincipalCustomerCredentialsTable).values({
+				serviceId: dbServices[0].id,
+				username: `user_${customerId}`,
+				password: `pass_${customerId}`,
+				additionalInformationUz: 'Qo\'shimcha ma\'lumot',
+				additionalInformationRu: 'Дополнительная информация',
+				principalCustomerId: customerId,
+				createdBy: 2,
+			});
+		}
+
+		if (dbTariffs.length > 0) {
+			const startDate = new Date();
+			const endDate = new Date();
+			endDate.setMonth(endDate.getMonth() + 1);
+
+			await db.insert(schemas.referencesAttachTariffToPrincipalCustomersTable).values({
+				principalCustomerId: customerId,
+				tariffId: dbTariffs[0].id,
+				startDate: startDate,
+				endDate: endDate,
+				createdBy: 2,
+			});
+		}
+	}
+	logger.info('Principal customers update seeded ✅');
 }
 
 /**
@@ -479,13 +586,16 @@ async function main() {
 		await seedPermissions();
 		await seedRoles();
 
-		// 3. Userlarni update qilish (location va role qo'shish)
 		await seedUsersUpdate();
 		await seedPrincipals();
 		await seedClientTypes();
 		await seedCounterparties();
 		await seedLegalForms();
-		await seedPrincipalCustomers();
+		await seedServices();
+		await seedCurrencies();
+		await seedTariffs();
+		await seedPrincipalCustomersInitial();
+		await seedPrincipalCustomersUpdate();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

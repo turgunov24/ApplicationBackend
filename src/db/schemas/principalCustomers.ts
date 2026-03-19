@@ -7,6 +7,7 @@ import { referencesClientTypesTable } from './references/clientTypes';
 import { referencesCounterpartiesTable } from './references/counterparties';
 import { referencesLegalFormsTable } from './references/legalForms';
 import { referencesPrincipalCustomerCredentialsTable } from './references/principalCustomerCredentials';
+import { referencesAttachTariffToPrincipalCustomersTable } from './references/attachTariffToPrincipalCustomers';
 
 export const statuses = [
 	'active',
@@ -65,5 +66,6 @@ export const principalCustomersRelations = relations(
 			references: [usersTable.id],
 		}),
 		credentials: many(referencesPrincipalCustomerCredentialsTable),
+		attachTariffToPrincipalCustomers: many(referencesAttachTariffToPrincipalCustomersTable),
 	}),
 );

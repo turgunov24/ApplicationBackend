@@ -36,3 +36,7 @@ export const REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER =
 	'/api/core/references/principal-customer-credentials';
 export const PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER =
 	'/api/principals/principal-customer-credentials';
+export const ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER =
+	'/api/core/attach-tariff-to-principal-customers';
+export const PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER =
+	'/api/principals/attach-tariff-to-principal-customers';

@@ -14,6 +14,11 @@ import { usersPermissions } from './users';
 import { principalsPermissions } from './principals';
 import { principalCustomersPermissions } from './principalCustomers';
 import { resourcesPermissions } from './resources';
+import { counterpartiesPermissions } from './counterparties';
+import { legalFormsPermissions } from './legalForms';
+import { servicesPermissions } from './services';
+import { principalCustomerCredentialsPermissions } from './principalCustomerCredentials';
+import { attachTariffToPrincipalCustomersPermissions } from './attachTariffToPrincipalCustomers';
 
 export const permissions: Array<
 	Pick<
@@ -35,4 +40,9 @@ export const permissions: Array<
 	...principalsPermissions,
 	...principalCustomersPermissions,
 	...resourcesPermissions,
+	...counterpartiesPermissions,
+	...legalFormsPermissions,
+	...servicesPermissions,
+	...principalCustomerCredentialsPermissions,
+	...attachTariffToPrincipalCustomersPermissions,
 ];

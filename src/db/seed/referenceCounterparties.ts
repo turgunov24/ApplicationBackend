@@ -1,4 +1,12 @@
-export const counterparties = [
-	{ name: 'Counterparty 1' },
-	{ name: 'Counterparty 2' },
+import { InferSelectModel } from 'drizzle-orm';
+import * as schemas from '../schemas/index';
+
+export const counterparties: Array<
+	Pick<
+		InferSelectModel<typeof schemas.referencesCounterpartiesTable>,
+		'name'
+	>
+> = [
+	{ name: 'Contoso Ltd.' },
+	{ name: 'Acme Corp.' },
 ];

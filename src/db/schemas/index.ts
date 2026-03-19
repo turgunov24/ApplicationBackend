@@ -62,3 +62,7 @@ export {
 	referencesPrincipalCustomerCredentialsTable,
 	referencesPrincipalCustomerCredentialsRelations,
 } from './references/principalCustomerCredentials';
+export {
+	referencesAttachTariffToPrincipalCustomersTable,
+	referencesAttachTariffToPrincipalCustomersRelations,
+} from './references/attachTariffToPrincipalCustomers';

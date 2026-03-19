@@ -38,4 +38,24 @@ export const permissionGroups: Array<
 		nameUz: "Tariflar ma'lumotnomalari",
 		nameRu: 'Тарифлар маълумотномалари',
 	},
+	{
+		nameUz: "Kontragentlar ma'lumotnomalari",
+		nameRu: 'Контрагентлар маълумотномалари',
+	},
+	{
+		nameUz: "Tashkiliy-huquqiy shakllar ma'lumotnomalari",
+		nameRu: 'Ташкилий-ҳуқуқий шакллар маълумотномалари',
+	},
+	{
+		nameUz: "Xizmatlar ma'lumotnomalari",
+		nameRu: 'Хизматлар маълумотномалари',
+	},
+	{
+		nameUz: "Principal mijozlar ma'lumotlari",
+		nameRu: 'Принсипал мижозлар маълумотлари',
+	},
+	{
+		nameUz: "Tariflarni biriktirish",
+		nameRu: 'Тарифларни бириктириш',
+	},
 ];
