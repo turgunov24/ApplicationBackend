@@ -509,6 +509,7 @@ async function seedPrincipalCustomersInitial() {
 			clientTypeId: clientType.id,
 			counterpartyId: counterparty.id,
 			legalFormId: legalForm.id,
+			inn: pc.inn,
 			createdBy: pc.createdBy,
 			status: pc.status,
 		});

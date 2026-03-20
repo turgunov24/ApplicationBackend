@@ -17,6 +17,7 @@ export const updateHandler = async (
 			clientTypeId,
 			counterpartyId,
 			legalFormId,
+			inn,
 			espExpireDate,
 		} = req.body;
 
@@ -28,6 +29,7 @@ export const updateHandler = async (
 				clientTypeId,
 				counterpartyId,
 				legalFormId,
+				inn,
 				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 				updatedAt: new Date(),
 			})

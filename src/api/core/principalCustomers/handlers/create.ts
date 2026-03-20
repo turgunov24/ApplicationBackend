@@ -17,6 +17,7 @@ export const createHandler = async (
 			clientTypeId,
 			counterpartyId,
 			legalFormId,
+			inn,
 			espExpireDate,
 		} = req.body;
 
@@ -34,6 +35,7 @@ export const createHandler = async (
 				clientTypeId,
 				counterpartyId,
 				legalFormId,
+				inn,
 				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 			})
 			.returning();

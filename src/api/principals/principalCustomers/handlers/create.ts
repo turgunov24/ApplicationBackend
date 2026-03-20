@@ -12,7 +12,7 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name, clientTypeId, counterpartyId, legalFormId, espExpireDate } =
+		const { name, clientTypeId, counterpartyId, legalFormId, inn, espExpireDate } =
 			req.body;
 
 		// Principal ni yaratgan admin ID ni topamiz
@@ -40,6 +40,7 @@ export const createHandler = async (
 				clientTypeId,
 				counterpartyId,
 				legalFormId,
+				inn,
 				espExpireDate: espExpireDate ? new Date(espExpireDate) : null,
 			})
 			.returning();

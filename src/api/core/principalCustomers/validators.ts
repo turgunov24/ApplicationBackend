@@ -13,6 +13,7 @@ export type CreatePayload = Pick<
 	| 'clientTypeId'
 	| 'counterpartyId'
 	| 'legalFormId'
+	| 'inn'
 	| 'espExpireDate'
 >;
 
@@ -115,6 +116,12 @@ const createSchema: CreateValidationSchema = {
 		isInt: true,
 		notEmpty: true,
 		errorMessage: 'Legal form id is required',
+	},
+	inn: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'INN is required',
 	},
 	espExpireDate: {
 		in: 'body',

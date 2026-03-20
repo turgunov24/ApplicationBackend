@@ -15,6 +15,13 @@
       "when": 1774023663032,
       "tag": "0001_cold_chameleon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774030328919,
+      "tag": "0002_rapid_tarantula",
+      "breakpoints": true
     }
   ]
 }

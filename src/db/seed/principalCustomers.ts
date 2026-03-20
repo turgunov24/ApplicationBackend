@@ -4,7 +4,7 @@ import * as schemas from '../schemas/index';
 export const principalCustomers: Array<
 	Pick<
 		InferSelectModel<typeof schemas.principalCustomersTable>,
-		'name' | 'createdBy' | 'status'
+		'name' | 'createdBy' | 'status' | 'inn'
 	> & {
 		principalUsername: string;
 		clientTypeNameUz: string;
@@ -18,6 +18,7 @@ export const principalCustomers: Array<
 		clientTypeNameUz: 'Jismoniy shaxs',
 		counterpartyName: 'Contoso Ltd.',
 		legalFormName: 'MChJ (Mas\'uliyati cheklangan jamiyat)',
+		inn: 123456789,
 		createdBy: 2,
 		status: 'active',
 	},
@@ -27,6 +28,7 @@ export const principalCustomers: Array<
 		clientTypeNameUz: 'Yuridik shaxs',
 		counterpartyName: 'Acme Corp.',
 		legalFormName: 'AJ (Aksiyadorlik jamiyati)',
+		inn: 987654321,
 		createdBy: 2,
 		status: 'active',
 	},

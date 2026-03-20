@@ -33,6 +33,7 @@ export const principalCustomersTable = pgTable('principal_customers', {
 	legalFormId: integer('legal_form_id')
 		.notNull()
 		.references(() => referencesLegalFormsTable.id),
+	inn: integer('inn').notNull(),
 	espPath: text('esp_path'),
 	espExpireDate: timestamp('esp_expire_date'),
 	createdBy: integer('created_by')
