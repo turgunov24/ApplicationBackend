@@ -8,7 +8,7 @@ import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesCounterpartiesTable>,
-	'name'
+	'name' | 'phone'
 >;
 
 type keys = keyof CreatePayload;
@@ -85,6 +85,13 @@ const createSchema: CreateValidationSchema = {
 		isString: true,
 		notEmpty: true,
 		errorMessage: 'Counterparty name is required',
+		trim: true,
+	},
+	phone: {
+		in: 'body',
+		isString: true,
+		notEmpty: true,
+		errorMessage: 'Counterparty phone is required',
 		trim: true,
 	},
 };

@@ -4,9 +4,9 @@ import * as schemas from '../schemas/index';
 export const counterparties: Array<
 	Pick<
 		InferSelectModel<typeof schemas.referencesCounterpartiesTable>,
-		'name'
+		'name' | 'phone'
 	>
 > = [
-	{ name: 'Contoso Ltd.' },
-	{ name: 'Acme Corp.' },
+	{ name: 'Contoso Ltd.', phone: '+998901234567' },
+	{ name: 'Acme Corp.', phone: '+998907654321' },
 ];

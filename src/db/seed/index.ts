@@ -389,6 +389,7 @@ async function seedCounterparties() {
 	for (const counterparty of counterparties) {
 		await db.insert(schemas.referencesCounterpartiesTable).values({
 			name: counterparty.name,
+			phone: counterparty.phone,
 			createdBy: 2,
 		});
 	}

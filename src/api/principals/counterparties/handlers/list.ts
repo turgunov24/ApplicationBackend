@@ -39,6 +39,7 @@ export const listHandler = async (req: Request, res: Response) => {
 				columns: {
 					id: true,
 					name: true,
+					phone: true,
 				},
 			});
 		res.json(counterparties);

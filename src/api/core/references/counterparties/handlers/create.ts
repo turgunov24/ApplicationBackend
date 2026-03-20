@@ -11,7 +11,7 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name } = req.body;
+		const { name, phone } = req.body;
 
 		const userId = getAuthUserId(req);
 
@@ -23,6 +23,7 @@ export const createHandler = async (
 			.values({
 				createdBy: userId,
 				name,
+				phone,
 			})
 			.returning();
 

@@ -12,6 +12,9 @@ import referencesClientTypesResources from '../api/core/references/clientTypes/r
 import referencesTariffsResources from '../api/core/references/tariffs/resources';
 import principalsResources from '../api/core/principals/resources';
 import principalCustomersResources from '../api/core/principalCustomers/resources';
+import referencesCounterpartiesResources from '../api/core/references/counterparties/resources';
+import referencesLegalFormsResources from '../api/core/references/legalForms/resources';
+import referencesServicesResources from '../api/core/references/services/resources';
 import attachTariffToPrincipalCustomersResources from '../api/core/attachTariffToPrincipalCustomers/resources';
 
 const resources = [
@@ -29,6 +32,9 @@ const resources = [
 	...usersResources,
 	...principalsResources,
 	...principalCustomersResources,
+	...referencesCounterpartiesResources,
+	...referencesLegalFormsResources,
+	...referencesServicesResources,
 	...attachTariffToPrincipalCustomersResources,
 ];
 

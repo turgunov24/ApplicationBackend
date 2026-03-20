@@ -10,6 +10,7 @@ export const referencesCounterpartiesTable = pgTable(
 	{
 		id: serial().primaryKey().notNull(),
 		name: varchar({ length: 255 }).notNull().default('counterparty_name'),
+		phone: varchar({ length: 255 }).notNull().unique(),
 		createdAt: timestamp().notNull().defaultNow(),
 		updatedAt: timestamp().notNull().defaultNow(),
 		status: text('status', { enum: statuses }).notNull().default('active'),
