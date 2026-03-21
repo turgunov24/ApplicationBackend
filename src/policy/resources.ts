@@ -16,6 +16,7 @@ import referencesCounterpartiesResources from '../api/core/references/counterpar
 import referencesLegalFormsResources from '../api/core/references/legalForms/resources';
 import referencesServicesResources from '../api/core/references/services/resources';
 import attachTariffToPrincipalCustomersResources from '../api/core/attachTariffToPrincipalCustomers/resources';
+import principalCustomerCredentialsResources from '../api/core/references/principalCustomerCredentials/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -36,6 +37,7 @@ const resources = [
 	...referencesLegalFormsResources,
 	...referencesServicesResources,
 	...attachTariffToPrincipalCustomersResources,
+	...principalCustomerCredentialsResources,
 ];
 
 export default resources;
