@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { eq, and } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
 import { referencesAttachTariffToPrincipalCustomersTable } from '../../../../db/schemas/references/attachTariffToPrincipalCustomers';
 import db from '../../../../db';
@@ -22,6 +23,30 @@ export const createHandler = async (
 
 		if (!userId)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
+		// Agar shu principalCustomer da active tariff mavjud bo'lsa — uni finished ga o'tkazamiz
+		const existingActive = await db
+			.select()
+			.from(referencesAttachTariffToPrincipalCustomersTable)
+			.where(
+				and(
+					eq(referencesAttachTariffToPrincipalCustomersTable.principalCustomerId, principalCustomerId),
+					eq(referencesAttachTariffToPrincipalCustomersTable.status, 'active'),
+				),
+			);
+
+		if (existingActive.length > 0) {
+			await db
+				.update(referencesAttachTariffToPrincipalCustomersTable)
+				.set({
+					status: 'finished',
+					endDate: new Date(),
+					updatedAt: new Date(),
+				})
+				.where(
+					eq(referencesAttachTariffToPrincipalCustomersTable.id, existingActive[0].id),
+				);
+		}
 
 		const result = await db
 			.insert(referencesAttachTariffToPrincipalCustomersTable)

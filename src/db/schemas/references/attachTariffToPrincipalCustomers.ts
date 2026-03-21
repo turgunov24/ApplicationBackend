@@ -5,7 +5,7 @@ import { usersTable } from '../users';
 import { principalCustomersTable } from '../principalCustomers';
 import { referencesTariffsTable } from './tariffs';
 
-export const statuses = ['active', 'deleted'] as const;
+export const statuses = ['active', 'deleted', 'finished'] as const;
 
 export const referencesAttachTariffToPrincipalCustomersTable = pgTable(
 	'references_attach_tariff_to_principal_customers',

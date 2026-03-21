@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
-import { ilike } from 'drizzle-orm';
+import { eq, InferSelectModel, ne, inArray } from 'drizzle-orm';
 import { and } from 'drizzle-orm';
 import { count } from 'drizzle-orm';
 import { asc } from 'drizzle-orm';
 import { referencesAttachTariffToPrincipalCustomersTable } from '../../../../db/schemas/references/attachTariffToPrincipalCustomers';
+import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import {
@@ -48,13 +48,53 @@ export const indexHandler = async (
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
 		if (id) {
-			const record = await db.query.referencesAttachTariffToPrincipalCustomersTable.findFirst({
-				where: eq(referencesAttachTariffToPrincipalCustomersTable.id, Number(id)),
-				with: {
-					tariff: true,
-					principalCustomer: true,
-				},
-			});
+			const record =
+				await db.query.referencesAttachTariffToPrincipalCustomersTable.findFirst(
+					{
+						where: eq(
+							referencesAttachTariffToPrincipalCustomersTable.id,
+							Number(id),
+						),
+						with: {
+							tariff: {
+								columns: {
+									nameUz: true,
+									nameRu: true,
+									monthlyPrice: true,
+								},
+								with: {
+									currency: {
+										columns: {
+											nameUz: true,
+											nameRu: true,
+										},
+									},
+								},
+							},
+							principalCustomer: true,
+						},
+					},
+				);
+
+			if (record?.principalCustomer?.counterpartyId) {
+				const [counterparty] = await db
+					.select({ name: referencesCounterpartiesTable.name })
+					.from(referencesCounterpartiesTable)
+					.where(
+						eq(
+							referencesCounterpartiesTable.id,
+							record.principalCustomer.counterpartyId,
+						),
+					);
+
+				return res.json({
+					...record,
+					principalCustomer: {
+						...record.principalCustomer,
+						counterparty: counterparty || null,
+					},
+				});
+			}
 
 			return res.json(record);
 		}
@@ -62,13 +102,28 @@ export const indexHandler = async (
 		const whereConditions = [];
 
 		if (userId !== SUPER_ADMIN_ID) {
-			whereConditions.push(eq(referencesAttachTariffToPrincipalCustomersTable.createdBy, userId));
+			whereConditions.push(
+				eq(
+					referencesAttachTariffToPrincipalCustomersTable.createdBy,
+					userId,
+				),
+			);
 		}
 
 		if (status !== 'all') {
-			whereConditions.push(eq(referencesAttachTariffToPrincipalCustomersTable.status, status));
+			whereConditions.push(
+				eq(
+					referencesAttachTariffToPrincipalCustomersTable.status,
+					status,
+				),
+			);
 		} else {
-			whereConditions.push(ne(referencesAttachTariffToPrincipalCustomersTable.status, 'deleted'));
+			whereConditions.push(
+				ne(
+					referencesAttachTariffToPrincipalCustomersTable.status,
+					'deleted',
+				),
+			);
 		}
 
 		const whereClause =
@@ -93,19 +148,80 @@ export const indexHandler = async (
 			totalCount,
 		);
 
-		const records = await db.query.referencesAttachTariffToPrincipalCustomersTable.findMany({
-			where: whereClause,
-			orderBy: asc(referencesAttachTariffToPrincipalCustomersTable.createdAt),
-			limit: _dataPerPage,
-			offset,
-			with: {
-				tariff: true,
-				principalCustomer: true,
-			},
-		});
+		const records =
+			await db.query.referencesAttachTariffToPrincipalCustomersTable.findMany(
+				{
+					where: whereClause,
+					orderBy: asc(
+						referencesAttachTariffToPrincipalCustomersTable.createdAt,
+					),
+					limit: _dataPerPage,
+					offset,
+					with: {
+						tariff: {
+							columns: {
+								nameUz: true,
+								nameRu: true,
+								monthlyPrice: true,
+							},
+							with: {
+								currency: {
+									columns: {
+										nameUz: true,
+										nameRu: true,
+									},
+								},
+							},
+						},
+						principalCustomer: true,
+					},
+				},
+			);
+
+		// counterparty ni alohida olamiz (PostgreSQL 63-char identifier limit tufayli nested with ishlamaydi)
+		const counterpartyIds = [
+			...new Set(
+				records
+					.map((r) => r.principalCustomer?.counterpartyId)
+					.filter(Boolean),
+			),
+		] as number[];
+
+		const counterparties =
+			counterpartyIds.length > 0
+				? await db
+						.select({
+							id: referencesCounterpartiesTable.id,
+							name: referencesCounterpartiesTable.name,
+						})
+						.from(referencesCounterpartiesTable)
+						.where(
+							inArray(
+								referencesCounterpartiesTable.id,
+								counterpartyIds,
+							),
+						)
+				: [];
+
+		const counterpartyMap = new Map(
+			counterparties.map((c) => [c.id, c]),
+		);
+
+		const result = records.map((r) => ({
+			...r,
+			principalCustomer: r.principalCustomer
+				? {
+						...r.principalCustomer,
+						counterparty:
+							counterpartyMap.get(
+								r.principalCustomer.counterpartyId,
+							) || null,
+					}
+				: r.principalCustomer,
+		}));
 
 		res.json({
-			result: records,
+			result,
 			pagination,
 		});
 	} catch (error: unknown) {

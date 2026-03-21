@@ -98,13 +98,6 @@ const createSchema: CreateValidationSchema = {
 		notEmpty: true,
 		errorMessage: 'Password is required',
 		trim: true,
-		isLength: {
-			options: {
-				min: 8,
-				max: 20,
-			},
-			errorMessage: 'Password must be between 8 and 20 characters',
-		},
 	},
 	additionalInformationUz: {
 		in: 'body',
@@ -134,13 +127,6 @@ const updateSchema: UpdateValidationSchema = {
 		isString: true,
 		trim: true,
 		optional: true,
-		isLength: {
-			options: {
-				min: 8,
-				max: 20,
-			},
-			errorMessage: 'Password must be between 8 and 20 characters',
-		},
 	},
 };
 

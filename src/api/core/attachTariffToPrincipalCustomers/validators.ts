@@ -8,18 +8,13 @@ import { referencesAttachTariffToPrincipalCustomersTable } from '../../../db/sch
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesAttachTariffToPrincipalCustomersTable>,
-	| 'principalCustomerId'
-	| 'tariffId'
-	| 'startDate'
-	| 'endDate'
+	'principalCustomerId' | 'tariffId' | 'startDate' | 'endDate'
 >;
 
 type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
 export type DeleteValidationSchema = Record<'id', ParamSchema>;
-export type UpdateValidationSchema = CreateValidationSchema &
-	DeleteValidationSchema;
 
 const indexSchema: DeleteValidationSchema = {
 	id: {
@@ -32,9 +27,12 @@ const indexSchema: DeleteValidationSchema = {
 					const record = await db
 						.select()
 						.from(referencesAttachTariffToPrincipalCustomersTable)
-						.where(eq(referencesAttachTariffToPrincipalCustomersTable.id, value));
+						.where(
+							eq(referencesAttachTariffToPrincipalCustomersTable.id, value),
+						);
 
-					if (!record.length) throw new Error('Attach tariff to principal customer not found');
+					if (!record.length)
+						throw new Error('Attach tariff to principal customer not found');
 					const userId = getAuthUserId(req as Request);
 
 					if (userId === SUPER_ADMIN_ID) return true;
@@ -62,7 +60,8 @@ const deleteSchema: DeleteValidationSchema = {
 					.from(referencesAttachTariffToPrincipalCustomersTable)
 					.where(eq(referencesAttachTariffToPrincipalCustomersTable.id, value));
 
-				if (!record.length) throw new Error('Attach tariff to principal customer not found');
+				if (!record.length)
+					throw new Error('Attach tariff to principal customer not found');
 				const userId = getAuthUserId(req as Request);
 
 				if (userId === SUPER_ADMIN_ID) return true;
@@ -97,18 +96,12 @@ const createSchema: CreateValidationSchema = {
 	},
 	endDate: {
 		in: 'body',
-		optional: true,
+		optional: { options: { values: 'falsy' } },
 		isISO8601: true,
 		errorMessage: 'Invalid end date format (must be ISO8601 date)',
 	},
 };
 
-const updateSchema: UpdateValidationSchema = {
-	...createSchema,
-	...deleteSchema,
-};
-
 export const createValidator = checkSchema(createSchema);
-export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);

@@ -7,7 +7,6 @@ const resources: Resource[] = [
 		endpoint: ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
 		allowedActions: [
 			ResourceActions.CREATE,
-			ResourceActions.UPDATE,
 			ResourceActions.READ,
 			ResourceActions.DELETE,
 		],

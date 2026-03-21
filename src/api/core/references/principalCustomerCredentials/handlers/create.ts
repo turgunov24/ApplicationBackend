@@ -5,7 +5,6 @@ import db from '../../../../../db';
 import { handleError } from '../../../../../utils/handleError';
 import { getAuthUserId } from '../../../../../utils/getAuthUserId';
 import { generateErrorMessage } from '../../../../../utils/generateErrorMessage';
-import bcrypt from 'bcryptjs';
 
 export const createHandler = async (
 	req: Request<{}, {}, CreatePayload>,
@@ -26,15 +25,13 @@ export const createHandler = async (
 		if (!userId)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		const hashedPassword = await bcrypt.hash(password, 10);
-
 		const result = await db
 			.insert(referencesPrincipalCustomerCredentialsTable)
 			.values({
 				createdBy: userId,
 				serviceId,
 				username,
-				password: hashedPassword,
+				password,
 				additionalInformationUz,
 				additionalInformationRu,
 				principalCustomerId,

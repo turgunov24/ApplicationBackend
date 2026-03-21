@@ -22,12 +22,6 @@ export const attachTariffToPrincipalCustomersPermissions: Array<
 		action: ResourceActions.CREATE,
 	},
 	{
-		nameUz: 'attach-tariff-to-principal-customers-update',
-		nameRu: 'attach-tariff-to-principal-customers-update',
-		resource: ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
-		action: ResourceActions.UPDATE,
-	},
-	{
 		nameUz: 'attach-tariff-to-principal-customers-delete',
 		nameRu: 'attach-tariff-to-principal-customers-delete',
 		resource: ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
