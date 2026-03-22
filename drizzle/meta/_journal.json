@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1773946405281,
-      "tag": "0000_funny_bedlam",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1774023663032,
-      "tag": "0001_cold_chameleon",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1774030328919,
-      "tag": "0002_rapid_tarantula",
+      "when": 1774208192526,
+      "tag": "0000_free_thing",
       "breakpoints": true
     }
   ]

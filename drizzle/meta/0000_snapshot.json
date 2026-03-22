@@ -1,5 +1,5 @@
 {
-  "id": "75586596-f058-4eba-97c0-1eee93db533c",
+  "id": "0d0b4b99-1852-4450-9d66-46060eee2b00",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -47,6 +47,12 @@
         },
         "legal_form_id": {
           "name": "legal_form_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inn": {
+          "name": "inn",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -488,6 +494,12 @@
           "notNull": true,
           "default": "'counterparty_name'"
         },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp",
@@ -533,7 +545,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "references_counterparties_phone_unique": {
+          "name": "references_counterparties_phone_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phone"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

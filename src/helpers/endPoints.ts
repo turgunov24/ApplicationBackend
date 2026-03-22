@@ -40,3 +40,5 @@ export const ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER =
 	'/api/core/attach-tariff-to-principal-customers';
 export const PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER =
 	'/api/principals/attach-tariff-to-principal-customers';
+export const PRINCIPALS_TARIFFS_CONTROLLER = '/api/principals/tariffs';
+export const PRINCIPALS_CURRENCIES_CONTROLLER = '/api/principals/currencies';

@@ -6,6 +6,7 @@ CREATE TABLE "principal_customers" (
 	"client_type_id" integer NOT NULL,
 	"counterparty_id" integer NOT NULL,
 	"legal_form_id" integer NOT NULL,
+	"inn" integer NOT NULL,
 	"esp_path" text,
 	"esp_expire_date" timestamp,
 	"created_by" integer NOT NULL,
@@ -59,10 +60,12 @@ CREATE TABLE "references_client_types" (
 CREATE TABLE "references_counterparties" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(255) DEFAULT 'counterparty_name' NOT NULL,
+	"phone" varchar(255) NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now() NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
-	"created_by" integer NOT NULL
+	"created_by" integer NOT NULL,
+	CONSTRAINT "references_counterparties_phone_unique" UNIQUE("phone")
 );
 --> statement-breakpoint
 CREATE TABLE "references_countries" (
