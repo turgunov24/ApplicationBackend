@@ -1,3 +1,4 @@
+import fs from 'fs';
 import db from '../../../../db';
 import { usersTable } from '../../../../db/schemas/users';
 import { Request, Response } from 'express';
@@ -64,6 +65,17 @@ export const uploadAvatarHandler = async (
 
 		if (req.file) {
 			if (req.file.path) {
+				const existingUser = await db.query.usersTable.findFirst({
+					where: eq(usersTable.id, Number(id)),
+					columns: { avatarPath: true },
+				});
+
+				if (existingUser?.avatarPath) {
+					if (fs.existsSync(existingUser.avatarPath)) {
+						fs.unlinkSync(existingUser.avatarPath);
+					}
+				}
+
 				await db
 					.update(usersTable)
 					.set({

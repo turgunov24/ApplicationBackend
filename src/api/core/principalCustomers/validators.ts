@@ -141,3 +141,4 @@ export const updateValidator = checkSchema(updateSchema);
 export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);
 export const uploadEspKeyValidator = checkSchema(deleteSchema);
+export const deleteEspKeyValidator = checkSchema(deleteSchema);

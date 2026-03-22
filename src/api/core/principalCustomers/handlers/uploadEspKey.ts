@@ -1,3 +1,4 @@
+import fs from 'fs';
 import db from '../../../../db';
 import { principalCustomersTable } from '../../../../db/schemas/principalCustomers';
 import { Request, Response } from 'express';
@@ -14,6 +15,18 @@ export const uploadEspKeyHandler = async (
 
 		if (req.file) {
 			if (req.file.path) {
+				const existingCustomer =
+					await db.query.principalCustomersTable.findFirst({
+						where: eq(principalCustomersTable.id, Number(id)),
+						columns: { espPath: true },
+					});
+
+				if (existingCustomer?.espPath) {
+					if (fs.existsSync(existingCustomer.espPath)) {
+						fs.unlinkSync(existingCustomer.espPath);
+					}
+				}
+
 				await db
 					.update(principalCustomersTable)
 					.set({
