@@ -2,8 +2,6 @@ import { Request, Response } from 'express';
 import {
 	eq,
 	ne,
-	or,
-	ilike,
 	and,
 	count,
 	asc,
@@ -12,6 +10,7 @@ import {
 } from 'drizzle-orm';
 import { principalCustomersTable } from '../../../../db/schemas';
 import { referencesAttachTariffToPrincipalCustomersTable } from '../../../../db/schemas/references/attachTariffToPrincipalCustomers';
+import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import {
@@ -112,16 +111,80 @@ export const indexHandler = async (
 			totalCount,
 		);
 
-		const records = await db
-			.select()
-			.from(referencesAttachTariffToPrincipalCustomersTable)
-			.where(whereClause)
-			.orderBy(asc(referencesAttachTariffToPrincipalCustomersTable.createdAt))
-			.limit(_dataPerPage)
-			.offset(offset);
+		const records =
+			await db.query.referencesAttachTariffToPrincipalCustomersTable.findMany(
+				{
+					where: whereClause,
+					orderBy: asc(
+						referencesAttachTariffToPrincipalCustomersTable.createdAt,
+					),
+					limit: _dataPerPage,
+					offset,
+					with: {
+						tariff: {
+							columns: {
+								nameUz: true,
+								nameRu: true,
+								monthlyPrice: true,
+							},
+							with: {
+								currency: {
+									columns: {
+										nameUz: true,
+										nameRu: true,
+									},
+								},
+							},
+						},
+						principalCustomer: true,
+					},
+				},
+			);
+
+		// counterparty ni alohida olamiz (PostgreSQL 63-char identifier limit tufayli nested with ishlamaydi)
+		const counterpartyIds = [
+			...new Set(
+				records
+					.map((r) => r.principalCustomer?.counterpartyId)
+					.filter(Boolean),
+			),
+		] as number[];
+
+		const counterparties =
+			counterpartyIds.length > 0
+				? await db
+						.select({
+							id: referencesCounterpartiesTable.id,
+							name: referencesCounterpartiesTable.name,
+						})
+						.from(referencesCounterpartiesTable)
+						.where(
+							inArray(
+								referencesCounterpartiesTable.id,
+								counterpartyIds,
+							),
+						)
+				: [];
+
+		const counterpartyMap = new Map(
+			counterparties.map((c) => [c.id, c]),
+		);
+
+		const result = records.map((r) => ({
+			...r,
+			principalCustomer: r.principalCustomer
+				? {
+						...r.principalCustomer,
+						counterparty:
+							counterpartyMap.get(
+								r.principalCustomer.counterpartyId,
+							) || null,
+					}
+				: r.principalCustomer,
+		}));
 
 		res.json({
-			result: records,
+			result,
 			pagination,
 		});
 	} catch (error: unknown) {

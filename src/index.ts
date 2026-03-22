@@ -32,6 +32,8 @@ import {
 	USERS_CONTROLLER,
 	ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	PRINCIPALS_TARIFFS_CONTROLLER,
+	PRINCIPALS_CURRENCIES_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
 
@@ -63,6 +65,8 @@ import referencesPrincipalCustomerCredentialsRouter from './api/core/references/
 import principalsPrincipalCustomerCredentialsRouter from './api/principals/principalCustomerCredentials/controller';
 import attachTariffToPrincipalCustomersRouter from './api/core/attachTariffToPrincipalCustomers/controller';
 import principalsAttachTariffToPrincipalCustomersRouter from './api/principals/attachTariffToPrincipalCustomers/controller';
+import principalsTariffsRouter from './api/principals/tariffs/controller';
+import principalsCurrenciesRouter from './api/principals/currencies/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -142,6 +146,8 @@ app.use(
 	PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	principalsAttachTariffToPrincipalCustomersRouter,
 );
+app.use(PRINCIPALS_TARIFFS_CONTROLLER, principalsTariffsRouter);
+app.use(PRINCIPALS_CURRENCIES_CONTROLLER, principalsCurrenciesRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server
