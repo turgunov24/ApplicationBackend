@@ -84,7 +84,12 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Basic route
 app.get('/', (req, res) => {
-	res.json({ message: 'Welcome to the API' });
+	res.json({
+		message: 'Welcome to the API',
+		dbName: process.env.DB_NAME,
+		dbPort: process.env.DB_PORT,
+		port,
+	});
 });
 
 // // Use users router
@@ -111,17 +116,32 @@ app.use(REFERENCES_CLIENT_TYPES_CONTROLLER, referencesClientTypesRouter);
 app.use(REFERENCES_TARIFFS_CONTROLLER, referencesTariffsRouter);
 app.use(PRINCIPAL_CUSTOMERS_CONTROLLER, principalCustomersRouter);
 app.use(PRINCIPALS_CLIENT_TYPES_CONTROLLER, principalsClientTypesRouter);
-app.use(PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER, principalsPrincipalCustomersRouter);
+app.use(
+	PRINCIPALS_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	principalsPrincipalCustomersRouter,
+);
 app.use(REFERENCES_COUNTERPARTIES_CONTROLLER, referencesCounterpartiesRouter);
 app.use(PRINCIPALS_COUNTERPARTIES_CONTROLLER, principalsCounterpartiesRouter);
 app.use(REFERENCES_LEGAL_FORMS_CONTROLLER, referencesLegalFormsRouter);
 app.use(PRINCIPALS_LEGAL_FORMS_CONTROLLER, principalsLegalFormsRouter);
 app.use(REFERENCES_SERVICES_CONTROLLER, referencesServicesRouter);
 app.use(PRINCIPALS_SERVICES_CONTROLLER, principalsServicesRouter);
-app.use(REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER, referencesPrincipalCustomerCredentialsRouter);
-app.use(PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER, principalsPrincipalCustomerCredentialsRouter);
-app.use(ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER, attachTariffToPrincipalCustomersRouter);
-app.use(PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER, principalsAttachTariffToPrincipalCustomersRouter);
+app.use(
+	REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
+	referencesPrincipalCustomerCredentialsRouter,
+);
+app.use(
+	PRINCIPALS_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
+	principalsPrincipalCustomerCredentialsRouter,
+);
+app.use(
+	ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	attachTariffToPrincipalCustomersRouter,
+);
+app.use(
+	PRINCIPALS_ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	principalsAttachTariffToPrincipalCustomersRouter,
+);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server
