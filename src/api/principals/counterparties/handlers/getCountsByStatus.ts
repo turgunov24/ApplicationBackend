@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { eq, and, count, inArray, ne } from 'drizzle-orm';
+import { eq, and, count } from 'drizzle-orm';
 import db from '../../../../db';
-import { principalCustomersTable } from '../../../../db/schemas';
-import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
+import { referencesCounterpartiesTable } from '../../../../db/schemas';
 import { statuses } from '../../../../db/schemas/references/counterparties';
 import { handleError } from '../../../../utils/handleError';
 import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
@@ -14,29 +13,9 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		const principalCustomers = await db
-			.select({
-				counterpartyId: principalCustomersTable.counterpartyId,
-			})
-			.from(principalCustomersTable)
-			.where(
-				and(
-					eq(principalCustomersTable.principalId, principal.id),
-					ne(principalCustomersTable.status, 'deleted'),
-				),
-			);
-
-		const counterpartyIds = principalCustomers.map(
-			(pc) => pc.counterpartyId,
-		);
-
-		const whereConditions = [];
-
-		if (counterpartyIds.length > 0) {
-			whereConditions.push(
-				inArray(referencesCounterpartiesTable.id, counterpartyIds),
-			);
-		}
+		const whereConditions = [
+			eq(referencesCounterpartiesTable.principalId, principal.id),
+		];
 
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;

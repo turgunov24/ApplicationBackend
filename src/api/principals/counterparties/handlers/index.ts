@@ -1,16 +1,10 @@
 import { Request, Response } from 'express';
-import {
-	eq,
-	ne,
-	or,
-	ilike,
-	and,
-	count,
-	asc,
-	InferSelectModel,
-} from 'drizzle-orm';
-import { principalCustomersTable } from '../../../../db/schemas';
-import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
+import { eq, InferSelectModel, ne, or } from 'drizzle-orm';
+import { ilike } from 'drizzle-orm';
+import { and } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
+import { asc } from 'drizzle-orm';
+import { referencesCounterpartiesTable } from '../../../../db/schemas';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
 import {
@@ -30,6 +24,7 @@ interface QueryParams {
 	dataPerPage: string;
 	search?: string;
 	status?: IStatuses['status'] | 'all';
+	id?: string;
 }
 
 export const indexHandler = async (
@@ -42,6 +37,7 @@ export const indexHandler = async (
 			dataPerPage = '5',
 			search,
 			status = 'all',
+			id,
 		} = req.query;
 
 		const principal = req.principal;
@@ -49,44 +45,20 @@ export const indexHandler = async (
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		// Get principal_customers entries for this principal
-		const principalCustomers = await db
-			.select({ counterpartyId: principalCustomersTable.counterpartyId })
-			.from(principalCustomersTable)
-			.where(
-				and(
-					eq(principalCustomersTable.principalId, principal.id),
-					ne(principalCustomersTable.status, 'deleted'),
-				),
-			);
+		if (id) {
+			const counterparty =
+				await db.query.referencesCounterpartiesTable.findFirst({
+					where: eq(referencesCounterpartiesTable.id, Number(id)),
+				});
 
-		const counterpartyIds = principalCustomers.map(
-			(pc) => pc.counterpartyId,
-		);
-
-		if (counterpartyIds.length === 0) {
-			return res.json({
-				result: [],
-				pagination: {
-					currentPage: 0,
-					dataPerPage: 5,
-					totalData: 0,
-					totalPages: 0,
-					hasNextPage: false,
-					hasPrevPage: false,
-				},
-			});
+			return res.json(counterparty);
 		}
 
 		const whereConditions = [];
 
-		// Filter by counterparty IDs belonging to this principal
+		// Bevosita principalId orqali filter
 		whereConditions.push(
-			or(
-				...counterpartyIds.map((id) =>
-					eq(referencesCounterpartiesTable.id, id),
-				),
-			),
+			eq(referencesCounterpartiesTable.principalId, principal.id),
 		);
 
 		if (status !== 'all') {

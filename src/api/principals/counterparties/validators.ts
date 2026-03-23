@@ -1,24 +1,21 @@
-import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
+import { referencesCounterpartiesTable } from '../../../db/schemas/references/counterparties';
 import { checkSchema, ParamSchema } from 'express-validator';
 import { eq, InferInsertModel } from 'drizzle-orm';
-import db from '../../../../db';
-import { getAuthUserId } from '../../../../utils/getAuthUserId';
+import db from '../../../db';
 import { Request } from 'express';
-import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesCounterpartiesTable>,
-	'name' | 'phone' | 'principalId'
+	'name' | 'phone'
 >;
 
 type keys = keyof CreatePayload;
 
 export type CreateValidationSchema = Record<keys, ParamSchema>;
-export type DeleteValidationSchema = Record<'id', ParamSchema>;
 export type UpdateValidationSchema = CreateValidationSchema &
-	DeleteValidationSchema;
+	Record<'id', ParamSchema>;
 
-const indexSchema: DeleteValidationSchema = {
+const indexSchema: Record<'id', ParamSchema> = {
 	id: {
 		in: 'query',
 		isInt: true,
@@ -33,45 +30,14 @@ const indexSchema: DeleteValidationSchema = {
 
 					if (!counterparty.length)
 						throw new Error('Counterparty not found');
-					const userId = getAuthUserId(req as Request);
 
-					if (userId === SUPER_ADMIN_ID) return true;
+					const principal = (req as Request).principal;
 
-					if (counterparty[0].createdBy !== userId)
+					if (counterparty[0].principalId !== principal.id)
 						throw new Error(
 							'You are not allowed to modify this counterparty',
 						);
 				}
-
-				return true;
-			},
-		},
-	},
-};
-
-const deleteSchema: DeleteValidationSchema = {
-	id: {
-		in: 'query',
-		isInt: true,
-		notEmpty: true,
-		errorMessage: 'Counterparty id is required',
-		custom: {
-			options: async (value, { req }) => {
-				const counterparty = await db
-					.select()
-					.from(referencesCounterpartiesTable)
-					.where(eq(referencesCounterpartiesTable.id, value));
-
-				if (!counterparty.length)
-					throw new Error('Counterparty not found');
-				const userId = getAuthUserId(req as Request);
-
-				if (userId === SUPER_ADMIN_ID) return true;
-
-				if (counterparty[0].createdBy !== userId)
-					throw new Error(
-						'You are not allowed to modify this counterparty',
-					);
 
 				return true;
 			},
@@ -94,20 +60,42 @@ const createSchema: CreateValidationSchema = {
 		errorMessage: 'Counterparty phone is required',
 		trim: true,
 	},
-	principalId: {
-		in: 'body',
+};
+
+const updateIdSchema: Record<'id', ParamSchema> = {
+	id: {
+		in: 'query',
 		isInt: true,
 		notEmpty: true,
-		errorMessage: 'Principal ID is required',
+		errorMessage: 'Counterparty id is required',
+		custom: {
+			options: async (value, { req }) => {
+				const counterparty = await db
+					.select()
+					.from(referencesCounterpartiesTable)
+					.where(eq(referencesCounterpartiesTable.id, value));
+
+				if (!counterparty.length)
+					throw new Error('Counterparty not found');
+
+				const principal = (req as Request).principal;
+
+				if (counterparty[0].principalId !== principal.id)
+					throw new Error(
+						'You are not allowed to modify this counterparty',
+					);
+
+				return true;
+			},
+		},
 	},
 };
 
 const updateSchema: UpdateValidationSchema = {
 	...createSchema,
-	...deleteSchema,
+	...updateIdSchema,
 };
 
 export const createValidator = checkSchema(createSchema);
 export const updateValidator = checkSchema(updateSchema);
-export const deleteValidator = checkSchema(deleteSchema);
 export const indexValidator = checkSchema(indexSchema);

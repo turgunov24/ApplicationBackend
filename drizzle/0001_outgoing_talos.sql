@@ -1,0 +1,2 @@
+ALTER TABLE "references_counterparties" ADD COLUMN "principal_id" integer NOT NULL;--> statement-breakpoint
+ALTER TABLE "references_counterparties" ADD CONSTRAINT "references_counterparties_principal_id_principals_id_fk" FOREIGN KEY ("principal_id") REFERENCES "public"."principals"("id") ON DELETE no action ON UPDATE no action;

@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../../../../db';
-import { principalsTable } from '../../../../db/schemas';
 import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
 import { handleError } from '../../../../utils/handleError';
-import { and, asc, eq, ne } from 'drizzle-orm';
+import { asc, and, eq, ne } from 'drizzle-orm';
 import { generateErrorMessage } from '../../../../utils/generateErrorMessage';
 
 export const listHandler = async (req: Request, res: Response) => {
@@ -13,35 +12,20 @@ export const listHandler = async (req: Request, res: Response) => {
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		// Principalni DB dan topib, createdBy (admin ID) ni olamiz
-		const principalRecord = await db.query.principalsTable.findFirst({
-			where: eq(principalsTable.id, principal.id),
+		const whereConditions = [ne(referencesCounterpartiesTable.status, 'deleted')];
+
+		// Bevosita principalId orqali filter
+		whereConditions.push(eq(referencesCounterpartiesTable.principalId, principal.id));
+
+		const counterparties = await db.query.referencesCounterpartiesTable.findMany({
+			where: and(...whereConditions),
+			orderBy: asc(referencesCounterpartiesTable.createdAt),
 			columns: {
-				createdBy: true,
+				id: true,
+				name: true,
+				phone: true,
 			},
 		});
-
-		if (!principalRecord)
-			return res
-				.status(404)
-				.json(generateErrorMessage('Principal not found'));
-
-		const adminId = principalRecord.createdBy;
-
-		// O'sha admin yaratgan counterparties ni qaytaramiz
-		const counterparties =
-			await db.query.referencesCounterpartiesTable.findMany({
-				where: and(
-					ne(referencesCounterpartiesTable.status, 'deleted'),
-					eq(referencesCounterpartiesTable.createdBy, adminId),
-				),
-				orderBy: asc(referencesCounterpartiesTable.createdAt),
-				columns: {
-					id: true,
-					name: true,
-					phone: true,
-				},
-			});
 		res.json(counterparties);
 	} catch (error) {
 		handleError(res, error);

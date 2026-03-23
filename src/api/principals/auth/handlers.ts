@@ -108,7 +108,7 @@ export const principalLoginHandler = async (
 
 		return res.status(200).json({
 			accessToken,
-			principal: pick(principal, ['fullName', 'username', 'email']),
+			principal: pick(principal, ['id', 'fullName', 'username', 'email']),
 		});
 	} catch (error: unknown) {
 		handleError(res, error);
