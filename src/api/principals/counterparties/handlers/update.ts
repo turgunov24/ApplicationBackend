@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
-import { referencesCounterpartiesTable } from '../../../../../db/schemas/references/counterparties';
-import db from '../../../../../db';
-import { handleError } from '../../../../../utils/handleError';
+import { referencesCounterpartiesTable } from '../../../../db/schemas/references/counterparties';
+import db from '../../../../db';
+import { handleError } from '../../../../utils/handleError';
 
 export const updateHandler = async (
 	req: Request<{}, {}, CreatePayload, { id: string }>,
@@ -11,14 +11,13 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { name, phone, principalId } = req.body;
+		const { name, phone } = req.body;
 
 		await db
 			.update(referencesCounterpartiesTable)
 			.set({
 				name,
 				phone,
-				principalId,
 				updatedAt: new Date(),
 			})
 			.where(eq(referencesCounterpartiesTable.id, Number(id)))

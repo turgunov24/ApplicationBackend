@@ -11,7 +11,7 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { name, phone } = req.body;
+		const { name, phone, principalId } = req.body;
 
 		const userId = getAuthUserId(req);
 
@@ -22,6 +22,7 @@ export const createHandler = async (
 			.insert(referencesCounterpartiesTable)
 			.values({
 				createdBy: userId,
+				principalId,
 				name,
 				phone,
 			})

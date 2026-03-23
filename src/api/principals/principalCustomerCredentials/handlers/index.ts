@@ -7,10 +7,9 @@ import {
 	and,
 	count,
 	asc,
-	inArray,
 	InferSelectModel,
 } from 'drizzle-orm';
-import { principalCustomersTable } from '../../../../db/schemas';
+import { principalsTable } from '../../../../db/schemas';
 import { referencesPrincipalCustomerCredentialsTable } from '../../../../db/schemas/references/principalCustomerCredentials';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
@@ -50,38 +49,26 @@ export const indexHandler = async (
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		// Get principal_customers entries for this principal
-		const principalCustomers = await db
-			.select({ id: principalCustomersTable.id })
-			.from(principalCustomersTable)
-			.where(
-				and(
-					eq(principalCustomersTable.principalId, principal.id),
-					ne(principalCustomersTable.status, 'deleted'),
-				),
-			);
+		// Principalni DB dan topib, createdBy (admin ID) ni olamiz
+		const principalRecord = await db.query.principalsTable.findFirst({
+			where: eq(principalsTable.id, principal.id),
+			columns: {
+				createdBy: true,
+			},
+		});
 
-		const principalCustomerIds = principalCustomers.map((pc) => pc.id);
+		if (!principalRecord)
+			return res
+				.status(404)
+				.json(generateErrorMessage('Principal not found'));
 
-		if (principalCustomerIds.length === 0) {
-			return res.json({
-				result: [],
-				pagination: {
-					currentPage: 0,
-					dataPerPage: 5,
-					totalData: 0,
-					totalPages: 0,
-					hasNextPage: false,
-					hasPrevPage: false,
-				},
-			});
-		}
+		const adminId = principalRecord.createdBy;
 
 		const whereConditions = [];
 
-		// Filter by principal customer IDs belonging to this principal
+		// O'sha admin yaratgan credentials ni filter qilamiz
 		whereConditions.push(
-			inArray(referencesPrincipalCustomerCredentialsTable.principalCustomerId, principalCustomerIds),
+			eq(referencesPrincipalCustomerCredentialsTable.createdBy, adminId),
 		);
 
 		if (status !== 'all') {

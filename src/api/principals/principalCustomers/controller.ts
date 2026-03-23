@@ -5,6 +5,7 @@ import {
 	indexValidator,
 	updateValidator,
 	uploadEspKeyValidator,
+	deleteEspKeyValidator,
 } from './validators';
 import { withValidationErrorsMiddleware } from '../../../middlewares/withValidationErrors';
 import { indexHandler } from './handlers';
@@ -17,6 +18,8 @@ import uploadEspKey from './handlers/multer';
 import { uploadEspKeyHandler } from './handlers/uploadEspKey';
 import { parsePrincipalFromToken } from '../../../middlewares/parsePrincipalFromToken';
 import { multerErrorHandler, validateFileRequired } from '../../core/users/controller';
+
+import { deleteEspKeyHandler } from './handlers/deleteEspKey';
 
 const router = Router();
 
@@ -41,6 +44,13 @@ router.put(
 	uploadEspKeyValidator,
 	withValidationErrorsMiddleware,
 	uploadEspKeyHandler,
+);
+
+router.delete(
+	'/delete-esp-key',
+	deleteEspKeyValidator,
+	withValidationErrorsMiddleware,
+	deleteEspKeyHandler,
 );
 
 router.delete(

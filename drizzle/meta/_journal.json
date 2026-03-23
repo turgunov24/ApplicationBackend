@@ -8,6 +8,13 @@
       "when": 1774208192526,
       "tag": "0000_free_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774281208832,
+      "tag": "0001_outgoing_talos",
+      "breakpoints": true
     }
   ]
 }

@@ -125,7 +125,7 @@ const createSchema: CreateValidationSchema = {
 	},
 	espExpireDate: {
 		in: 'body',
-		optional: true,
+		optional: { options: { values: 'falsy' } },
 		isISO8601: true,
 		errorMessage: 'Invalid ESP expire date format (must be ISO8601 date)',
 	},

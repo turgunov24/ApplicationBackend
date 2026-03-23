@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { eq, and, count, inArray, ne } from 'drizzle-orm';
+import { eq, and, count } from 'drizzle-orm';
 import db from '../../../../db';
-import { principalCustomersTable } from '../../../../db/schemas';
+import { principalsTable } from '../../../../db/schemas';
 import { referencesPrincipalCustomerCredentialsTable } from '../../../../db/schemas/references/principalCustomerCredentials';
 import { statuses } from '../../../../db/schemas/references/principalCustomerCredentials';
 import { handleError } from '../../../../utils/handleError';
@@ -14,25 +14,24 @@ export const getCountsByStatusHandler = async (req: Request, res: Response) => {
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		const principalCustomers = await db
-			.select({ id: principalCustomersTable.id })
-			.from(principalCustomersTable)
-			.where(
-				and(
-					eq(principalCustomersTable.principalId, principal.id),
-					ne(principalCustomersTable.status, 'deleted'),
-				),
-			);
+		// Principalni DB dan topib, createdBy (admin ID) ni olamiz
+		const principalRecord = await db.query.principalsTable.findFirst({
+			where: eq(principalsTable.id, principal.id),
+			columns: {
+				createdBy: true,
+			},
+		});
 
-		const principalCustomerIds = principalCustomers.map((pc) => pc.id);
+		if (!principalRecord)
+			return res
+				.status(404)
+				.json(generateErrorMessage('Principal not found'));
 
-		const whereConditions = [];
+		const adminId = principalRecord.createdBy;
 
-		if (principalCustomerIds.length > 0) {
-			whereConditions.push(
-				inArray(referencesPrincipalCustomerCredentialsTable.principalCustomerId, principalCustomerIds),
-			);
-		}
+		const whereConditions = [
+			eq(referencesPrincipalCustomerCredentialsTable.createdBy, adminId),
+		];
 
 		const whereClause =
 			whereConditions.length > 0 ? and(...whereConditions) : undefined;

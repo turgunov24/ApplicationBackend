@@ -9,7 +9,7 @@ import {
 	asc,
 	InferSelectModel,
 } from 'drizzle-orm';
-import { principalCustomersTable } from '../../../../db/schemas';
+import { principalsTable } from '../../../../db/schemas';
 import { referencesLegalFormsTable } from '../../../../db/schemas/references/legalForms';
 import db from '../../../../db';
 import { handleError } from '../../../../utils/handleError';
@@ -49,42 +49,26 @@ export const indexHandler = async (
 		if (!principal)
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
-		// Get principal_customers entries for this principal
-		const principalCustomers = await db
-			.select({ legalFormId: principalCustomersTable.legalFormId })
-			.from(principalCustomersTable)
-			.where(
-				and(
-					eq(principalCustomersTable.principalId, principal.id),
-					ne(principalCustomersTable.status, 'deleted'),
-				),
-			);
+		// Principalni DB dan topib, createdBy (admin ID) ni olamiz
+		const principalRecord = await db.query.principalsTable.findFirst({
+			where: eq(principalsTable.id, principal.id),
+			columns: {
+				createdBy: true,
+			},
+		});
 
-		const legalFormIds = principalCustomers.map((pc) => pc.legalFormId);
+		if (!principalRecord)
+			return res
+				.status(404)
+				.json(generateErrorMessage('Principal not found'));
 
-		if (legalFormIds.length === 0) {
-			return res.json({
-				result: [],
-				pagination: {
-					currentPage: 0,
-					dataPerPage: 5,
-					totalData: 0,
-					totalPages: 0,
-					hasNextPage: false,
-					hasPrevPage: false,
-				},
-			});
-		}
+		const adminId = principalRecord.createdBy;
 
 		const whereConditions = [];
 
-		// Filter by legalForm IDs belonging to this principal
+		// O'sha admin yaratgan legalForms ni filter qilamiz
 		whereConditions.push(
-			or(
-				...legalFormIds.map((id) =>
-					eq(referencesLegalFormsTable.id, id),
-				),
-			),
+			eq(referencesLegalFormsTable.createdBy, adminId),
 		);
 
 		if (status !== 'all') {

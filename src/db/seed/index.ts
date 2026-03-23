@@ -52,10 +52,12 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_CLIENT_TYPES_CONTROLLER]: "Mijoz turlari ma'lumotnomalari",
 	[REFERENCES_TARIFFS_CONTROLLER]: "Tariflar ma'lumotnomalari",
 	[REFERENCES_COUNTERPARTIES_CONTROLLER]: "Kontragentlar ma'lumotnomalari",
-	[REFERENCES_LEGAL_FORMS_CONTROLLER]: "Tashkiliy-huquqiy shakllar ma'lumotnomalari",
+	[REFERENCES_LEGAL_FORMS_CONTROLLER]:
+		"Tashkiliy-huquqiy shakllar ma'lumotnomalari",
 	[REFERENCES_SERVICES_CONTROLLER]: "Xizmatlar ma'lumotnomalari",
-	[REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER]: "Principal mijozlar ma'lumotlari",
-	[ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER]: "Tariflarni biriktirish",
+	[REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER]:
+		"Principal mijozlar ma'lumotlari",
+	[ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER]: 'Tariflarni biriktirish',
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -310,13 +312,11 @@ async function seedUsersUpdate() {
 			.where(eq(schemas.usersTable.id, user.id));
 
 		// Role ni biriktiramiz
-		await db
-			.insert(schemas.usersRolesTable)
-			.values({
-				userId: user.id,
-				roleId: role.id,
-			})
-			// .onConflictDoNothing();
+		await db.insert(schemas.usersRolesTable).values({
+			userId: user.id,
+			roleId: role.id,
+		});
+		// .onConflictDoNothing();
 	}
 }
 
@@ -349,21 +349,19 @@ async function seedPrincipals() {
 
 		const hashedPassword = await bcrypt.hash(principal.password, 10);
 
-		await db
-			.insert(schemas.principalsTable)
-			.values({
-				username: principal.username,
-				fullName: principal.fullName,
-				email: principal.email,
-				phone: principal.phone,
-				password: hashedPassword,
-				createdBy: principal.createdBy,
-				countryId: district.region.countryId,
-				regionId: district.regionId,
-				districtId: district.id,
-				status: 'active',
-			})
-			.onConflictDoNothing();
+		await db.insert(schemas.principalsTable).values({
+			username: principal.username,
+			fullName: principal.fullName,
+			email: principal.email,
+			phone: principal.phone,
+			password: hashedPassword,
+			createdBy: principal.createdBy,
+			countryId: district.region.countryId,
+			regionId: district.regionId,
+			districtId: district.id,
+			status: 'active',
+		});
+		// .onConflictDoNothing();
 	}
 }
 
@@ -387,9 +385,24 @@ async function seedClientTypes() {
  */
 async function seedCounterparties() {
 	for (const counterparty of counterparties) {
+		const principal = await db.query.principalsTable.findFirst({
+			where: eq(
+				schemas.principalsTable.username,
+				counterparty.principalUsername,
+			),
+			columns: { id: true },
+		});
+
+		if (!principal) {
+			throw new Error(
+				`Principal not found for counterparty ${counterparty.name}`,
+			);
+		}
+
 		await db.insert(schemas.referencesCounterpartiesTable).values({
 			name: counterparty.name,
 			phone: counterparty.phone,
+			principalId: principal.id,
 			createdBy: 2,
 		});
 	}
@@ -441,11 +454,16 @@ async function seedCurrencies() {
  */
 async function seedTariffs() {
 	const dbCurrencies = await db
-		.select({ id: schemas.referencesCurrenciesTable.id, nameUz: schemas.referencesCurrenciesTable.nameUz })
+		.select({
+			id: schemas.referencesCurrenciesTable.id,
+			nameUz: schemas.referencesCurrenciesTable.nameUz,
+		})
 		.from(schemas.referencesCurrenciesTable);
 
 	for (const tariff of tariffs) {
-		const currency = dbCurrencies.find(c => c.nameUz === tariff.currencyNameUz);
+		const currency = dbCurrencies.find(
+			(c) => c.nameUz === tariff.currencyNameUz,
+		);
 		if (!currency) {
 			logger.warn(`Currency ${tariff.currencyNameUz} not found!`);
 			continue;
@@ -485,10 +503,15 @@ async function seedPrincipalCustomersInitial() {
 			throw new Error(`Client type not found for customer ${pc.name}`);
 		}
 
-		const counterparty = await db.query.referencesCounterpartiesTable.findFirst({
-			where: eq(schemas.referencesCounterpartiesTable.name, pc.counterpartyName),
-			columns: { id: true },
-		});
+		const counterparty = await db.query.referencesCounterpartiesTable.findFirst(
+			{
+				where: eq(
+					schemas.referencesCounterpartiesTable.name,
+					pc.counterpartyName,
+				),
+				columns: { id: true },
+			},
+		);
 
 		if (!counterparty) {
 			throw new Error(`Counterparty not found for customer ${pc.name}`);
@@ -521,11 +544,11 @@ async function seedPrincipalCustomersInitial() {
  * Principal customerlarga tegishli credentiallar va tariflarni biriktiradi
  */
 async function seedPrincipalCustomersUpdate() {
-	const dbServices = await db
+	const services = await db
 		.select({ id: schemas.referencesServicesTable.id })
 		.from(schemas.referencesServicesTable);
 
-	const dbTariffs = await db
+	const tariffs = await db
 		.select({ id: schemas.referencesTariffsTable.id })
 		.from(schemas.referencesTariffsTable);
 
@@ -541,30 +564,34 @@ async function seedPrincipalCustomersUpdate() {
 
 		const customerId = customer.id;
 
-		if (dbServices.length > 0) {
-			await db.insert(schemas.referencesPrincipalCustomerCredentialsTable).values({
-				serviceId: dbServices[0].id,
-				username: `user_${customerId}`,
-				password: `pass_${customerId}`,
-				additionalInformationUz: 'Qo\'shimcha ma\'lumot',
-				additionalInformationRu: 'Дополнительная информация',
-				principalCustomerId: customerId,
-				createdBy: 2,
-			});
+		if (services.length > 0) {
+			await db
+				.insert(schemas.referencesPrincipalCustomerCredentialsTable)
+				.values({
+					serviceId: services[0].id,
+					username: `user_${customerId}`,
+					password: `pass_${customerId}`,
+					additionalInformationUz: "Qo'shimcha ma'lumot",
+					additionalInformationRu: 'Дополнительная информация',
+					principalCustomerId: customerId,
+					createdBy: 2,
+				});
 		}
 
-		if (dbTariffs.length > 0) {
+		if (tariffs.length > 0) {
 			const startDate = new Date();
 			const endDate = new Date();
 			endDate.setMonth(endDate.getMonth() + 1);
 
-			await db.insert(schemas.referencesAttachTariffToPrincipalCustomersTable).values({
-				principalCustomerId: customerId,
-				tariffId: dbTariffs[0].id,
-				startDate: startDate,
-				endDate: endDate,
-				createdBy: 2,
-			});
+			await db
+				.insert(schemas.referencesAttachTariffToPrincipalCustomersTable)
+				.values({
+					principalCustomerId: customerId,
+					tariffId: tariffs[0].id,
+					startDate: startDate,
+					endDate: endDate,
+					createdBy: 2,
+				});
 		}
 	}
 	logger.info('Principal customers update seeded ✅');
