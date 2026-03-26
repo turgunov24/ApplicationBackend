@@ -66,3 +66,11 @@ export {
 	referencesAttachTariffToPrincipalCustomersTable,
 	referencesAttachTariffToPrincipalCustomersRelations,
 } from './references/attachTariffToPrincipalCustomers';
+export {
+	referencesTranslationsTable,
+	referencesTranslationsRelations,
+} from './references/translations';
+export {
+	referencesUserTranslationsTable,
+	referencesUserTranslationsRelations,
+} from './references/userTranslations';

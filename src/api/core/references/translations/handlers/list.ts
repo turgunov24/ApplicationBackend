@@ -1,0 +1,38 @@
+import { Request, Response } from 'express';
+import db from '../../../../../db';
+import { referencesTranslationsTable } from '../../../../../db/schemas';
+import { handleError } from '../../../../../utils/handleError';
+import { and, asc, eq, ne } from 'drizzle-orm';
+import { getAuthUserId } from '../../../../../utils/getAuthUserId';
+import { generateErrorMessage } from '../../../../../utils/generateErrorMessage';
+import { SUPER_ADMIN_ID } from '../../../../../helpers/config';
+
+export const listHandler = async (req: Request, res: Response) => {
+	try {
+		const userId = getAuthUserId(req);
+
+		if (!userId)
+			return res.status(401).json(generateErrorMessage('Unauthorized'));
+
+		const whereConditions = [ne(referencesTranslationsTable.status, 'deleted')];
+
+		if (userId !== SUPER_ADMIN_ID) {
+			whereConditions.push(eq(referencesTranslationsTable.createdBy, userId));
+		}
+
+		const translations = await db.query.referencesTranslationsTable.findMany({
+			where: and(...whereConditions),
+			orderBy: asc(referencesTranslationsTable.createdAt),
+			columns: {
+				id: true,
+				lang: true,
+				namespace: true,
+				key: true,
+				value: true,
+			},
+		});
+		res.json(translations);
+	} catch (error) {
+		handleError(res, error);
+	}
+};
