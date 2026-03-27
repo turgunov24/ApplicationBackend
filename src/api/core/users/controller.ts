@@ -11,6 +11,7 @@ import {
 } from './validators';
 import { updateHandler } from './handlers/update';
 import { getCountsByStatusHandler } from './handlers/getCountsByStatus';
+import { listHandler } from './handlers/list';
 import upload from './handlers/multer';
 import { validationResult } from 'express-validator';
 import fs from 'fs';
@@ -99,6 +100,8 @@ router.get(
 );
 
 router.get('/counts-by-status', getCountsByStatusHandler);
+
+router.get('/list', listHandler);
 
 router.post(
 	'/',

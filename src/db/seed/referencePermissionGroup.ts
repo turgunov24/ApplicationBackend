@@ -58,4 +58,12 @@ export const permissionGroups: Array<
 		nameUz: "Tariflarni biriktirish",
 		nameRu: 'Тарифларни бириктириш',
 	},
+	{
+		nameUz: "Tarjimalar ma'lumotnomalari",
+		nameRu: 'Таржималар маълумотномалари',
+	},
+	{
+		nameUz: "Foydalanuvchi tarjimalari ma'lumotnomalari",
+		nameRu: 'Фойдаланувчи таржималари маълумотномалари',
+	},
 ];

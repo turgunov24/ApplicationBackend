@@ -17,6 +17,8 @@ import referencesLegalFormsResources from '../api/core/references/legalForms/res
 import referencesServicesResources from '../api/core/references/services/resources';
 import attachTariffToPrincipalCustomersResources from '../api/core/attachTariffToPrincipalCustomers/resources';
 import principalCustomerCredentialsResources from '../api/core/references/principalCustomerCredentials/resources';
+import referencesTranslationsResources from '../api/core/references/translations/resources';
+import referencesUserTranslationsResources from '../api/core/references/userTranslations/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -38,6 +40,8 @@ const resources = [
 	...referencesServicesResources,
 	...attachTariffToPrincipalCustomersResources,
 	...principalCustomerCredentialsResources,
+	...referencesTranslationsResources,
+	...referencesUserTranslationsResources,
 ];
 
 export default resources;
