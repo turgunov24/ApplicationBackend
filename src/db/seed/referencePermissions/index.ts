@@ -19,6 +19,8 @@ import { legalFormsPermissions } from './legalForms';
 import { servicesPermissions } from './services';
 import { principalCustomerCredentialsPermissions } from './principalCustomerCredentials';
 import { attachTariffToPrincipalCustomersPermissions } from './attachTariffToPrincipalCustomers';
+import { translationsPermissions } from './translations';
+import { userTranslationsPermissions } from './userTranslations';
 
 export const permissions: Array<
 	Pick<
@@ -45,4 +47,6 @@ export const permissions: Array<
 	...servicesPermissions,
 	...principalCustomerCredentialsPermissions,
 	...attachTariffToPrincipalCustomersPermissions,
+	...translationsPermissions,
+	...userTranslationsPermissions,
 ];

@@ -28,6 +28,8 @@ import {
 	REFERENCES_SERVICES_CONTROLLER,
 	REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER,
 	ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
+	REFERENCES_TRANSLATIONS_CONTROLLER,
+	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -42,6 +44,8 @@ import { services } from './referenceServices';
 import { currencies } from './referenceCurrencies';
 import { tariffs } from './referenceTariffs';
 import { principalCustomers } from './principalCustomers';
+import { translations } from './referenceTranslations';
+import { userTranslations } from './referenceUserTranslations';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -58,6 +62,9 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_PRINCIPAL_CUSTOMER_CREDENTIALS_CONTROLLER]:
 		"Principal mijozlar ma'lumotlari",
 	[ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER]: 'Tariflarni biriktirish',
+	[REFERENCES_TRANSLATIONS_CONTROLLER]: "Tarjimalar ma'lumotnomalari",
+	[REFERENCES_USER_TRANSLATIONS_CONTROLLER]:
+		"Foydalanuvchi tarjimalari ma'lumotnomalari",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -598,6 +605,48 @@ async function seedPrincipalCustomersUpdate() {
 }
 
 /**
+ * Translationlarni seed qiladi
+ */
+async function seedTranslations() {
+	for (const translation of translations) {
+		await db.insert(schemas.referencesTranslationsTable).values({
+			lang: translation.lang,
+			namespace: translation.namespace,
+			key: translation.key,
+			value: translation.value,
+			createdBy: 2,
+		});
+	}
+	logger.info('Translations seeded ✅');
+}
+
+/**
+ * User translationlarni seed qiladi
+ */
+async function seedUserTranslations() {
+	for (const ut of userTranslations) {
+		const user = await db.query.usersTable.findFirst({
+			where: eq(schemas.usersTable.username, ut.userUsername),
+			columns: { id: true },
+		});
+
+		if (!user) {
+			throw new Error(`User not found for user translation: ${ut.userUsername}`);
+		}
+
+		await db.insert(schemas.referencesUserTranslationsTable).values({
+			userId: user.id,
+			lang: ut.lang,
+			namespace: ut.namespace,
+			key: ut.key,
+			value: ut.value,
+			createdBy: 2,
+		});
+	}
+	logger.info('User translations seeded ✅');
+}
+
+/**
  * Asosiy seed funksiya — barcha bosqichlarni ketma-ket ishga tushiradi
  */
 async function main() {
@@ -625,6 +674,8 @@ async function main() {
 		await seedTariffs();
 		await seedPrincipalCustomersInitial();
 		await seedPrincipalCustomersUpdate();
+		await seedTranslations();
+		await seedUserTranslations();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

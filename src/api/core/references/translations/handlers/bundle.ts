@@ -11,6 +11,7 @@ import { getAuthUserId } from '../../../../../utils/getAuthUserId';
 interface BundleParams {
 	[key: string]: string;
 	lang: string;
+	ns: string;
 }
 
 export const bundleHandler = async (
@@ -18,30 +19,27 @@ export const bundleHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { lang } = req.params;
+		const { lang, ns } = req.params;
 
 		// 1. Get global translations
 		const globalTranslations =
 			await db.query.referencesTranslationsTable.findMany({
 				where: and(
 					eq(referencesTranslationsTable.lang, lang),
+					eq(referencesTranslationsTable.namespace, ns),
 					ne(referencesTranslationsTable.status, 'deleted'),
 				),
 				columns: {
-					namespace: true,
 					key: true,
 					value: true,
 				},
 			});
 
-		// 2. Build the bundle object { namespace: { key: value } }
-		const bundle: Record<string, Record<string, string>> = {};
+		// 2. Build flat { key: value }
+		const result: Record<string, string> = {};
 
 		for (const row of globalTranslations) {
-			if (!bundle[row.namespace]) {
-				bundle[row.namespace] = {};
-			}
-			bundle[row.namespace][row.key] = row.value;
+			result[row.key] = row.value;
 		}
 
 		// 3. Get user-specific translations (override global)
@@ -53,24 +51,24 @@ export const bundleHandler = async (
 					where: and(
 						eq(referencesUserTranslationsTable.userId, userId),
 						eq(referencesUserTranslationsTable.lang, lang),
+						eq(
+							referencesUserTranslationsTable.namespace,
+							ns,
+						),
 						ne(referencesUserTranslationsTable.status, 'deleted'),
 					),
 					columns: {
-						namespace: true,
 						key: true,
 						value: true,
 					},
 				});
 
 			for (const row of userTranslations) {
-				if (!bundle[row.namespace]) {
-					bundle[row.namespace] = {};
-				}
-				bundle[row.namespace][row.key] = row.value;
+				result[row.key] = row.value;
 			}
 		}
 
-		res.json(bundle);
+		res.json(result);
 	} catch (error: unknown) {
 		handleError(res, error);
 	}

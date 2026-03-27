@@ -20,12 +20,7 @@ const router = Router();
 
 router.use(parseUserFromToken, authorizeUser);
 
-router.get(
-	'/',
-	indexValidator,
-	withValidationErrorsMiddleware,
-	indexHandler,
-);
+router.get('/', indexValidator, withValidationErrorsMiddleware, indexHandler);
 
 router.post(
 	'/',
@@ -47,6 +42,6 @@ router.get('/list', listHandler);
 
 router.get('/counts-by-status', getCountsByStatusHandler);
 
-router.get('/bundle/:lang', bundleHandler);
+router.get('/bundle/:lang/:ns', bundleHandler);
 
 export default router;
