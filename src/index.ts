@@ -36,6 +36,7 @@ import {
 	PRINCIPALS_CURRENCIES_CONTROLLER,
 	REFERENCES_TRANSLATIONS_CONTROLLER,
 	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
+	PRINCIPALS_TRANSLATIONS_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
 
@@ -71,6 +72,7 @@ import principalsTariffsRouter from './api/principals/tariffs/controller';
 import principalsCurrenciesRouter from './api/principals/currencies/controller';
 import referencesTranslationsRouter from './api/core/references/translations/controller';
 import referencesUserTranslationsRouter from './api/core/references/userTranslations/controller';
+import principalsTranslationsRouter from './api/principals/translations/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -157,6 +159,7 @@ app.use(
 	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
 	referencesUserTranslationsRouter,
 );
+app.use(PRINCIPALS_TRANSLATIONS_CONTROLLER, principalsTranslationsRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server
