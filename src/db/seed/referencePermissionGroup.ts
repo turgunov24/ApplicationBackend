@@ -66,4 +66,8 @@ export const permissionGroups: Array<
 		nameUz: "Foydalanuvchi tarjimalari ma'lumotnomalari",
 		nameRu: 'Фойдаланувчи таржималари маълумотномалари',
 	},
+	{
+		nameUz: "Vazifalar ma'lumotnomalari",
+		nameRu: 'Вазифалар маълумотномалари',
+	},
 ];
