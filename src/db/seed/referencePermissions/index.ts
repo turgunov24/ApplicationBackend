@@ -21,6 +21,7 @@ import { principalCustomerCredentialsPermissions } from './principalCustomerCred
 import { attachTariffToPrincipalCustomersPermissions } from './attachTariffToPrincipalCustomers';
 import { translationsPermissions } from './translations';
 import { userTranslationsPermissions } from './userTranslations';
+import { tasksPermissions } from './tasks';
 
 export const permissions: Array<
 	Pick<
@@ -49,4 +50,5 @@ export const permissions: Array<
 	...attachTariffToPrincipalCustomersPermissions,
 	...translationsPermissions,
 	...userTranslationsPermissions,
+	...tasksPermissions,
 ];

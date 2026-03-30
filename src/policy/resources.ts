@@ -19,6 +19,7 @@ import attachTariffToPrincipalCustomersResources from '../api/core/attachTariffT
 import principalCustomerCredentialsResources from '../api/core/references/principalCustomerCredentials/resources';
 import referencesTranslationsResources from '../api/core/references/translations/resources';
 import referencesUserTranslationsResources from '../api/core/references/userTranslations/resources';
+import referencesTasksResources from '../api/core/references/tasks/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -42,6 +43,7 @@ const resources = [
 	...principalCustomerCredentialsResources,
 	...referencesTranslationsResources,
 	...referencesUserTranslationsResources,
+	...referencesTasksResources,
 ];
 
 export default resources;
