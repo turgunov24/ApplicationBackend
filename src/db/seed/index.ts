@@ -30,6 +30,7 @@ import {
 	ATTACH_TARIFF_TO_PRINCIPAL_CUSTOMERS_CONTROLLER,
 	REFERENCES_TRANSLATIONS_CONTROLLER,
 	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
+	REFERENCES_TASKS_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -46,6 +47,7 @@ import { tariffs } from './referenceTariffs';
 import { principalCustomers } from './principalCustomers';
 import { translations } from './referenceTranslations';
 import { userTranslations } from './referenceUserTranslations';
+import { tasks } from './referenceTasks';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -65,6 +67,7 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_TRANSLATIONS_CONTROLLER]: "Tarjimalar ma'lumotnomalari",
 	[REFERENCES_USER_TRANSLATIONS_CONTROLLER]:
 		"Foydalanuvchi tarjimalari ma'lumotnomalari",
+	[REFERENCES_TASKS_CONTROLLER]: "Vazifalar ma'lumotnomalari",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -647,6 +650,31 @@ async function seedUserTranslations() {
 }
 
 /**
+ * Vazifalarni seed qiladi
+ */
+async function seedTasks() {
+	for (const task of tasks) {
+		const customer = await db.query.principalCustomersTable.findFirst({
+			where: eq(schemas.principalCustomersTable.name, task.principalCustomerName),
+			columns: { id: true },
+		});
+
+		if (!customer) {
+			throw new Error(`Principal customer not found: ${task.principalCustomerName}`);
+		}
+
+		await db.insert(schemas.referencesTasksTable).values({
+			translationKey: task.translationKey,
+			description: task.description,
+			deadline: task.deadline,
+			principalCustomerId: customer.id,
+			createdBy: 2,
+		});
+	}
+	logger.info('Tasks seeded ✅');
+}
+
+/**
  * Asosiy seed funksiya — barcha bosqichlarni ketma-ket ishga tushiradi
  */
 async function main() {
@@ -676,6 +704,7 @@ async function main() {
 		await seedPrincipalCustomersUpdate();
 		await seedTranslations();
 		await seedUserTranslations();
+		await seedTasks();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

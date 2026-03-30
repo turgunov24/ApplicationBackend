@@ -48,3 +48,5 @@ export const REFERENCES_TRANSLATIONS_CONTROLLER =
 	'/api/core/references/translations';
 export const REFERENCES_USER_TRANSLATIONS_CONTROLLER =
 	'/api/core/references/user-translations';
+export const REFERENCES_TASKS_CONTROLLER =
+	'/api/core/references/tasks';
