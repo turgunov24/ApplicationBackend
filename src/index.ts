@@ -38,6 +38,8 @@ import {
 	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
 	PRINCIPALS_TRANSLATIONS_CONTROLLER,
 	REFERENCES_TASKS_CONTROLLER,
+	REFERENCES_TASKS_COMMENTS_CONTROLLER,
+	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
 
@@ -75,6 +77,8 @@ import referencesTranslationsRouter from './api/core/references/translations/con
 import referencesUserTranslationsRouter from './api/core/references/userTranslations/controller';
 import principalsTranslationsRouter from './api/principals/translations/controller';
 import referencesTasksRouter from './api/core/references/tasks/controller';
+import referencesTasksCommentsRouter from './api/core/references/tasksComments/controller';
+import referencesTaskActionsHistoryRouter from './api/core/references/taskActionsHistory/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -163,6 +167,8 @@ app.use(
 );
 app.use(PRINCIPALS_TRANSLATIONS_CONTROLLER, principalsTranslationsRouter);
 app.use(REFERENCES_TASKS_CONTROLLER, referencesTasksRouter);
+app.use(REFERENCES_TASKS_COMMENTS_CONTROLLER, referencesTasksCommentsRouter);
+app.use(REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER, referencesTaskActionsHistoryRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

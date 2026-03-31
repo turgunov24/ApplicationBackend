@@ -70,4 +70,12 @@ export const permissionGroups: Array<
 		nameUz: "Vazifalar ma'lumotnomalari",
 		nameRu: 'Вазифалар маълумотномалари',
 	},
+	{
+		nameUz: "Vazifa izohlari ma'lumotnomalari",
+		nameRu: 'Вазифа изоҳлари маълумотномалари',
+	},
+	{
+		nameUz: "Vazifa harakatlari tarixi ma'lumotnomalari",
+		nameRu: 'Вазифа ҳаракатлари тарихи маълумотномалари',
+	},
 ];

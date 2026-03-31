@@ -71,6 +71,14 @@ export {
 	referencesTasksRelations,
 } from './references/tasks';
 export {
+	referencesTasksCommentsTable,
+	referencesTasksCommentsRelations,
+} from './references/tasksComments';
+export {
+	referencesTaskActionsHistoryTable,
+	referencesTaskActionsHistoryRelations,
+} from './references/taskActionsHistory';
+export {
 	referencesTranslationsTable,
 	referencesTranslationsRelations,
 } from './references/translations';

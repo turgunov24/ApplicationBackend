@@ -22,6 +22,8 @@ import { attachTariffToPrincipalCustomersPermissions } from './attachTariffToPri
 import { translationsPermissions } from './translations';
 import { userTranslationsPermissions } from './userTranslations';
 import { tasksPermissions } from './tasks';
+import { tasksCommentsPermissions } from './tasksComments';
+import { taskActionsHistoryPermissions } from './taskActionsHistory';
 
 export const permissions: Array<
 	Pick<
@@ -51,4 +53,6 @@ export const permissions: Array<
 	...translationsPermissions,
 	...userTranslationsPermissions,
 	...tasksPermissions,
+	...tasksCommentsPermissions,
+	...taskActionsHistoryPermissions,
 ];

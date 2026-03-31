@@ -29,6 +29,20 @@
       "when": 1774862967270,
       "tag": "0003_curved_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774864656619,
+      "tag": "0004_burly_colleen_wing",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774933141955,
+      "tag": "0005_workable_firebrand",
+      "breakpoints": true
     }
   ]
 }

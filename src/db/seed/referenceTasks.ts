@@ -1,9 +1,14 @@
-export const tasks: Array<{
-	translationKey: string;
-	description: string;
-	principalCustomerName: string;
-	deadline?: Date;
-}> = [
+import { InferSelectModel } from 'drizzle-orm';
+import * as schemas from '../schemas/index';
+
+export const tasks: Array<
+	Pick<
+		InferSelectModel<typeof schemas.referencesTasksTable>,
+		'translationKey' | 'description' | 'deadline'
+	> & {
+		principalCustomerName: string;
+	}
+> = [
 	{
 		translationKey: 'task_integration_setup',
 		description: 'Integratsiya sozlamalari',

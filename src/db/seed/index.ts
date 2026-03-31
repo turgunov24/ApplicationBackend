@@ -31,6 +31,8 @@ import {
 	REFERENCES_TRANSLATIONS_CONTROLLER,
 	REFERENCES_USER_TRANSLATIONS_CONTROLLER,
 	REFERENCES_TASKS_CONTROLLER,
+	REFERENCES_TASKS_COMMENTS_CONTROLLER,
+	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -48,6 +50,8 @@ import { principalCustomers } from './principalCustomers';
 import { translations } from './referenceTranslations';
 import { userTranslations } from './referenceUserTranslations';
 import { tasks } from './referenceTasks';
+import { tasksComments } from './referenceTasksComments';
+import { taskActionsHistory } from './referenceTaskActionsHistory';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -68,6 +72,8 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_USER_TRANSLATIONS_CONTROLLER]:
 		"Foydalanuvchi tarjimalari ma'lumotnomalari",
 	[REFERENCES_TASKS_CONTROLLER]: "Vazifalar ma'lumotnomalari",
+	[REFERENCES_TASKS_COMMENTS_CONTROLLER]: "Vazifa izohlari ma'lumotnomalari",
+	[REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER]: "Vazifa harakatlari tarixi ma'lumotnomalari",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -675,6 +681,53 @@ async function seedTasks() {
 }
 
 /**
+ * Vazifa izohlarini seed qiladi
+ */
+async function seedTasksComments() {
+	for (const tasksComment of tasksComments) {
+		const task = await db.query.referencesTasksTable.findFirst({
+			where: eq(schemas.referencesTasksTable.translationKey, tasksComment.taskTranslationKey),
+			columns: { id: true },
+		});
+
+		if (!task) {
+			throw new Error(`Task not found: ${tasksComment.taskTranslationKey}`);
+		}
+
+		await db.insert(schemas.referencesTasksCommentsTable).values({
+			text: tasksComment.text,
+			taskId: task.id,
+			createdBy: 2,
+		});
+	}
+	logger.info('Tasks comments seeded ✅');
+}
+
+/**
+ * Vazifa harakatlari tarixini seed qiladi
+ */
+async function seedTaskActionsHistory() {
+	for (const history of taskActionsHistory) {
+		const task = await db.query.referencesTasksTable.findFirst({
+			where: eq(schemas.referencesTasksTable.translationKey, history.taskTranslationKey),
+			columns: { id: true },
+		});
+
+		if (!task) {
+			throw new Error(`Task not found: ${history.taskTranslationKey}`);
+		}
+
+		await db.insert(schemas.referencesTaskActionsHistoryTable).values({
+			taskId: task.id,
+			type: history.type,
+			status: history.status,
+			createdBy: 2,
+		});
+	}
+	logger.info('Task actions history seeded ✅');
+}
+
+/**
  * Asosiy seed funksiya — barcha bosqichlarni ketma-ket ishga tushiradi
  */
 async function main() {
@@ -705,6 +758,8 @@ async function main() {
 		await seedTranslations();
 		await seedUserTranslations();
 		await seedTasks();
+		await seedTasksComments();
+		await seedTaskActionsHistory();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {
