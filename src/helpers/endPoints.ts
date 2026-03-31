@@ -50,3 +50,7 @@ export const REFERENCES_USER_TRANSLATIONS_CONTROLLER =
 	'/api/core/references/user-translations';
 export const REFERENCES_TASKS_CONTROLLER =
 	'/api/core/references/tasks';
+export const REFERENCES_TASKS_COMMENTS_CONTROLLER =
+	'/api/core/references/tasks-comments';
+export const REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER =
+	'/api/core/references/task-actions-history';

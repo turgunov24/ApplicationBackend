@@ -20,6 +20,8 @@ import principalCustomerCredentialsResources from '../api/core/references/princi
 import referencesTranslationsResources from '../api/core/references/translations/resources';
 import referencesUserTranslationsResources from '../api/core/references/userTranslations/resources';
 import referencesTasksResources from '../api/core/references/tasks/resources';
+import referencesTasksCommentsResources from '../api/core/references/tasksComments/resources';
+import referencesTaskActionsHistoryResources from '../api/core/references/taskActionsHistory/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -44,6 +46,8 @@ const resources = [
 	...referencesTranslationsResources,
 	...referencesUserTranslationsResources,
 	...referencesTasksResources,
+	...referencesTasksCommentsResources,
+	...referencesTaskActionsHistoryResources,
 ];
 
 export default resources;
