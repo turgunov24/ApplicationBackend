@@ -54,3 +54,5 @@ export const REFERENCES_TASKS_COMMENTS_CONTROLLER =
 	'/api/core/references/tasks-comments';
 export const REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER =
 	'/api/core/references/task-actions-history';
+export const REFERENCES_TASK_TEMPLATES_CONTROLLER =
+	'/api/core/references/task-templates';
