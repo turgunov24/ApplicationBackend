@@ -79,6 +79,10 @@ export {
 	referencesTaskActionsHistoryRelations,
 } from './references/taskActionsHistory';
 export {
+	referencesTaskTemplatesTable,
+	referencesTaskTemplatesRelations,
+} from './references/taskTemplates';
+export {
 	referencesTranslationsTable,
 	referencesTranslationsRelations,
 } from './references/translations';
