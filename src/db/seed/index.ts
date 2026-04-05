@@ -33,6 +33,7 @@ import {
 	REFERENCES_TASKS_CONTROLLER,
 	REFERENCES_TASKS_COMMENTS_CONTROLLER,
 	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
+	REFERENCES_TASK_TEMPLATES_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -52,6 +53,7 @@ import { userTranslations } from './referenceUserTranslations';
 import { tasks } from './referenceTasks';
 import { tasksComments } from './referenceTasksComments';
 import { taskActionsHistory } from './referenceTaskActionsHistory';
+import { taskTemplates } from './referenceTaskTemplates';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -73,7 +75,10 @@ const controllerToGroupMap: Record<string, string> = {
 		"Foydalanuvchi tarjimalari ma'lumotnomalari",
 	[REFERENCES_TASKS_CONTROLLER]: "Vazifalar ma'lumotnomalari",
 	[REFERENCES_TASKS_COMMENTS_CONTROLLER]: "Vazifa izohlari ma'lumotnomalari",
-	[REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER]: "Vazifa harakatlari tarixi ma'lumotnomalari",
+	[REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER]:
+		"Vazifa harakatlari tarixi ma'lumotnomalari",
+	[REFERENCES_TASK_TEMPLATES_CONTROLLER]:
+		"Vazifa shablonlari ma'lumotnomalari",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -640,7 +645,9 @@ async function seedUserTranslations() {
 		});
 
 		if (!user) {
-			throw new Error(`User not found for user translation: ${ut.userUsername}`);
+			throw new Error(
+				`User not found for user translation: ${ut.userUsername}`,
+			);
 		}
 
 		await db.insert(schemas.referencesUserTranslationsTable).values({
@@ -661,12 +668,17 @@ async function seedUserTranslations() {
 async function seedTasks() {
 	for (const task of tasks) {
 		const customer = await db.query.principalCustomersTable.findFirst({
-			where: eq(schemas.principalCustomersTable.name, task.principalCustomerName),
+			where: eq(
+				schemas.principalCustomersTable.name,
+				task.principalCustomerName,
+			),
 			columns: { id: true },
 		});
 
 		if (!customer) {
-			throw new Error(`Principal customer not found: ${task.principalCustomerName}`);
+			throw new Error(
+				`Principal customer not found: ${task.principalCustomerName}`,
+			);
 		}
 
 		await db.insert(schemas.referencesTasksTable).values({
@@ -686,7 +698,10 @@ async function seedTasks() {
 async function seedTasksComments() {
 	for (const tasksComment of tasksComments) {
 		const task = await db.query.referencesTasksTable.findFirst({
-			where: eq(schemas.referencesTasksTable.translationKey, tasksComment.taskTranslationKey),
+			where: eq(
+				schemas.referencesTasksTable.translationKey,
+				tasksComment.taskTranslationKey,
+			),
 			columns: { id: true },
 		});
 
@@ -709,7 +724,10 @@ async function seedTasksComments() {
 async function seedTaskActionsHistory() {
 	for (const history of taskActionsHistory) {
 		const task = await db.query.referencesTasksTable.findFirst({
-			where: eq(schemas.referencesTasksTable.translationKey, history.taskTranslationKey),
+			where: eq(
+				schemas.referencesTasksTable.translationKey,
+				history.taskTranslationKey,
+			),
 			columns: { id: true },
 		});
 
@@ -725,6 +743,25 @@ async function seedTaskActionsHistory() {
 		});
 	}
 	logger.info('Task actions history seeded ✅');
+}
+
+/**
+ * Vazifa shablonlarini seed qiladi
+ */
+async function seedTaskTemplates() {
+	for (const taskTemplate of taskTemplates) {
+		await db.insert(schemas.referencesTaskTemplatesTable).values({
+			translationKey: taskTemplate.translationKey,
+			description: taskTemplate.description,
+			recurrence: taskTemplate.recurrence,
+			date: taskTemplate.date,
+			dayOfMonth: taskTemplate.dayOfMonth,
+			monthOfQuarter: taskTemplate.monthOfQuarter,
+			monthOfYear: taskTemplate.monthOfYear,
+			createdBy: 2,
+		});
+	}
+	logger.info('Task templates seeded ✅');
 }
 
 /**
@@ -760,6 +797,7 @@ async function main() {
 		await seedTasks();
 		await seedTasksComments();
 		await seedTaskActionsHistory();
+		await seedTaskTemplates();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');
 	} catch (error) {

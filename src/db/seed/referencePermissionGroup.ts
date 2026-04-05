@@ -78,4 +78,8 @@ export const permissionGroups: Array<
 		nameUz: "Vazifa harakatlari tarixi ma'lumotnomalari",
 		nameRu: 'Вазифа ҳаракатлари тарихи маълумотномалари',
 	},
+	{
+		nameUz: "Vazifa shablonlari ma'lumotnomalari",
+		nameRu: 'Вазифа шаблонлари маълумотномалари',
+	},
 ];

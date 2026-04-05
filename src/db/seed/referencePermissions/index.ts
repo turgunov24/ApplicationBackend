@@ -24,6 +24,7 @@ import { userTranslationsPermissions } from './userTranslations';
 import { tasksPermissions } from './tasks';
 import { tasksCommentsPermissions } from './tasksComments';
 import { taskActionsHistoryPermissions } from './taskActionsHistory';
+import { taskTemplatesPermissions } from './taskTemplates';
 
 export const permissions: Array<
 	Pick<
@@ -55,4 +56,5 @@ export const permissions: Array<
 	...tasksPermissions,
 	...tasksCommentsPermissions,
 	...taskActionsHistoryPermissions,
+	...taskTemplatesPermissions,
 ];

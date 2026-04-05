@@ -100,13 +100,13 @@ const createSchema: CreateValidationSchema = {
 	},
 	date: {
 		in: 'body',
-		optional: true,
+		optional: { options: { nullable: true } },
 		isISO8601: true,
 		errorMessage: 'Task template date must be a valid date',
 	},
 	dayOfMonth: {
 		in: 'body',
-		optional: true,
+		optional: { options: { nullable: true } },
 		isInt: {
 			options: { min: 1, max: 31 },
 			errorMessage: 'dayOfMonth must be between 1 and 31',
@@ -114,7 +114,7 @@ const createSchema: CreateValidationSchema = {
 	},
 	monthOfQuarter: {
 		in: 'body',
-		optional: true,
+		optional: { options: { nullable: true } },
 		isInt: {
 			options: { min: 1, max: 3 },
 			errorMessage: 'monthOfQuarter must be between 1 and 3',
@@ -122,7 +122,7 @@ const createSchema: CreateValidationSchema = {
 	},
 	monthOfYear: {
 		in: 'body',
-		optional: true,
+		optional: { options: { nullable: true } },
 		isInt: {
 			options: { min: 1, max: 12 },
 			errorMessage: 'monthOfYear must be between 1 and 12',
