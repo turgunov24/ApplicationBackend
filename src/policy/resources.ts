@@ -22,6 +22,7 @@ import referencesUserTranslationsResources from '../api/core/references/userTran
 import referencesTasksResources from '../api/core/references/tasks/resources';
 import referencesTasksCommentsResources from '../api/core/references/tasksComments/resources';
 import referencesTaskActionsHistoryResources from '../api/core/references/taskActionsHistory/resources';
+import referencesTaskTemplatesResources from '../api/core/references/taskTemplates/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -48,6 +49,7 @@ const resources = [
 	...referencesTasksResources,
 	...referencesTasksCommentsResources,
 	...referencesTaskActionsHistoryResources,
+	...referencesTaskTemplatesResources,
 ];
 
 export default resources;
