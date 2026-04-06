@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { CreatePayload } from '../validators';
-import { referencesTaskTemplatesTable } from '../../../../../db/schemas/references/taskTemplates';
+import { referencesTaskRecurrenceTable } from '../../../../../db/schemas/references/taskRecurrence';
 import db from '../../../../../db';
 import { handleError } from '../../../../../utils/handleError';
 
@@ -11,25 +11,20 @@ export const updateHandler = async (
 ) => {
 	try {
 		const { id } = req.query;
-		const { translationKey, description, recurrenceId, taskTemplateCategoryId, date, dayOfMonth, monthOfQuarter, monthOfYear } = req.body;
+		const { translationKey, token, description } = req.body;
 
 		await db
-			.update(referencesTaskTemplatesTable)
+			.update(referencesTaskRecurrenceTable)
 			.set({
 				translationKey,
+				token,
 				description,
-				recurrenceId,
-				taskTemplateCategoryId,
-				date: date ? new Date(date) : undefined,
-				dayOfMonth,
-				monthOfQuarter,
-				monthOfYear,
 				updatedAt: new Date(),
 			})
-			.where(eq(referencesTaskTemplatesTable.id, Number(id)))
+			.where(eq(referencesTaskRecurrenceTable.id, Number(id)))
 			.returning();
 
-		res.json({ message: 'Task template updated successfully' });
+		res.json({ message: 'Task recurrence updated successfully' });
 	} catch (error: unknown) {
 		handleError(res, error);
 	}

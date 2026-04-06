@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CreatePayload } from '../validators';
-import { referencesTaskTemplatesTable } from '../../../../../db/schemas/references/taskTemplates';
+import { referencesTaskTemplateCategoriesTable } from '../../../../../db/schemas/references/taskTemplateCategories';
 import db from '../../../../../db';
 import { handleError } from '../../../../../utils/handleError';
 import { getAuthUserId } from '../../../../../utils/getAuthUserId';
@@ -11,7 +11,7 @@ export const createHandler = async (
 	res: Response,
 ) => {
 	try {
-		const { translationKey, description, recurrenceId, taskTemplateCategoryId, date, dayOfMonth, monthOfQuarter, monthOfYear } = req.body;
+		const { translationKey } = req.body;
 
 		const userId = getAuthUserId(req);
 
@@ -19,17 +19,10 @@ export const createHandler = async (
 			return res.status(401).json(generateErrorMessage('Unauthorized'));
 
 		const result = await db
-			.insert(referencesTaskTemplatesTable)
+			.insert(referencesTaskTemplateCategoriesTable)
 			.values({
 				createdBy: userId,
 				translationKey,
-				description,
-				recurrenceId,
-				taskTemplateCategoryId,
-				date: date ? new Date(date) : undefined,
-				dayOfMonth,
-				monthOfQuarter,
-				monthOfYear,
 			})
 			.returning();
 

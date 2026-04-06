@@ -83,6 +83,14 @@ export {
 	referencesTaskTemplatesRelations,
 } from './references/taskTemplates';
 export {
+	referencesTaskTemplateCategoriesTable,
+	referencesTaskTemplateCategoriesRelations,
+} from './references/taskTemplateCategories';
+export {
+	referencesTaskRecurrenceTable,
+	referencesTaskRecurrenceRelations,
+} from './references/taskRecurrence';
+export {
 	referencesTranslationsTable,
 	referencesTranslationsRelations,
 } from './references/translations';

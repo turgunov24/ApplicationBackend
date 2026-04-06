@@ -8,7 +8,7 @@ import { SUPER_ADMIN_ID } from '../../../../helpers/config';
 
 export type CreatePayload = Pick<
 	InferInsertModel<typeof referencesTaskTemplatesTable>,
-	'translationKey' | 'description' | 'recurrence' | 'date' | 'dayOfMonth' | 'monthOfQuarter' | 'monthOfYear'
+	'translationKey' | 'description' | 'recurrenceId' | 'taskTemplateCategoryId' | 'date' | 'dayOfMonth' | 'monthOfQuarter' | 'monthOfYear'
 >;
 
 type keys = keyof CreatePayload;
@@ -88,15 +88,17 @@ const createSchema: CreateValidationSchema = {
 		errorMessage: 'Task template description is required',
 		trim: true,
 	},
-	recurrence: {
+	recurrenceId: {
 		in: 'body',
-		isString: true,
+		isInt: true,
 		notEmpty: true,
-		errorMessage: 'Task template recurrence is required',
-		isIn: {
-			options: [['once', 'monthly', 'fiscalQuarter', 'yearly']],
-			errorMessage: 'Recurrence must be one of: once, monthly, fiscalQuarter, yearly',
-		},
+		errorMessage: 'Task template recurrenceId is required',
+	},
+	taskTemplateCategoryId: {
+		in: 'body',
+		isInt: true,
+		notEmpty: true,
+		errorMessage: 'Task template taskTemplateCategoryId is required',
 	},
 	date: {
 		in: 'body',

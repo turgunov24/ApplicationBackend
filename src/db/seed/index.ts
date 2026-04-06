@@ -34,6 +34,8 @@ import {
 	REFERENCES_TASKS_COMMENTS_CONTROLLER,
 	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
 	REFERENCES_TASK_TEMPLATES_CONTROLLER,
+	REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER,
+	REFERENCES_TASK_RECURRENCE_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -54,6 +56,8 @@ import { tasks } from './referenceTasks';
 import { tasksComments } from './referenceTasksComments';
 import { taskActionsHistory } from './referenceTaskActionsHistory';
 import { taskTemplates } from './referenceTaskTemplates';
+import { taskTemplateCategories } from './referenceTaskTemplateCategories';
+import { taskRecurrences } from './referenceTaskRecurrence';
 
 // Controller → Permission group name mapping
 const controllerToGroupMap: Record<string, string> = {
@@ -77,8 +81,11 @@ const controllerToGroupMap: Record<string, string> = {
 	[REFERENCES_TASKS_COMMENTS_CONTROLLER]: "Vazifa izohlari ma'lumotnomalari",
 	[REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER]:
 		"Vazifa harakatlari tarixi ma'lumotnomalari",
-	[REFERENCES_TASK_TEMPLATES_CONTROLLER]:
-		"Vazifa shablonlari ma'lumotnomalari",
+	[REFERENCES_TASK_TEMPLATES_CONTROLLER]: "Vazifa shablonlari ma'lumotnomalari",
+	[REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER]:
+		"Vazifa shablon kategoriyalari ma'lumotnomalari",
+	[REFERENCES_TASK_RECURRENCE_CONTROLLER]:
+		"Vazifa takrorlanishi ma'lumotnomalari",
 };
 
 // Admin-related controllers — barchasi bitta gruppa
@@ -746,14 +753,70 @@ async function seedTaskActionsHistory() {
 }
 
 /**
+ * Vazifa shablon kategoriyalarini seed qiladi
+ */
+async function seedTaskTemplateCategories() {
+	for (const category of taskTemplateCategories) {
+		await db.insert(schemas.referencesTaskTemplateCategoriesTable).values({
+			translationKey: category.translationKey,
+			createdBy: 2,
+		});
+	}
+	logger.info('Task template categories seeded ✅');
+}
+
+/**
+ * Vazifa takrorlanishlarini seed qiladi
+ */
+async function seedTaskRecurrences() {
+	for (const recurrence of taskRecurrences) {
+		await db.insert(schemas.referencesTaskRecurrenceTable).values({
+			translationKey: recurrence.translationKey,
+			token: recurrence.token,
+			description: recurrence.description,
+			createdBy: 2,
+		});
+	}
+	logger.info('Task recurrences seeded ✅');
+}
+
+/**
  * Vazifa shablonlarini seed qiladi
  */
 async function seedTaskTemplates() {
 	for (const taskTemplate of taskTemplates) {
+		const recurrence = await db.query.referencesTaskRecurrenceTable.findFirst({
+			where: eq(
+				schemas.referencesTaskRecurrenceTable.token,
+				taskTemplate.recurrenceToken,
+			),
+			columns: { id: true },
+		});
+
+		if (!recurrence) {
+			throw new Error(`Recurrence not found: ${taskTemplate.recurrenceToken}`);
+		}
+
+		const category =
+			await db.query.referencesTaskTemplateCategoriesTable.findFirst({
+				where: eq(
+					schemas.referencesTaskTemplateCategoriesTable.translationKey,
+					taskTemplate.categoryTranslationKey,
+				),
+				columns: { id: true },
+			});
+
+		if (!category) {
+			throw new Error(
+				`Category not found: ${taskTemplate.categoryTranslationKey}`,
+			);
+		}
+
 		await db.insert(schemas.referencesTaskTemplatesTable).values({
 			translationKey: taskTemplate.translationKey,
 			description: taskTemplate.description,
-			recurrence: taskTemplate.recurrence,
+			recurrenceId: recurrence.id,
+			taskTemplateCategoryId: category.id,
 			date: taskTemplate.date,
 			dayOfMonth: taskTemplate.dayOfMonth,
 			monthOfQuarter: taskTemplate.monthOfQuarter,
@@ -797,6 +860,8 @@ async function main() {
 		await seedTasks();
 		await seedTasksComments();
 		await seedTaskActionsHistory();
+		await seedTaskTemplateCategories();
+		await seedTaskRecurrences();
 		await seedTaskTemplates();
 
 		logger.info('SUCCESSFULLY SEED DATABASE 🌴');

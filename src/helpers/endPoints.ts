@@ -56,3 +56,7 @@ export const REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER =
 	'/api/core/references/task-actions-history';
 export const REFERENCES_TASK_TEMPLATES_CONTROLLER =
 	'/api/core/references/task-templates';
+export const REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER =
+	'/api/core/references/task-template-categories';
+export const REFERENCES_TASK_RECURRENCE_CONTROLLER =
+	'/api/core/references/task-recurrence';
