@@ -41,6 +41,8 @@ import {
 	REFERENCES_TASKS_COMMENTS_CONTROLLER,
 	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
 	REFERENCES_TASK_TEMPLATES_CONTROLLER,
+	REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER,
+	REFERENCES_TASK_RECURRENCE_CONTROLLER,
 } from './helpers/endPoints';
 import cors from 'cors';
 
@@ -81,6 +83,8 @@ import referencesTasksRouter from './api/core/references/tasks/controller';
 import referencesTasksCommentsRouter from './api/core/references/tasksComments/controller';
 import referencesTaskActionsHistoryRouter from './api/core/references/taskActionsHistory/controller';
 import referencesTaskTemplatesRouter from './api/core/references/taskTemplates/controller';
+import referencesTaskTemplateCategoriesRouter from './api/core/references/taskTemplateCategories/controller';
+import referencesTaskRecurrenceRouter from './api/core/references/taskRecurrence/controller';
 import { swaggerServe, swaggerSetup } from './api/swagger/index';
 import { initializeWebSocket } from './websocket';
 
@@ -170,8 +174,16 @@ app.use(
 app.use(PRINCIPALS_TRANSLATIONS_CONTROLLER, principalsTranslationsRouter);
 app.use(REFERENCES_TASKS_CONTROLLER, referencesTasksRouter);
 app.use(REFERENCES_TASKS_COMMENTS_CONTROLLER, referencesTasksCommentsRouter);
-app.use(REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER, referencesTaskActionsHistoryRouter);
+app.use(
+	REFERENCES_TASK_ACTIONS_HISTORY_CONTROLLER,
+	referencesTaskActionsHistoryRouter,
+);
 app.use(REFERENCES_TASK_TEMPLATES_CONTROLLER, referencesTaskTemplatesRouter);
+app.use(
+	REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER,
+	referencesTaskTemplateCategoriesRouter,
+);
+app.use(REFERENCES_TASK_RECURRENCE_CONTROLLER, referencesTaskRecurrenceRouter);
 app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server

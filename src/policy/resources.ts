@@ -23,6 +23,8 @@ import referencesTasksResources from '../api/core/references/tasks/resources';
 import referencesTasksCommentsResources from '../api/core/references/tasksComments/resources';
 import referencesTaskActionsHistoryResources from '../api/core/references/taskActionsHistory/resources';
 import referencesTaskTemplatesResources from '../api/core/references/taskTemplates/resources';
+import referencesTaskTemplateCategoriesResources from '../api/core/references/taskTemplateCategories/resources';
+import referencesTaskRecurrenceResources from '../api/core/references/taskRecurrence/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -50,6 +52,8 @@ const resources = [
 	...referencesTasksCommentsResources,
 	...referencesTaskActionsHistoryResources,
 	...referencesTaskTemplatesResources,
+	...referencesTaskTemplateCategoriesResources,
+	...referencesTaskRecurrenceResources,
 ];
 
 export default resources;

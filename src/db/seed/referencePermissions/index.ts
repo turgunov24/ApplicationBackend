@@ -25,6 +25,8 @@ import { tasksPermissions } from './tasks';
 import { tasksCommentsPermissions } from './tasksComments';
 import { taskActionsHistoryPermissions } from './taskActionsHistory';
 import { taskTemplatesPermissions } from './taskTemplates';
+import { taskTemplateCategoriesPermissions } from './taskTemplateCategories';
+import { taskRecurrencePermissions } from './taskRecurrence';
 
 export const permissions: Array<
 	Pick<
@@ -57,4 +59,6 @@ export const permissions: Array<
 	...tasksCommentsPermissions,
 	...taskActionsHistoryPermissions,
 	...taskTemplatesPermissions,
+	...taskTemplateCategoriesPermissions,
+	...taskRecurrencePermissions,
 ];

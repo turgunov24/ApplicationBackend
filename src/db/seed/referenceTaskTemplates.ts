@@ -4,13 +4,17 @@ import * as schemas from '../schemas/index';
 export const taskTemplates: Array<
 	Pick<
 		InferSelectModel<typeof schemas.referencesTaskTemplatesTable>,
-		'translationKey' | 'description' | 'recurrence' | 'date' | 'dayOfMonth' | 'monthOfQuarter' | 'monthOfYear'
-	>
+		'translationKey' | 'description' | 'date' | 'dayOfMonth' | 'monthOfQuarter' | 'monthOfYear'
+	> & {
+		recurrenceToken: string;
+		categoryTranslationKey: string;
+	}
 > = [
 	{
 		translationKey: 'task_template_monthly_report',
 		description: 'Oylik hisobot tayyorlash',
-		recurrence: 'monthly',
+		recurrenceToken: 'monthly',
+		categoryTranslationKey: 'task_template_category_financial',
 		date: null,
 		dayOfMonth: 5,
 		monthOfQuarter: null,
@@ -19,7 +23,8 @@ export const taskTemplates: Array<
 	{
 		translationKey: 'task_template_quarterly_audit',
 		description: 'Choraklik audit tekshiruvi',
-		recurrence: 'fiscalQuarter',
+		recurrenceToken: 'fiscalQuarter',
+		categoryTranslationKey: 'task_template_category_operational',
 		date: null,
 		dayOfMonth: 10,
 		monthOfQuarter: 1,

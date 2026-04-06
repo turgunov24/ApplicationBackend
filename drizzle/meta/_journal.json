@@ -50,6 +50,13 @@
       "when": 1775411801564,
       "tag": "0006_brave_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1775498100221,
+      "tag": "0007_tranquil_electro",
+      "breakpoints": true
     }
   ]
 }
