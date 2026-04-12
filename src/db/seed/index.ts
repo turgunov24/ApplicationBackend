@@ -36,6 +36,7 @@ import {
 	REFERENCES_TASK_TEMPLATES_CONTROLLER,
 	REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER,
 	REFERENCES_TASK_RECURRENCE_CONTROLLER,
+	REFERENCES_ATTACH_TEMPLATE_TO_TASK_CONTROLLER,
 } from '../../helpers/endPoints';
 import { eq } from 'drizzle-orm';
 import { ResourceActions } from '../../types/auth';
@@ -86,6 +87,8 @@ const controllerToGroupMap: Record<string, string> = {
 		"Vazifa shablon kategoriyalari ma'lumotnomalari",
 	[REFERENCES_TASK_RECURRENCE_CONTROLLER]:
 		"Vazifa takrorlanishi ma'lumotnomalari",
+	[REFERENCES_ATTACH_TEMPLATE_TO_TASK_CONTROLLER]:
+		"Shablonlarni vazifaga biriktirish",
 };
 
 // Admin-related controllers — barchasi bitta gruppa

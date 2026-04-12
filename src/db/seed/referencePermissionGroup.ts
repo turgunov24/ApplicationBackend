@@ -90,4 +90,8 @@ export const permissionGroups: Array<
 		nameUz: "Vazifa takrorlanishi ma'lumotnomalari",
 		nameRu: 'Вазифа такрорланиши маълумотномалари',
 	},
+	{
+		nameUz: "Shablonlarni vazifaga biriktirish",
+		nameRu: 'Шаблонларни вазифага бириктириш',
+	},
 ];
