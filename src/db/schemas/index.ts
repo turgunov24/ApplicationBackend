@@ -67,6 +67,10 @@ export {
 	referencesAttachTariffToPrincipalCustomersRelations,
 } from './references/attachTariffToPrincipalCustomers';
 export {
+	referencesAttachTemplateToTaskTable,
+	referencesAttachTemplateToTaskRelations,
+} from './references/attachTemplateToTask';
+export {
 	referencesTasksTable,
 	referencesTasksRelations,
 } from './references/tasks';
