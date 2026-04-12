@@ -60,3 +60,5 @@ export const REFERENCES_TASK_TEMPLATE_CATEGORIES_CONTROLLER =
 	'/api/core/references/task-template-categories';
 export const REFERENCES_TASK_RECURRENCE_CONTROLLER =
 	'/api/core/references/task-recurrence';
+export const REFERENCES_ATTACH_TEMPLATE_TO_TASK_CONTROLLER =
+	'/api/core/references/attach-template-to-task';
