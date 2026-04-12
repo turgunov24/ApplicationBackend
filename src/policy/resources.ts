@@ -25,6 +25,7 @@ import referencesTaskActionsHistoryResources from '../api/core/references/taskAc
 import referencesTaskTemplatesResources from '../api/core/references/taskTemplates/resources';
 import referencesTaskTemplateCategoriesResources from '../api/core/references/taskTemplateCategories/resources';
 import referencesTaskRecurrenceResources from '../api/core/references/taskRecurrence/resources';
+import referencesAttachTemplateToTaskResources from '../api/core/references/attachTemplateToTask/resources';
 
 const resources = [
 	...referencesClientTypesResources,
@@ -54,6 +55,7 @@ const resources = [
 	...referencesTaskTemplatesResources,
 	...referencesTaskTemplateCategoriesResources,
 	...referencesTaskRecurrenceResources,
+	...referencesAttachTemplateToTaskResources,
 ];
 
 export default resources;
