@@ -191,6 +191,6 @@ app.use('/swagger', swaggerServe, swaggerSetup);
 
 // Start the server
 server.listen(port, () => {
-	logger.info(`Server is running on http://localhost:${port}`);
+	logger.info(`Server is running on http://localhost:${port} main`);
 	initializeWebSocket();
 });
