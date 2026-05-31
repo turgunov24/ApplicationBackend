@@ -1,0 +1,43 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /home/tadone/apps/backend
+
+            # Oxirgi kodni olish
+            git pull origin main
+
+            # Dependencylarni o'rnatish
+            npm install
+
+            # Build qilish
+            npm run build
+
+            # pm2 dan birinchi marta ishga tushirish yoki restart
+            pm2 describe backend > /dev/null 2>&1 \
+              && pm2 restart backend \
+              || pm2 start dist/index.js --name backend
+
+            # pm2 holatini saqlash
+            pm2 save
+
+            echo "Deploy muvaffaqiyatli yakunlandi!"
