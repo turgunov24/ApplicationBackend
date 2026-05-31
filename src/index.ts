@@ -109,7 +109,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 // Basic route
 app.get('/', (req, res) => {
 	res.json({
-		message: 'Welcome to the API',
+		message: 'Welcome to the tadone API',
 		dbName: process.env.DB_NAME,
 		dbPort: process.env.DB_PORT,
 		port,
