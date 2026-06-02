@@ -1,5 +1,4 @@
 name: Deploy to VPS
-
 on:
   push:
     branches:
@@ -8,7 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,19 +21,13 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
             cd /home/tadone/apps/backend
-
             git pull origin main
-
             npm install
-
             npm run build
-
+            npm run migrate
             pm2 describe backend > /dev/null 2>&1 \
               && pm2 restart backend \
               || pm2 start dist/index.js --name backend
-
             pm2 save
-
             echo "Deploy muvaffaqiyatli yakunlandi!"
